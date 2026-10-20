@@ -59,6 +59,17 @@ FEW_SHOT_EXAMPLES = [
             "department": "Electrical Engineering & Public Lighting Division",
             "reason": "Imminent electrocution life hazard on pedestrian walkway."
         }
+    },
+    {
+        "description": "Street light not working for past 4 days, entire road is completely dark at night causing safety concern",
+        "output": {
+            "category": "Street Light",
+            "subcategory": "Street Light Not Working",
+            "priority": "MEDIUM",
+            "confidence": 0.96,
+            "department": "Electrical Engineering & Public Lighting Division",
+            "reason": "Street light failure resulting in hazardous dark road conditions."
+        }
     }
 ]
 

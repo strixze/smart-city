@@ -17,6 +17,7 @@ CIVIC_CATEGORIES = [
     "Roads",
     "Drainage",
     "Water Supply",
+    "Street Light",
     "Other"
 ]
 
@@ -42,6 +43,13 @@ PUBLIC_DATASETS = [
         "categories": ["Drainage", "Water Supply"],
         "url": "https://data.mendeley.com/datasets/pwbvx94r96/1",
         "description": "Urban flooded roads, overflowing stormwater drains, and surface water accumulation."
+    },
+    {
+        "name": "Roboflow Streetlight & Utility Pole Defect Dataset",
+        "license": "CC-BY 4.0 / Open Source",
+        "categories": ["Street Light"],
+        "url": "https://universe.roboflow.com/street-lighting/streetlight-defects-and-outages",
+        "description": "Day and night urban scenes of working street lamps, damaged poles, flickering fixtures, and dark road sectors."
     }
 ]
 
@@ -70,6 +78,7 @@ def generate_benchmark_category_samples(output_dir: str, num_samples_per_class: 
         "Roads": [(70, 70, 70), (50, 50, 50), (90, 85, 80), (35, 35, 35), (110, 110, 105)],
         "Drainage": [(30, 45, 50), (20, 30, 35), (40, 60, 55), (60, 75, 70), (15, 25, 30)],
         "Water Supply": [(40, 90, 160), (30, 70, 140), (70, 130, 200), (100, 170, 230), (20, 50, 110)],
+        "Street Light": [(15, 20, 30), (22, 28, 42), (28, 35, 50), (10, 15, 25), (40, 48, 65)],
         "Other": [(120, 120, 130), (140, 130, 120), (100, 110, 120), (160, 160, 160), (90, 90, 95)]
     }
 
@@ -99,6 +108,25 @@ def generate_benchmark_category_samples(output_dir: str, num_samples_per_class: 
                 elif cat == "Drainage":
                     # Draw dark gutter / slit lines
                     draw.line([(x0, y0), (x1, y0)], fill=(10, 15, 20), width=6)
+                elif cat == "Street Light":
+                    # Street lamp poles, glowing fixtures (working) or dark fixtures (damaged/unlit)
+                    pole_x = rng.randint(90, 160)
+                    pole_top_y = rng.randint(40, 70)
+                    tilt = rng.randint(-15, 15) if i % 3 == 0 else 0
+                    # Pole body
+                    draw.line([(pole_x, pole_top_y), (pole_x + tilt, 256)], fill=(130, 135, 145), width=5)
+                    # Lamp arm
+                    arm_end_x = pole_x + 35
+                    draw.line([(pole_x, pole_top_y), (arm_end_x, pole_top_y - 6)], fill=(120, 125, 135), width=4)
+                    if i % 2 == 0:
+                        # Glowing working lantern with halo
+                        draw.ellipse([arm_end_x - 12, pole_top_y - 18, arm_end_x + 16, pole_top_y + 10], fill=(255, 235, 140))
+                        draw.ellipse([arm_end_x - 6, pole_top_y - 12, arm_end_x + 10, pole_top_y + 4], fill=(255, 255, 230))
+                    else:
+                        # Dark, non-working or broken lamp fixture
+                        draw.ellipse([arm_end_x - 8, pole_top_y - 12, arm_end_x + 10, pole_top_y + 6], fill=(50, 55, 65), outline=(30, 35, 45))
+                    # Electric wire
+                    draw.line([(0, pole_top_y + 10), (256, pole_top_y + 20)], fill=(40, 45, 55), width=2)
                 else:
                     draw.ellipse([x0, y0, x1, y1], fill=c)
 

@@ -21,6 +21,14 @@ export const COMPLAINT_CATEGORIES = {
     "Pipeline Damage",
     "Water Supply Issue"
   ],
+  "Street Light": [
+    "Street Light Not Working",
+    "Street Light Damaged",
+    "Street Light Missing",
+    "Street Light Flickering",
+    "Street Light Pole Damaged",
+    "Multiple Street Lights Not Working"
+  ],
   "Street Infrastructure": [
     "Broken Street Light",
     "Damaged Traffic Signal",
@@ -93,6 +101,43 @@ const complaintSchema = new Schema(
     aiConfidence: {
       type: Number,
       default: 0
+    },
+    predictedCategory: {
+      type: String,
+      default: ""
+    },
+    predictedSubcategory: {
+      type: String,
+      default: ""
+    },
+    confidence: {
+      type: Number,
+      default: 0
+    },
+    predictionSource: {
+      type: String,
+      enum: ["mobilenet", "gemini_vision", "rules", "manual"],
+      default: "rules"
+    },
+    modelLoaded: {
+      type: Boolean,
+      default: false
+    },
+    modelVersion: {
+      type: String,
+      default: null
+    },
+    fallbackUsed: {
+      type: Boolean,
+      default: false
+    },
+    fallbackReason: {
+      type: String,
+      default: ""
+    },
+    requestId: {
+      type: String,
+      default: ""
     },
     priority: {
       type: String,

@@ -26,6 +26,7 @@ import dayjs from "dayjs";
 import toast from "react-hot-toast";
 
 const MUNICIPAL_CATEGORIES = [
+  "Street Light",
   "Waste Management",
   "Roads",
   "Drainage",
@@ -291,12 +292,12 @@ export const AdminComplaintDetail = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs">
           <div>
             <p className="text-[#64748B] font-semibold uppercase text-[10px]">AI Category</p>
-            <p className="font-bold text-[#0F172A] mt-0.5">{complaint.aiCategory || "Pending AI Analysis"}</p>
+            <p className="font-bold text-[#0F172A] mt-0.5">{complaint.aiCategory || complaint.predictedCategory || "Pending AI Analysis"}</p>
           </div>
           <div>
             <p className="text-[#64748B] font-semibold uppercase text-[10px]">AI Subcategory</p>
             <p className="font-bold text-[#0F172A] mt-0.5">
-              {complaint.aiSubcategory || (complaint.aiCategory ? "General Issue" : "Pending AI Analysis")}
+              {complaint.aiSubcategory || complaint.predictedSubcategory || (complaint.aiCategory ? "General Issue" : "Pending AI Analysis")}
             </p>
           </div>
           <div>
@@ -304,11 +305,30 @@ export const AdminComplaintDetail = () => {
             <p className="font-bold text-amber-700 mt-0.5">{complaint.aiPriority || "Pending AI Analysis"}</p>
           </div>
           <div>
-            <p className="text-[#64748B] font-semibold uppercase text-[10px]">Status</p>
-            <p className="font-bold text-emerald-700 mt-0.5">
-              {complaint.aiCategory ? "AI Classified" : "Pending AI Analysis"}
+            <p className="text-[#64748B] font-semibold uppercase text-[10px]">Prediction Source</p>
+            <p className="font-bold text-[#0D9488] mt-0.5">
+              {complaint.predictionSource === "mobilenet"
+                ? "MobileNetV3 (PyTorch)"
+                : complaint.predictionSource === "gemini_vision"
+                ? "Gemini Vision AI"
+                : complaint.predictionSource === "rules"
+                ? "Rule-Based Heuristic"
+                : complaint.predictionSource === "manual"
+                ? "Manual Citizen Override"
+                : "Auto-Assigned"}
             </p>
           </div>
+        </div>
+
+        {/* Prediction Pipeline Diagnostic Metadata */}
+        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-[#64748B] flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-3">
+            <span>Model: <strong className="text-slate-800">{complaint.modelLoaded ? (complaint.modelVersion || "mobilenet_v3_small_v1") : "Inactive"}</strong></span>
+            <span>Fallback: <strong className={complaint.fallbackUsed ? "text-amber-700" : "text-emerald-700"}>{complaint.fallbackUsed ? (complaint.fallbackReason || "Yes") : "No"}</strong></span>
+          </div>
+          {complaint.requestId && (
+            <span className="text-[10px] text-slate-400">Request ID: {complaint.requestId}</span>
+          )}
         </div>
 
         {/* ADMIN OVERRIDE CONTROLS */}

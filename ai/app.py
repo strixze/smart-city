@@ -15,6 +15,7 @@ import tempfile
 import base64
 import logging
 import time
+import uuid
 
 from flask import Flask, request, jsonify, g
 
@@ -62,7 +63,7 @@ from schemas import (
     validate_subcategory,
 )
 
-from classifier import classify_complaint, get_model_status
+from classifier import classify_complaint, get_model_status, reload_model
 from utils import cleanup_temp_file
 
 # --------------------------------------------------
@@ -98,7 +99,7 @@ def log_request():
 def add_cors_headers(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Access-Control-Allow-Headers"] = (
-        "Content-Type,Authorization"
+        "Content-Type,Authorization,X-Request-Id"
     )
     response.headers["Access-Control-Allow-Methods"] = (
         "GET,POST,OPTIONS"
@@ -128,14 +129,18 @@ def add_cors_headers(response):
 
 @app.route("/health", methods=["GET"])
 def health():
-    """Return service and model health information."""
+    """Return service, architecture, and model health verification."""
 
     gemini_key = os.environ.get("GEMINI_API_KEY")
     model_status = get_model_status()
 
+    is_model_loaded = bool(model_status.get("loaded", False))
+    is_model_verified = bool(model_status.get("verified", False))
+
     logger.info(
-        "HEALTH CHECK | Model loaded: %s | Model: %s | Device: %s",
-        model_status.get("loaded", False),
+        "HEALTH CHECK | Model loaded: %s | Verified: %s | Model: %s | Device: %s",
+        is_model_loaded,
+        is_model_verified,
         model_status.get("model_name"),
         model_status.get("device"),
     )
@@ -145,14 +150,20 @@ def health():
         "service": "Smart City Civic AI Microservice",
         "version": "1.0.0",
         "port": int(os.environ.get("AI_PORT", 8000)),
-        "modelLoaded": model_status.get("loaded", False),
+        "modelLoaded": is_model_loaded,
+        "modelVerified": is_model_verified,
         "modelName": model_status.get("model_name"),
-        "modelArchitecture": model_status.get("architecture"),
+        "modelArchitecture": model_status.get("architecture", "mobilenet_v3_small"),
+        "modelVersion": model_status.get("version"),
         "modelDevice": model_status.get("device"),
         "modelClasses": model_status.get("classes", []),
         "modelNumClasses": model_status.get("num_classes", 0),
         "modelLoadTimeMs": model_status.get("load_time_ms", 0.0),
         "modelError": model_status.get("error"),
+        "supportedCategories": list(CIVIC_TAXONOMY.keys()),
+        "visionApiConfigured": bool(gemini_key),
+        "geminiConfigured": bool(gemini_key),
+        "fallbackClassificationEnabled": True,
         "capabilities": [
             "mobilenet_v3_small_transfer_learning",
             "multimodal-vision-inspection",
@@ -161,7 +172,22 @@ def health():
             "department-routing",
             "dual-engine-local-and-gemini",
         ],
-        "geminiConfigured": bool(gemini_key),
+    }), 200
+
+
+@app.route("/reload-model", methods=["POST"])
+def reload_model_weights():
+    """Reloads model weights and configuration from disk without restarting service."""
+    status = reload_model()
+    logger.info(
+        "MODEL RELOAD | Loaded: %s | Classes: %s | Error: %s",
+        status.get("loaded"),
+        status.get("classes"),
+        status.get("error"),
+    )
+    return jsonify({
+        "message": "Model reloaded",
+        "status": status
     }), 200
 
 
@@ -253,8 +279,13 @@ def analyze():
 
     description = ""
     temp_path = None
+    request_id = (
+        request.headers.get("X-Request-Id")
+        or request.form.get("requestId")
+        or f"req_{int(time.time() * 1000)}_{uuid.uuid4().hex[:8]}"
+    )
 
-    logger.info("ANALYSIS | Starting civic complaint analysis")
+    logger.info("ANALYSIS [%s] | Starting civic complaint analysis", request_id)
 
     try:
         # ------------------------------------------
@@ -278,7 +309,8 @@ def analyze():
 
                     if ext not in ALLOWED_IMAGE_EXTENSIONS:
                         logger.warning(
-                            "UPLOAD REJECTED | Unsupported extension: %s",
+                            "UPLOAD REJECTED [%s] | Unsupported extension: %s",
+                            request_id,
                             ext,
                         )
 
@@ -287,7 +319,8 @@ def analyze():
                                 f"Unsupported image format '{ext}'. "
                                 "Allowed formats: "
                                 f"{sorted(ALLOWED_IMAGE_EXTENSIONS)}"
-                            )
+                            ),
+                            "requestId": request_id,
                         }), 400
 
                     fd, temp_path = tempfile.mkstemp(suffix=ext)
@@ -296,7 +329,8 @@ def analyze():
                     file.save(temp_path)
 
                     logger.info(
-                        "IMAGE UPLOAD | Image received successfully"
+                        "IMAGE UPLOAD [%s] | Image received successfully",
+                        request_id,
                     )
 
         # ------------------------------------------
@@ -308,6 +342,8 @@ def analyze():
 
             description = data.get("description", "")
             b64_image = data.get("image_base64")
+            if not request.headers.get("X-Request-Id") and data.get("requestId"):
+                request_id = data.get("requestId")
 
             if b64_image:
                 try:
@@ -321,13 +357,13 @@ def analyze():
 
                     if not img_bytes:
                         logger.warning(
-                            "IMAGE UPLOAD | Empty base64 image"
+                            "IMAGE UPLOAD [%s] | Empty base64 image",
+                            request_id,
                         )
 
                         return jsonify({
-                            "error": (
-                                "Received empty image_base64 payload."
-                            )
+                            "error": "Received empty image_base64 payload.",
+                            "requestId": request_id,
                         }), 400
 
                     fd, temp_path = tempfile.mkstemp(
@@ -339,17 +375,20 @@ def analyze():
                         image_file.write(img_bytes)
 
                     logger.info(
-                        "IMAGE UPLOAD | Base64 image decoded successfully"
+                        "IMAGE UPLOAD [%s] | Base64 image decoded successfully",
+                        request_id,
                     )
 
                 except (ValueError, TypeError) as exc:
                     logger.warning(
-                        "IMAGE UPLOAD | Base64 decoding failed: %s",
+                        "IMAGE UPLOAD [%s] | Base64 decoding failed: %s",
+                        request_id,
                         exc,
                     )
 
                     return jsonify({
-                        "error": "Invalid base64 image payload."
+                        "error": "Invalid base64 image payload.",
+                        "requestId": request_id,
                     }), 400
 
         # ------------------------------------------
@@ -364,8 +403,8 @@ def analyze():
             )
 
         logger.info(
-            "ANALYSIS INPUT | Image attached: %s | "
-            "Description provided: %s",
+            "ANALYSIS INPUT [%s] | Image attached: %s | Description: %s",
+            request_id,
             bool(temp_path),
             bool(description.strip()),
         )
@@ -374,14 +413,13 @@ def analyze():
         # Run the classifier
         # ------------------------------------------
 
-        logger.info("CLASSIFIER | Starting complaint classification")
-
         inference_start = time.perf_counter()
 
         result = classify_complaint(
             image_path=temp_path,
             description=description,
             use_llm=True,
+            request_id=request_id,
         )
 
         inference_ms = (
@@ -393,31 +431,46 @@ def analyze():
                 "Classifier returned an unexpected response type"
             )
 
+        result["requestId"] = request_id
+
+        # Diagnostic logging (Safe, no credentials logged)
         logger.info(
-            "CLASSIFICATION COMPLETE | Category: %s | "
-            "Subcategory: %s | Confidence: %s | "
-            "Duration: %.2f ms | Fallback: %s",
-            result.get("category", "Unknown"),
-            result.get("subcategory", "Unknown"),
-            result.get("confidence", "Unknown"),
+            "CLASSIFICATION DIAGNOSTIC | ReqID: %s | Source: %s | ModelLoaded: %s | "
+            "VisionApiCalled: %s | FallbackUsed: %s | FinalCat: %s | Subcat: %s | "
+            "Conf: %s | Latency: %.2f ms",
+            request_id,
+            result.get("predictionSource", "unknown"),
+            result.get("modelLoaded", False),
+            result.get("predictionSource") == "gemini_vision",
+            result.get("fallbackUsed", False),
+            result.get("predictedCategory", result.get("category", "Unknown")),
+            result.get("predictedSubcategory", result.get("subcategory", "")),
+            result.get("confidence", 0.0),
             inference_ms,
-            result.get("isFallback", False),
         )
 
         return jsonify(result), 200
 
-    except Exception:
-        logger.exception("ANALYSIS ERROR | Complaint classification failed")
+    except Exception as exc:
+        sanitized_error = str(exc)[:200]
+        logger.exception("ANALYSIS ERROR [%s] | Failure: %s", request_id, sanitized_error)
 
         return jsonify({
             "error": "Complaint analysis failed",
             "category": "Other",
             "subcategory": "General Issue",
+            "predictedCategory": "Other",
+            "predictedSubcategory": "General Issue",
             "priority": "MEDIUM",
             "confidence": 0.5,
             "department": "General Municipal Grievance Cell",
             "reason": "Automated fallback due to processing error",
             "isFallback": True,
+            "fallbackUsed": True,
+            "fallbackReason": f"Processing exception: {sanitized_error}",
+            "predictionSource": "rules",
+            "modelLoaded": get_model_status().get("loaded", False),
+            "requestId": request_id,
         }), 500
 
     finally:
@@ -425,12 +478,15 @@ def analyze():
             try:
                 cleanup_temp_file(temp_path)
                 logger.info(
-                    "CLEANUP | Temporary image file cleaned up"
+                    "CLEANUP [%s] | Temporary image file cleaned up",
+                    request_id,
                 )
             except Exception:
                 logger.exception(
-                    "CLEANUP ERROR | Failed to clean temporary image"
+                    "CLEANUP ERROR [%s] | Failed to clean temporary image",
+                    request_id,
                 )
+
 
 
 # --------------------------------------------------

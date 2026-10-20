@@ -118,6 +118,7 @@ export const AdminDashboard = () => {
           bg: "bg-rose-50 text-rose-600",
           border: "border-rose-100"
         };
+      case "Street Light":
       case "Street Infrastructure":
         return {
           icon: Lightbulb,

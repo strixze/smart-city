@@ -40,6 +40,7 @@ const DEPARTMENT_COLORS = {
   "Drainage": "#F59E0B",         // Warm Amber / Yellow
   "Other": "#8B5CF6",            // Purple
   "Water Supply": "#06B6D4",      // Sky / Cyan
+  "Street Light": "#EAB308",      // Warm Yellow / Street Light
   "Street Infrastructure": "#EC4899", // Rose Pink
   "Public Property": "#10B981"   // Emerald
 };

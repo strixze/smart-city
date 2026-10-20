@@ -41,16 +41,19 @@ export const createComplaint = asyncHandler(async (req, res) => {
   let finalAiSub = aiSubcategory || "";
   let finalAiConf = aiConfidence ? Number(aiConfidence) : 0;
   let finalAiPrio = aiPriority || priority || "MEDIUM";
+  let aiPredictionResult = null;
 
   try {
     const aiResult = await analyzeComplaintImageAndText({
       imagePath: req.file ? req.file.path : null,
-      description: description.trim()
+      description: description.trim(),
+      requestId: req.headers["x-request-id"] || null
     });
 
     if (aiResult) {
-      finalAiCat = aiResult.category || finalAiCat || "Other";
-      finalAiSub = aiResult.subcategory || finalAiSub || "";
+      aiPredictionResult = aiResult;
+      finalAiCat = aiResult.category || aiResult.predictedCategory || finalAiCat || "Other";
+      finalAiSub = aiResult.subcategory || aiResult.predictedSubcategory || finalAiSub || "";
       finalAiConf = typeof aiResult.confidence === "number" ? aiResult.confidence : 0.85;
       finalAiPrio = aiResult.priority || finalAiPrio || "MEDIUM";
     }
@@ -62,6 +65,15 @@ export const createComplaint = asyncHandler(async (req, res) => {
   }
 
   // Derive final category and priority (favoring user override if specified, else AI classification)
+
+  const isUserManualOverride = Boolean(
+    req.body.predictionSource === "manual" ||
+    (category &&
+    category.trim() !== "" &&
+    category !== "Auto-Detect" &&
+    category !== finalAiCat)
+  );
+
   const resolvedCategory = (category && category.trim() !== "" && category !== "Auto-Detect")
     ? category
     : (finalAiCat || "Other");
@@ -69,6 +81,10 @@ export const createComplaint = asyncHandler(async (req, res) => {
   const resolvedPriority = (priority && priority.trim() !== "")
     ? priority
     : (finalAiPrio || "MEDIUM");
+
+  const predictionSource = isUserManualOverride
+    ? "manual"
+    : (aiPredictionResult?.predictionSource || "rules");
 
   const complaint = await Complaint.create({
     complaintNumber,
@@ -80,6 +96,15 @@ export const createComplaint = asyncHandler(async (req, res) => {
     aiCategory: finalAiCat,
     aiSubcategory: finalAiSub,
     aiConfidence: finalAiConf,
+    predictedCategory: finalAiCat,
+    predictedSubcategory: finalAiSub,
+    confidence: finalAiConf,
+    predictionSource,
+    modelLoaded: Boolean(aiPredictionResult?.modelLoaded ?? (req.body.modelLoaded === "true" || req.body.modelLoaded === true)),
+    modelVersion: aiPredictionResult?.modelVersion || req.body.modelVersion || null,
+    fallbackUsed: Boolean(aiPredictionResult?.fallbackUsed ?? (req.body.fallbackUsed === "true" || req.body.fallbackUsed === true || isUserManualOverride)),
+    fallbackReason: aiPredictionResult?.fallbackReason || req.body.fallbackReason || (isUserManualOverride ? "Manual citizen category selection" : ""),
+    requestId: aiPredictionResult?.requestId || req.body.requestId || req.headers["x-request-id"] || "",
     priority: resolvedPriority,
     aiPriority: finalAiPrio,
     status: "SUBMITTED",

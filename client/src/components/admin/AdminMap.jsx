@@ -55,7 +55,7 @@ export const AdminMap = ({ stats = {}, complaints = [] }) => {
       status: "IN_PROGRESS",
       color: "amber",
       title: "Broken Streetlight - Elm St",
-      category: "Street Infrastructure",
+      category: "Street Light",
       priority: "MEDIUM"
     },
     {

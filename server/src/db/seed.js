@@ -65,6 +65,18 @@ function ensureSampleImages() {
       text: "PIPELINE REPAIRED — AFTER RESOLUTION",
       bg: "#ecfdf5",
       color: "#047857"
+    },
+    {
+      name: "sample-streetlight-before.svg",
+      text: "STREET LIGHT OUTAGE & POLE DAMAGED — BEFORE",
+      bg: "#0f172a",
+      color: "#f59e0b"
+    },
+    {
+      name: "sample-streetlight-after.svg",
+      text: "STREET LIGHT REPAIRED & RESTORED — AFTER",
+      bg: "#ecfdf5",
+      color: "#047857"
     }
   ];
 

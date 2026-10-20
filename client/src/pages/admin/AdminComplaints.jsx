@@ -190,12 +190,14 @@ export const AdminComplaints = () => {
             className="w-full md:w-auto px-3 py-2 bg-white border border-[#E2E8F0] text-[#0F172A] rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#0D9488]"
           >
             <option value="ALL">All Categories</option>
+            <option value="Street Light">Street Light</option>
             <option value="Waste Management">Waste Management</option>
             <option value="Roads">Roads</option>
             <option value="Drainage">Drainage</option>
             <option value="Water Supply">Water Supply</option>
             <option value="Street Infrastructure">Street Infrastructure</option>
             <option value="Public Property">Public Property</option>
+            <option value="Other">Other</option>
           </select>
 
           <select

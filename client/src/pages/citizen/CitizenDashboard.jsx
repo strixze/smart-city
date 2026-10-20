@@ -108,6 +108,7 @@ export const CitizenDashboard = () => {
     switch (category) {
       case "Roads":
         return <Layers className="w-3.5 h-3.5 text-blue-600" />;
+      case "Street Light":
       case "Street Infrastructure":
         return <Lightbulb className="w-3.5 h-3.5 text-amber-600" />;
       case "Waste Management":

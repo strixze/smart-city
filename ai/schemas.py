@@ -86,19 +86,39 @@ CIVIC_TAXONOMY: Dict[str, Dict[str, Any]] = {
         "default_priority": PRIORITY_HIGH,
         "hazard_keywords": ["pipeline burst", "burst pipe", "contaminated drinking water", "massive leak"]
     },
+    "Street Light": {
+        "department": "Electrical Engineering & Public Lighting Division",
+        "subcategories": [
+            "Street Light Not Working",
+            "Street Light Damaged",
+            "Street Light Missing",
+            "Street Light Flickering",
+            "Street Light Pole Damaged",
+            "Multiple Street Lights Not Working",
+        ],
+        "keywords": [
+            "street light", "streetlight", "street lamp", "lamp post", "lighting",
+            "dark street", "flickering light", "broken pole", "light pole", "light bulb",
+            "sodium lamp", "led street light", "unlit", "blackout", "no light",
+            "pole damaged", "light fixture", "streetlamp", "unlit street"
+        ],
+        "default_priority": PRIORITY_MEDIUM,
+        "hazard_keywords": [
+            "live wire", "hanging wire", "electric shock", "sparking", "fallen pole",
+            "exposed wire", "pole collapsed", "falling pole", "electrocution"
+        ]
+    },
     "Street Infrastructure": {
         "department": "Electrical Engineering & Public Lighting Division",
         "subcategories": [
-            "Broken Street Light",
             "Damaged Traffic Signal",
             "Damaged Sign Board",
             "Exposed Electric Wire",
             "Fallen Electric Pole"
         ],
         "keywords": [
-            "street light", "light", "lamp", "pole", "dark", "pitch dark",
             "signal", "traffic signal", "traffic light", "sign board", "signboard",
-            "wire", "cable", "electric pole", "junction box", "streetlamp"
+            "wire", "cable", "electric pole", "junction box", "hanging cable"
         ],
         "default_priority": PRIORITY_MEDIUM,
         "hazard_keywords": ["live wire", "hanging wire", "electric shock", "sparking", "fallen pole", "traffic light failure"]
@@ -169,7 +189,21 @@ class ClassificationResult:
     model: str = "SmartCity-CivicVision-v1.0"
     isFallback: bool = False
     source: str = "local-heuristic-vision"
+    predictionSource: str = "rules"
+    predictedCategory: str = ""
+    predictedSubcategory: str = ""
+    modelLoaded: bool = False
+    modelVersion: Optional[str] = None
+    fallbackUsed: bool = False
+    fallbackReason: Optional[str] = None
+    requestId: Optional[str] = None
     features: Optional[Dict[str, Any]] = None
+
+    def __post_init__(self):
+        if not self.predictedCategory:
+            self.predictedCategory = self.category
+        if not self.predictedSubcategory:
+            self.predictedSubcategory = self.subcategory
 
     def to_dict(self) -> Dict[str, Any]:
         data = asdict(self)

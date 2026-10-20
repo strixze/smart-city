@@ -22,6 +22,51 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
+export const CATEGORY_SUBCATEGORIES = {
+  "Street Light": [
+    "Street Light Not Working",
+    "Street Light Damaged",
+    "Street Light Missing",
+    "Street Light Flickering",
+    "Street Light Pole Damaged",
+    "Multiple Street Lights Not Working"
+  ],
+  "Waste Management": [
+    "Garbage Dump",
+    "Overflowing Dustbin",
+    "Illegal Waste Disposal"
+  ],
+  "Roads": [
+    "Pothole",
+    "Damaged Road",
+    "Broken Footpath"
+  ],
+  "Drainage": [
+    "Blocked Drain",
+    "Drainage Overflow",
+    "Sewage Leakage"
+  ],
+  "Water Supply": [
+    "Water Leakage",
+    "Pipeline Damage",
+    "Water Supply Issue"
+  ],
+  "Street Infrastructure": [
+    "Broken Street Light",
+    "Damaged Traffic Signal",
+    "Damaged Sign Board"
+  ],
+  "Public Property": [
+    "Damaged Bench",
+    "Damaged Park Equipment",
+    "Vandalism"
+  ],
+  "Other": [
+    "General Issue",
+    "Other"
+  ]
+};
+
 export const ReportComplaint = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1); // 1: Image & AI, 2: Title & Desc, 3: Location, 4: Review
@@ -37,8 +82,8 @@ export const ReportComplaint = () => {
   const [aiError, setAiError] = useState(null);
 
   // Form Fields
-  const [category, setCategory] = useState("");
-  const [subcategory, setSubcategory] = useState("");
+  const [category, setCategory] = useState("Street Light");
+  const [subcategory, setSubcategory] = useState("Street Light Not Working");
   const [priority, setPriority] = useState("MEDIUM");
 
   // Title & Description (Step 2)
@@ -99,22 +144,30 @@ export const ReportComplaint = () => {
       if (res.data?.data) {
         const result = res.data.data;
         setAiResult(result);
-        setCategory(result.category || "Other");
-        setSubcategory(result.subcategory || "General Issue");
+        const resolvedCat = result.category || result.predictedCategory || "Street Light";
+        const subcats = CATEGORY_SUBCATEGORIES[resolvedCat] || ["General Issue"];
+        const resolvedSub = result.subcategory || result.predictedSubcategory || subcats[0];
+        setCategory(resolvedCat);
+        setSubcategory(resolvedSub);
         setPriority(result.priority || "MEDIUM");
 
-        if (!title && result.subcategory) {
-          setTitle(`${result.subcategory} Reported`);
+        if (!title && resolvedSub) {
+          setTitle(`${resolvedSub} Reported`);
         }
 
-        toast.success(`AI classified: ${result.category} (${result.priority} priority)`);
+        const sourceLabel = result.predictionSource === "mobilenet"
+          ? "PyTorch MobileNetV3"
+          : result.predictionSource === "gemini_vision"
+          ? "Gemini Vision AI"
+          : "Rule-Based Heuristic";
+        toast.success(`AI classified (${sourceLabel}): ${resolvedCat}`);
       } else {
         throw new Error("No classification result returned from server");
       }
     } catch (err) {
       console.warn("AI Classification error:", err.message);
-      setAiError("Unable to automatically identify the issue. Please try another image.");
-      toast.error("AI could not classify image. Please retry or upload a clearer photo.");
+      setAiError("Unable to automatically identify the issue. You can continue manually.");
+      toast.error("AI could not classify image. You can continue with manual selection.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -172,6 +225,18 @@ export const ReportComplaint = () => {
       toast.error("Please upload an image first.");
       return;
     }
+    if (!category) {
+      setCategory("Street Light");
+      setSubcategory("Street Light Not Working");
+    }
+    setCurrentStep(2);
+  };
+
+  const handleContinueManually = () => {
+    if (!category) {
+      setCategory("Street Light");
+      setSubcategory("Street Light Not Working");
+    }
     setCurrentStep(2);
   };
 
@@ -211,20 +276,35 @@ export const ReportComplaint = () => {
 
     setSubmitting(true);
     try {
+      const isManual = !aiResult || (category !== (aiResult.category || aiResult.predictedCategory));
+      const effectiveSource = isManual ? "manual" : (aiResult.predictionSource || "mobilenet");
+
       const formData = new FormData();
       formData.append("title", title.trim());
       formData.append("description", description.trim());
       formData.append("locationAddress", locationAddress.trim());
-      formData.append("category", category || aiResult?.category || "Other");
-      formData.append("subcategory", subcategory || aiResult?.subcategory || "General Issue");
-      formData.append("priority", priority || aiResult?.priority || "MEDIUM");
+      formData.append("category", category || "Street Light");
+      formData.append("subcategory", subcategory || "Street Light Not Working");
+      formData.append("priority", priority || "MEDIUM");
       formData.append("image", imageFile);
 
       if (aiResult) {
-        formData.append("aiCategory", aiResult.category || category);
-        formData.append("aiSubcategory", aiResult.subcategory || subcategory);
-        formData.append("aiConfidence", aiResult.confidence || 0.85);
+        formData.append("aiCategory", aiResult.category || aiResult.predictedCategory || category);
+        formData.append("aiSubcategory", aiResult.subcategory || aiResult.predictedSubcategory || subcategory);
+        formData.append("aiConfidence", aiResult.confidence !== undefined ? aiResult.confidence : 0.85);
         formData.append("aiPriority", aiResult.priority || priority);
+      }
+      formData.append("predictionSource", effectiveSource);
+      formData.append("modelLoaded", aiResult?.modelLoaded ? "true" : "false");
+      formData.append("modelVersion", aiResult?.modelVersion || "mobilenet_v3_small_v1");
+      formData.append("fallbackUsed", (aiResult?.fallbackUsed || isManual) ? "true" : "false");
+      if (aiResult?.fallbackReason) {
+        formData.append("fallbackReason", aiResult.fallbackReason);
+      } else if (isManual) {
+        formData.append("fallbackReason", "Manual citizen category selection");
+      }
+      if (aiResult?.requestId) {
+        formData.append("requestId", aiResult.requestId);
       }
 
       const res = await complaintApi.createComplaint(formData);
@@ -405,13 +485,20 @@ export const ReportComplaint = () => {
               </div>
 
               {!aiResult && !isAnalyzing && !aiError && (
-                <div className="flex justify-center">
+                <div className="flex flex-wrap items-center justify-center gap-3">
                   <button
                     type="button"
                     onClick={() => analyzeImageWithAI(imageFile)}
                     className="px-6 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs shadow-xs transition-all flex items-center gap-2"
                   >
                     <Sparkles className="w-4 h-4" /> Analyze Image with AI
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleContinueManually}
+                    className="px-5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white hover:bg-[#F8FAFC] text-[#475569] font-bold text-xs shadow-xs transition-all flex items-center gap-1.5"
+                  >
+                    Continue Manually <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               )}
@@ -437,9 +524,14 @@ export const ReportComplaint = () => {
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                   <span>Defect Confirmed by AI Vision</span>
                 </div>
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-white text-[#0D9488] border border-teal-200 shadow-2xs">
-                  {Math.round((aiResult.confidence || 0.85) * 100)}% Match
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white text-slate-700 border border-teal-200 shadow-2xs">
+                    Source: {aiResult.predictionSource === "mobilenet" ? "MobileNetV3 PyTorch" : aiResult.predictionSource === "gemini_vision" ? "Gemini Vision AI" : "Rules Heuristic"}
+                  </span>
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-white text-[#0D9488] border border-teal-200 shadow-2xs">
+                    {Math.round((aiResult.confidence || 0.85) * 100)}% Match
+                  </span>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
@@ -492,15 +584,22 @@ export const ReportComplaint = () => {
                 {aiError}
               </div>
               <p className="text-xs text-amber-700">
-                The photo could not be classified with certainty. Please upload a clearer close-up photograph of the issue.
+                The photo could not be classified automatically. You can retry analysis or continue directly with manual category selection.
               </p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex flex-wrap items-center gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => analyzeImageWithAI(imageFile)}
                   className="px-4 py-2 rounded-xl bg-[#D97706] hover:bg-[#B45309] text-white text-xs font-bold shadow-2xs flex items-center gap-1.5"
                 >
                   <RefreshCw className="w-3.5 h-3.5" /> Retry Analysis
+                </button>
+                <button
+                  type="button"
+                  onClick={handleContinueManually}
+                  className="px-4 py-2 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white text-xs font-bold shadow-2xs flex items-center gap-1.5"
+                >
+                  Continue Manually <ArrowRight className="w-3.5 h-3.5" />
                 </button>
                 <button
                   type="button"
@@ -516,7 +615,7 @@ export const ReportComplaint = () => {
       )}
 
       {/* ─────────────────────────────────────────────────────────
-          STEP 2: TITLE + DESCRIPTION
+          STEP 2: TITLE + DESCRIPTION & CATEGORY SELECTION
          ───────────────────────────────────────────────────────── */}
       {currentStep === 2 && (
         <div className="bg-white rounded-2xl p-6 sm:p-7 border border-[#E2E8F0] shadow-xs space-y-6">
@@ -525,22 +624,97 @@ export const ReportComplaint = () => {
               Tell us about the issue
             </h3>
             <p className="text-xs text-[#64748B] mt-0.5">
-              Give your complaint a concise title and details to guide field crews.
+              Confirm or select the category and provide clear details to guide municipal field crews.
             </p>
           </div>
 
-          {/* AI Detection Summary */}
-          <div className="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-between text-xs">
+          {/* AI vs Manual Detection Summary */}
+          <div className="p-3.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <Cpu className="w-4 h-4 text-[#0D9488] flex-shrink-0" />
-              <span className="text-[#64748B] font-semibold">AI Detected:</span>
+              <span className="text-[#64748B] font-semibold">
+                {aiResult ? "AI Suggested:" : "Classification:"}
+              </span>
               <span className="font-bold text-[#0F172A]">
                 {category} → {subcategory}
               </span>
             </div>
-            <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] text-[10px] font-bold border border-teal-200">
-              {priority} Priority
-            </span>
+            <div className="flex items-center gap-2">
+              {aiResult && category !== (aiResult.category || aiResult.predictedCategory) ? (
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold border border-amber-200">
+                  Manual Citizen Override
+                </span>
+              ) : aiResult ? (
+                <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] text-[10px] font-bold border border-teal-200">
+                  AI Source: {aiResult.predictionSource || "mobilenet"}
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200">
+                  Manual Entry
+                </span>
+              )}
+              <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] text-[10px] font-bold border border-teal-200">
+                {priority} Priority
+              </span>
+            </div>
+          </div>
+
+          {/* Category & Subcategory Selection Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1">
+                Category *
+              </label>
+              <select
+                value={category}
+                onChange={(e) => {
+                  const newCat = e.target.value;
+                  setCategory(newCat);
+                  const subcats = CATEGORY_SUBCATEGORIES[newCat] || ["General Issue"];
+                  setSubcategory(subcats[0]);
+                }}
+                className="w-full px-3 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm text-[#0F172A] focus:outline-none focus:border-[#0D9488] focus:bg-white"
+              >
+                {Object.keys(CATEGORY_SUBCATEGORIES).map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1">
+                Subcategory *
+              </label>
+              <select
+                value={subcategory}
+                onChange={(e) => setSubcategory(e.target.value)}
+                className="w-full px-3 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm text-[#0F172A] focus:outline-none focus:border-[#0D9488] focus:bg-white"
+              >
+                {(CATEGORY_SUBCATEGORIES[category] || ["General Issue"]).map((sub) => (
+                  <option key={sub} value={sub}>
+                    {sub}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1">
+                Priority Rating
+              </label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                className="w-full px-3 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm text-[#0F172A] focus:outline-none focus:border-[#0D9488] focus:bg-white"
+              >
+                <option value="LOW">LOW</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="HIGH">HIGH</option>
+                <option value="CRITICAL">CRITICAL</option>
+              </select>
+            </div>
           </div>
 
           <div>
@@ -698,11 +872,16 @@ export const ReportComplaint = () => {
               </div>
             )}
 
-            {/* AI Classification Block */}
+            {/* Classification & Prediction Metadata Block */}
             <div className="p-4 rounded-xl bg-white border border-[#E2E8F0] space-y-2 shadow-2xs">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#0D9488] flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5" /> AI Classification
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#0D9488] flex items-center gap-1.5">
+                  <Cpu className="w-3.5 h-3.5" /> Classification & Triage Details
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                  Source: {!aiResult || category !== (aiResult.category || aiResult.predictedCategory) ? "Manual Citizen Selection" : (aiResult.predictionSource === "mobilenet" ? "MobileNetV3 Model" : aiResult.predictionSource === "gemini_vision" ? "Gemini Vision" : "Rules Heuristic")}
+                </span>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
                 <div>
                   <p className="text-[10px] text-[#64748B] font-semibold uppercase">Category</p>
@@ -714,13 +893,21 @@ export const ReportComplaint = () => {
                 </div>
                 <div>
                   <p className="text-[10px] text-[#64748B] font-semibold uppercase">Confidence</p>
-                  <p className="font-bold text-[#0D9488]">{Math.round((aiResult?.confidence || 0.85) * 100)}%</p>
+                  <p className="font-bold text-[#0D9488]">
+                    {aiResult ? `${Math.round((aiResult?.confidence || 0.85) * 100)}%` : "Manual Entry"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-[10px] text-[#64748B] font-semibold uppercase">Priority</p>
                   <p className="font-bold text-amber-700">{priority}</p>
                 </div>
               </div>
+              {aiResult?.requestId && (
+                <div className="pt-1 border-t border-slate-100 text-[10px] text-[#94A3B8] font-mono flex items-center justify-between">
+                  <span>Trace ID: {aiResult.requestId}</span>
+                  <span>Model: {aiResult.modelLoaded ? (aiResult.modelVersion || "mobilenet_v3_small_v1 (verified)") : "vision_fallback"}</span>
+                </div>
+              )}
             </div>
 
             <div>

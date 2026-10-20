@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./db/dbConfig.js";
 import { initSocketIO } from "./services/socket.service.js";
 
+// Load environment variables (supports local AI microservice and production overrides)
 dotenv.config({ path: "./.env" });
 
 const port = process.env.PORT || 3000;

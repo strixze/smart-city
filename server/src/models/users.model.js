@@ -10,6 +10,7 @@ export const DEPARTMENTS = [
   "Roads",
   "Drainage",
   "Water Supply",
+  "Street Light",
   "Street Infrastructure",
   "Public Property",
   "Other"

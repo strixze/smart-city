@@ -48,6 +48,23 @@ except ImportError:
     GENAI_AVAILABLE = False
 
 
+def verify_model_architecture(model: Any, expected_classes: int = 6, image_size: int = 224, device: str = "cpu") -> bool:
+    """
+    Validates model forward pass and verifies output classes match expectations.
+    Returns True if valid, False if dimensions mismatch or forward pass fails.
+    """
+    if not TORCH_AVAILABLE or model is None:
+        return False
+    try:
+        dummy_input = torch.zeros(1, 3, image_size, image_size, device=device)
+        with torch.no_grad():
+            dummy_output = model(dummy_input)
+        return dummy_output.shape == (1, expected_classes)
+    except Exception as e:
+        print(f"[Model Verification Failure] {e}")
+        return False
+
+
 class MobileNetV3ModelLoader:
     """
     Singleton loader for the fine-tuned MobileNetV3 Small civic classification model.
@@ -109,6 +126,16 @@ class MobileNetV3ModelLoader:
             state_dict = torch.load(self.weights_path, map_location=self.device)
             model.load_state_dict(state_dict)
             model.eval()
+
+            # Architecture verification: ensure forward pass works and matches class dimensions
+            dummy_input = torch.zeros(1, 3, image_size, image_size, device=self.device)
+            with torch.no_grad():
+                dummy_output = model(dummy_input)
+            if dummy_output.shape != (1, self.num_classes):
+                raise ValueError(
+                    f"Model output dimension mismatch: expected (1, {self.num_classes}), got {dummy_output.shape}"
+                )
+
             self.model = model.to(self.device)
 
             self.transform = transforms.Compose([
@@ -119,14 +146,21 @@ class MobileNetV3ModelLoader:
             ])
             self.softmax = nn.Softmax(dim=1)
             self.is_loaded = True
+            self.load_error = None
             self.load_time_ms = round((time.perf_counter() - t0) * 1000, 2)
-            print(f"[MobileNetV3 Loader] Successfully loaded '{self.config.get('model_name', 'MobileNetV3-Small')}' "
+            print(f"[MobileNetV3 Loader] Successfully loaded and verified '{self.config.get('model_name', 'MobileNetV3-Small')}' "
                   f"({self.num_classes} classes) in {self.load_time_ms} ms on {self.device}.")
 
         except Exception as e:
             self.is_loaded = False
-            self.load_error = f"Error during model loading: {str(e)}"
+            self.model = None
+            self.load_error = f"Error during model loading or verification: {str(e)}"
             print(f"[MobileNetV3 Loader Error] {self.load_error}")
+
+    def reload(self) -> Dict[str, Any]:
+        """Reloads configuration and checkpoint weights from disk."""
+        self._load()
+        return self.get_status()
 
     @torch.inference_mode()
     def predict(self, image_path: str, top_k: int = 3) -> Tuple[Optional[str], float, List[Dict[str, Any]], float]:
@@ -175,7 +209,8 @@ class MobileNetV3ModelLoader:
             "classes": self.classes,
             "num_classes": self.num_classes,
             "load_time_ms": self.load_time_ms,
-            "error": self.load_error
+            "error": self.load_error,
+            "verified": self.is_loaded and (self.model is not None)
         }
 
 
@@ -188,10 +223,16 @@ def get_model_status() -> Dict[str, Any]:
     return MOBILENET_LOADER.get_status()
 
 
+def reload_model() -> Dict[str, Any]:
+    """Reloads the model weights and config from disk."""
+    return MOBILENET_LOADER.reload()
+
+
 def classify_with_gemini(
     image_path: Optional[str] = None,
     description: str = "",
-    api_key: Optional[str] = None
+    api_key: Optional[str] = None,
+    request_id: Optional[str] = None
 ) -> Optional[Dict[str, Any]]:
     """
     Attempts multimodal classification using Gemini if API key and package are available.
@@ -250,16 +291,29 @@ def classify_with_gemini(
         if not validate_subcategory(cat, sub):
             sub = CIVIC_TAXONOMY[cat]["subcategories"][0]
 
+        conf = float(data.get("confidence", 0.92))
+        priority = data.get("priority", "MEDIUM")
+        reason = data.get("reason", "Analyzed by multimodal civic vision AI")
+        dept = data.get("department") or get_department_for_category(cat)
+
         return {
             "category": cat,
             "subcategory": sub,
-            "priority": data.get("priority", "MEDIUM"),
-            "confidence": float(data.get("confidence", 0.92)),
-            "reason": data.get("reason", "Analyzed by multimodal civic vision AI"),
-            "department": data.get("department") or get_department_for_category(cat),
+            "predictedCategory": cat,
+            "predictedSubcategory": sub,
+            "priority": priority,
+            "confidence": conf,
+            "reason": reason,
+            "department": dept,
             "model": "Gemini-Multimodal-Civic",
+            "modelVersion": None,
             "isFallback": False,
-            "source": "gemini"
+            "fallbackUsed": False,
+            "fallbackReason": None,
+            "modelLoaded": MOBILENET_LOADER.is_loaded,
+            "source": "gemini",
+            "predictionSource": "gemini_vision",
+            "requestId": request_id,
         }
     except Exception as e:
         print(f"[SmartCity Classifier] Gemini call warning (using local fallback): {e}")
@@ -269,12 +323,13 @@ def classify_with_gemini(
 def classify_local(
     image_path: Optional[str] = None,
     description: str = "",
-    fallback_reason: str = "Automated rule-based heuristic classification"
+    fallback_reason: str = "Automated rule-based heuristic classification",
+    request_id: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Keyword and sensory heuristic classifier used as a fallback when
     neither MobileNetV3 neural model nor Gemini cloud LLM is active.
-    Honesty policy: Always marked as isFallback=True.
+    Honesty policy: Always marked as isFallback=True, predictionSource='rules'.
     """
     text = clean_text(description)
     img_features = extract_image_features(image_path)
@@ -298,7 +353,7 @@ def classify_local(
                 score += 3.5
 
         # 3. Multimodal computer vision feature correlation
-        if cat == "Street Infrastructure" and img_features.is_dark:
+        if cat in ["Street Light", "Street Infrastructure"] and img_features.is_dark:
             score += 2.5
 
         if cat == "Roads" and img_features.is_greyish:
@@ -316,8 +371,13 @@ def classify_local(
     highest_score = scores[best_cat]
 
     if highest_score <= 0:
-        best_cat = "Waste Management" if not text else "Other"
-        confidence = 0.60
+        # If dark image with no text, suggest Street Light or Waste Management
+        if img_features.is_dark and not text:
+            best_cat = "Street Light"
+            confidence = 0.60
+        else:
+            best_cat = "Waste Management" if not text else "Other"
+            confidence = 0.60
     else:
         confidence = round(min(0.85, 0.65 + (highest_score * 0.02)), 2)
 
@@ -351,6 +411,14 @@ def classify_local(
         model="Heuristic-Keyword-Fallback",
         isFallback=True,
         source="local-heuristic-fallback",
+        predictionSource="rules",
+        predictedCategory=best_cat,
+        predictedSubcategory=selected_sub,
+        modelLoaded=MOBILENET_LOADER.is_loaded,
+        modelVersion=None,
+        fallbackUsed=True,
+        fallbackReason=fallback_reason,
+        requestId=request_id,
         features=img_features.to_dict() if img_features.valid else None
     )
 
@@ -360,16 +428,20 @@ def classify_local(
 def classify_complaint(
     image_path: Optional[str] = None,
     description: str = "",
-    use_llm: bool = True
+    use_llm: bool = True,
+    request_id: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Main classification orchestrator:
     1. If an image is provided and MobileNetV3 weights are loaded:
        Runs MobileNetV3 Small transfer learning inference directly.
-    2. If no image or MobileNetV3 not ready:
+       (predictionSource: "mobilenet")
+    2. If no image or MobileNetV3 not ready / errors:
        Tries Gemini if configured.
+       (predictionSource: "gemini_vision")
     3. Graceful degradation:
-       Falls back to heuristic rules with explicit isFallback=True.
+       Falls back to heuristic rules with explicit fallbackUsed=True.
+       (predictionSource: "rules")
     """
     has_image = bool(image_path and os.path.exists(image_path))
 
@@ -401,18 +473,28 @@ def classify_complaint(
             if is_hazard:
                 reason += f" Escalated to {priority} due to critical hazard indicators: [{', '.join(matched_hazards)}]."
 
+            model_version = MOBILENET_LOADER.config.get("version", "1.0.0")
+
             return {
                 "category": pred_cat,
                 "subcategory": selected_sub,
+                "predictedCategory": pred_cat,
+                "predictedSubcategory": selected_sub,
                 "priority": priority,
                 "confidence": conf,
                 "reason": reason,
                 "department": get_department_for_category(pred_cat),
                 "model": "MobileNetV3-Small-Civic",
+                "modelVersion": model_version,
                 "isFallback": False,
+                "fallbackUsed": False,
+                "fallbackReason": None,
+                "modelLoaded": True,
                 "source": "mobilenet_v3",
+                "predictionSource": "mobilenet",
                 "top_predictions": top_preds,
-                "inference_time_ms": latency_ms
+                "inference_time_ms": latency_ms,
+                "requestId": request_id,
             }
         except Exception as e:
             print(f"[SmartCity Classifier] MobileNetV3 inference warning: {e}")
@@ -420,7 +502,11 @@ def classify_complaint(
 
     # Priority 2: Gemini Multimodal Vision (if LLM enabled and key available)
     if use_llm:
-        llm_result = classify_with_gemini(image_path=image_path, description=description)
+        llm_result = classify_with_gemini(
+            image_path=image_path,
+            description=description,
+            request_id=request_id
+        )
         if llm_result:
             return llm_result
 
@@ -431,4 +517,9 @@ def classify_complaint(
     elif not has_image:
         fallback_reason = "Text-only heuristic classification (no image provided)"
 
-    return classify_local(image_path=image_path, description=description, fallback_reason=fallback_reason)
+    return classify_local(
+        image_path=image_path,
+        description=description,
+        fallback_reason=fallback_reason,
+        request_id=request_id
+    )

@@ -1,30 +1,30 @@
 {
   "model_name": "MobileNetV3-Small-Civic",
   "architecture": "mobilenet_v3_small",
-  "test_samples_count": 12,
-  "overall_accuracy": 0.6667,
+  "test_samples_count": 15,
+  "overall_accuracy": 0.9333,
   "macro_metrics": {
-    "precision": 0.62,
-    "recall": 0.6667,
-    "f1_score": 0.5833
+    "precision": 0.9583,
+    "recall": 0.9167,
+    "f1_score": 0.9206
   },
   "weighted_metrics": {
-    "precision": 0.65,
-    "recall": 0.6667,
-    "f1_score": 0.5903
+    "precision": 0.95,
+    "recall": 0.9333,
+    "f1_score": 0.927
   },
   "per_class_metrics": {
     "Drainage": {
-      "precision": 0.6,
+      "precision": 1.0,
       "recall": 1.0,
-      "f1_score": 0.75,
-      "support": 3
+      "f1_score": 1.0,
+      "support": 2
     },
     "Other": {
-      "precision": 0.5,
+      "precision": 0.75,
       "recall": 1.0,
-      "f1_score": 0.6667,
-      "support": 2
+      "f1_score": 0.8571,
+      "support": 3
     },
     "Roads": {
       "precision": 1.0,
@@ -32,21 +32,36 @@
       "f1_score": 1.0,
       "support": 2
     },
+    "Street Light": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "support": 3
+    },
     "Waste Management": {
       "precision": 1.0,
-      "recall": 0.3333,
-      "f1_score": 0.5,
+      "recall": 1.0,
+      "f1_score": 1.0,
       "support": 3
     },
     "Water Supply": {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1_score": 0.0,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1_score": 0.6667,
       "support": 2
     }
   },
   "confusion_matrix": [
     [
+      2,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
       3,
       0,
       0,
@@ -55,6 +70,7 @@
     ],
     [
       0,
+      0,
       2,
       0,
       0,
@@ -63,29 +79,33 @@
     [
       0,
       0,
-      2,
+      0,
+      3,
       0,
       0
     ],
     [
-      2,
       0,
+      0,
+      0,
+      0,
+      3,
+      0
+    ],
+    [
       0,
       1,
-      0
-    ],
-    [
-      0,
-      2,
       0,
       0,
-      0
+      0,
+      1
     ]
   ],
   "classes": [
     "Drainage",
     "Other",
     "Roads",
+    "Street Light",
     "Waste Management",
     "Water Supply"
   ]

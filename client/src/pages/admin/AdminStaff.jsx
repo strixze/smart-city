@@ -18,6 +18,7 @@ import {
 import toast from "react-hot-toast";
 
 const DEPARTMENTS = [
+  "Street Light",
   "Waste Management",
   "Roads",
   "Drainage",
