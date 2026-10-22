@@ -1,0 +1,48 @@
+{
+  "model_name": "MobileNetV3-Small-Civic",
+  "architecture": "mobilenet_v3_small",
+  "version": "1.0.0",
+  "num_classes": 6,
+  "classes": [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+  ],
+  "class_to_idx": {
+    "Drainage": 0,
+    "Other": 1,
+    "Roads": 2,
+    "Street Light": 3,
+    "Waste Management": 4,
+    "Water Supply": 5
+  },
+  "input_size": [
+    3,
+    224,
+    224
+  ],
+  "image_size": 224,
+  "input_mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "input_std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "best_epoch": 8,
+  "best_val_loss": 0.0774,
+  "best_val_acc": 1.0,
+  "trained_at": "2026-10-21T11:57:56.582760Z",
+  "dataset_samples": {
+    "total": 134,
+    "train": 93,
+    "val": 20,
+    "test": 21
+  }
+}

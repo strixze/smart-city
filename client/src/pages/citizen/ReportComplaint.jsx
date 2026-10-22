@@ -74,6 +74,8 @@ export const ReportComplaint = () => {
   // File & Image State
   const [imageFile, setImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const cameraInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
   const fileInputRef = useRef(null);
 
   // AI Classification State
@@ -178,6 +180,8 @@ export const ReportComplaint = () => {
     setImagePreviewUrl(null);
     setAiResult(null);
     setAiError(null);
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
+    if (galleryInputRef.current) galleryInputRef.current.value = "";
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -416,10 +420,54 @@ export const ReportComplaint = () => {
             </div>
           </div>
 
-          {/* Upload Dropzone */}
+          {/* Hidden Camera Capture Input */}
+          <input
+            ref={cameraInputRef}
+            id="citizen-camera-input"
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                handleFileSelect(e.target.files[0]);
+              }
+              e.target.value = "";
+            }}
+          />
+
+          {/* Hidden Gallery Selection Input */}
+          <input
+            ref={galleryInputRef}
+            id="citizen-gallery-input"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/jpg"
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                handleFileSelect(e.target.files[0]);
+              }
+              e.target.value = "";
+            }}
+          />
+
+          {/* Fallback File Input Ref for backward compatibility */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/jpg"
+            className="hidden"
+            onChange={(e) => {
+              if (e.target.files && e.target.files[0]) {
+                handleFileSelect(e.target.files[0]);
+              }
+              e.target.value = "";
+            }}
+          />
+
+          {/* Upload / Capture Selection Box */}
           {!imagePreviewUrl ? (
             <div
-              onClick={() => fileInputRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
                 e.preventDefault();
@@ -427,29 +475,63 @@ export const ReportComplaint = () => {
                   handleFileSelect(e.dataTransfer.files[0]);
                 }
               }}
-              className="border-2 border-dashed border-[#CBD5E1] hover:border-[#0D9488] bg-[#F8FAFC] hover:bg-teal-50/20 rounded-2xl p-8 sm:p-12 text-center cursor-pointer transition-all group flex flex-col items-center justify-center space-y-3"
+              className="border-2 border-dashed border-[#CBD5E1] bg-[#F8FAFC] rounded-2xl p-6 sm:p-10 text-center transition-all"
             >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    handleFileSelect(e.target.files[0]);
-                  }
-                }}
-              />
-              <div className="w-16 h-16 rounded-2xl bg-teal-50 text-[#0D9488] border border-teal-200 flex items-center justify-center group-hover:scale-105 transition-all shadow-xs">
-                <Camera className="w-8 h-8" />
-              </div>
-              <div>
-                <p className="text-sm sm:text-base font-bold text-[#0F172A]">
-                  Take photo or upload from device
-                </p>
-                <p className="text-xs text-[#64748B] mt-1 max-w-sm mx-auto">
-                  Supports JPG, PNG, WEBP up to 10MB. Clear close-ups ensure the highest classification accuracy.
+              <div className="max-w-md mx-auto space-y-4">
+                <div>
+                  <p className="text-sm sm:text-base font-bold text-[#0F172A]">
+                    Attach Incident Photograph
+                  </p>
+                  <p className="text-xs text-[#64748B] mt-1 max-w-sm mx-auto">
+                    Capture a new photo on-site or choose an existing image from your device gallery.
+                  </p>
+                </div>
+
+                {/* Two clearly identifiable options */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                  {/* Option 1: Take Photo */}
+                  <button
+                    type="button"
+                    id="citizen-take-photo-btn"
+                    onClick={() => cameraInputRef.current?.click()}
+                    className="p-5 rounded-xl border-2 border-[#E2E8F0] hover:border-[#0D9488] bg-white hover:bg-[#F0FDFA] transition-all group shadow-xs cursor-pointer flex flex-col items-center justify-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-teal-50 text-[#0D9488] border border-teal-200 flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xs">
+                      <Camera className="w-6 h-6" />
+                    </div>
+                    <div className="text-center">
+                      <span className="text-sm font-bold text-[#0F172A] group-hover:text-[#0D9488] block">
+                        Take Photo
+                      </span>
+                      <span className="text-[11px] text-[#64748B] block mt-0.5">
+                        Capture with camera
+                      </span>
+                    </div>
+                  </button>
+
+                  {/* Option 2: Upload from Gallery */}
+                  <button
+                    type="button"
+                    id="citizen-gallery-upload-btn"
+                    onClick={() => galleryInputRef.current?.click()}
+                    className="p-5 rounded-xl border-2 border-[#E2E8F0] hover:border-[#0D9488] bg-white hover:bg-[#F0FDFA] transition-all group shadow-xs cursor-pointer flex flex-col items-center justify-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-teal-50 text-[#0D9488] border border-teal-200 flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xs">
+                      <UploadCloud className="w-6 h-6" />
+                    </div>
+                    <div className="text-center">
+                      <span className="text-sm font-bold text-[#0F172A] group-hover:text-[#0D9488] block">
+                        Upload from Gallery
+                      </span>
+                      <span className="text-[11px] text-[#64748B] block mt-0.5">
+                        Choose existing image
+                      </span>
+                    </div>
+                  </button>
+                </div>
+
+                <p className="text-[11px] text-[#94A3B8] pt-1">
+                  or drag & drop photo here • Supports JPG, PNG, WEBP up to 10MB
                 </p>
               </div>
             </div>
@@ -482,6 +564,45 @@ export const ReportComplaint = () => {
                 >
                   <X className="w-4 h-4" />
                 </button>
+              </div>
+
+              {/* Replace Image Controls Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
+                <div className="flex items-center gap-2 text-xs text-[#0F172A] truncate">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span className="font-semibold truncate max-w-[150px] sm:max-w-[240px]">
+                    {imageFile?.name || "Incident image attached"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => cameraInputRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E2E8F0] bg-white hover:bg-[#F0FDFA] hover:border-[#0D9488] text-xs font-semibold text-[#0F172A] transition-colors shadow-2xs"
+                    title="Retake photo using camera"
+                  >
+                    <Camera className="w-3.5 h-3.5 text-[#0D9488]" />
+                    <span>Retake Photo</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => galleryInputRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E2E8F0] bg-white hover:bg-[#F0FDFA] hover:border-[#0D9488] text-xs font-semibold text-[#0F172A] transition-colors shadow-2xs"
+                    title="Choose a different image from gallery"
+                  >
+                    <UploadCloud className="w-3.5 h-3.5 text-[#0D9488]" />
+                    <span>Choose from Gallery</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleClearImage}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-xs font-semibold text-rose-700 transition-colors shadow-2xs"
+                    title="Remove photo"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    <span>Remove</span>
+                  </button>
+                </div>
               </div>
 
               {!aiResult && !isAnalyzing && !aiError && (

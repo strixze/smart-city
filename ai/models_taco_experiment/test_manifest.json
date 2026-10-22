@@ -1,0 +1,104 @@
+{
+  "test_samples": [
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1097_000083.JPG",
+      4
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Water Supply\\water_supply_005.jpg",
+      5
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Water Supply\\water_supply_001.jpg",
+      5
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1133_000045.JPG",
+      4
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Other\\other_012.jpg",
+      1
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Street Light\\street_light_004.jpg",
+      3
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Street Light\\street_light_007.jpg",
+      3
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Street Light\\street_light_009.jpg",
+      3
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Roads\\roads_016.jpg",
+      2
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Waste Management\\waste_management_005.jpg",
+      4
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Waste Management\\waste_management_008.jpg",
+      4
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Waste Management\\waste_management_001.jpg",
+      4
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Drainage\\drainage_013.jpg",
+      0
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Other\\other_006.jpg",
+      1
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Drainage\\drainage_011.jpg",
+      0
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1157_000019.JPG",
+      4
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Drainage\\drainage_004.jpg",
+      0
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_569_000068.jpg",
+      4
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Roads\\roads_013.jpg",
+      2
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1169_000005.JPG",
+      4
+    ],
+    [
+      "D:\\safe\\smart-city\\ai\\data\\Roads\\roads_010.jpg",
+      2
+    ]
+  ],
+  "class_names": [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+  ],
+  "class_to_idx": {
+    "Drainage": 0,
+    "Other": 1,
+    "Roads": 2,
+    "Street Light": 3,
+    "Waste Management": 4,
+    "Water Supply": 5
+  }
+}
