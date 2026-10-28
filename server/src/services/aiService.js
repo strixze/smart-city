@@ -200,14 +200,14 @@ async function queryMicroserviceAI(imagePath, description, requestId) {
       method: "POST",
       body: formData,
       headers,
-      signal: AbortSignal.timeout(3500),
+      signal: AbortSignal.timeout(20000),
     });
 
     if (response.ok) {
       const data = await response.json();
       const predSource = data.predictionSource || (
-        data.source === "mobilenet_v3" ? "mobilenet" :
-        data.source === "gemini" ? "gemini_vision" : "rules"
+        data.source === "gemini" ? "gemini_vision" :
+        data.source === "mobilenet_v3" ? "mobilenet" : "rules"
       );
 
       return {
@@ -217,17 +217,19 @@ async function queryMicroserviceAI(imagePath, description, requestId) {
         predictedSubcategory: data.predictedSubcategory || data.subcategory || "General Issue",
         priority: data.priority || "MEDIUM",
         confidence: typeof data.confidence === "number" ? data.confidence : 0.85,
+        description: data.description || data.reason || "",
         reason: data.reason || "",
         department: data.department || "",
+        needsReview: Boolean(data.needsReview),
         predictionSource: predSource,
         modelLoaded: Boolean(data.modelLoaded),
-        modelVersion: data.modelVersion || (predSource === "mobilenet" ? "1.0.0" : null),
+        modelVersion: data.modelVersion || null,
         fallbackUsed: Boolean(data.fallbackUsed ?? data.isFallback),
         fallbackReason: data.fallbackReason || (data.isFallback ? data.reason : null),
         requestId: data.requestId || requestId,
         isFallback: Boolean(data.isFallback ?? data.fallbackUsed),
         source: data.source || predSource,
-        model: data.model || (predSource === "mobilenet" ? "MobileNetV3-Small-Civic" : "CivicClassifier"),
+        model: data.model || "Gemini-Vision",
         topPredictions: data.top_predictions || [],
         serviceStatus: `AI Microservice connected (${data.model || predSource})`,
       };

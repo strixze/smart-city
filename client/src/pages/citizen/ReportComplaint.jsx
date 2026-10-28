@@ -126,7 +126,7 @@ export const ReportComplaint = () => {
     analyzeImageWithAI(file);
   };
 
-  // Trigger AI / Gemini Classification
+  // Trigger AI Classification
   const analyzeImageWithAI = async (fileToAnalyze) => {
     const targetFile = fileToAnalyze || imageFile;
     if (!targetFile) {
@@ -157,12 +157,7 @@ export const ReportComplaint = () => {
           setTitle(`${resolvedSub} Reported`);
         }
 
-        const sourceLabel = result.predictionSource === "mobilenet"
-          ? "PyTorch MobileNetV3"
-          : result.predictionSource === "gemini_vision"
-          ? "Gemini Vision AI"
-          : "Rule-Based Heuristic";
-        toast.success(`AI classified (${sourceLabel}): ${resolvedCat}`);
+        toast.success(`AI classified: ${resolvedCat}`);
       } else {
         throw new Error("No classification result returned from server");
       }
@@ -281,7 +276,7 @@ export const ReportComplaint = () => {
     setSubmitting(true);
     try {
       const isManual = !aiResult || (category !== (aiResult.category || aiResult.predictedCategory));
-      const effectiveSource = isManual ? "manual" : (aiResult.predictionSource || "mobilenet");
+      const effectiveSource = isManual ? "manual" : (aiResult.predictionSource || "gemini_vision");
 
       const formData = new FormData();
       formData.append("title", title.trim());
@@ -300,7 +295,7 @@ export const ReportComplaint = () => {
       }
       formData.append("predictionSource", effectiveSource);
       formData.append("modelLoaded", aiResult?.modelLoaded ? "true" : "false");
-      formData.append("modelVersion", aiResult?.modelVersion || "mobilenet_v3_small_v1");
+      formData.append("modelVersion", aiResult?.modelVersion || "gemini-3.1-flash-lite");
       formData.append("fallbackUsed", (aiResult?.fallbackUsed || isManual) ? "true" : "false");
       if (aiResult?.fallbackReason) {
         formData.append("fallbackReason", aiResult.fallbackReason);
@@ -647,7 +642,7 @@ export const ReportComplaint = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white text-slate-700 border border-teal-200 shadow-2xs">
-                    Source: {aiResult.predictionSource === "mobilenet" ? "MobileNetV3 PyTorch" : aiResult.predictionSource === "gemini_vision" ? "Gemini Vision AI" : "Rules Heuristic"}
+                    {aiResult.needsReview ? "Flagged for Verification" : "Automated Classification"}
                   </span>
                   <span className="px-3 py-1 rounded-full text-xs font-bold bg-white text-[#0D9488] border border-teal-200 shadow-2xs">
                     {Math.round((aiResult.confidence || 0.85) * 100)}% Match
@@ -767,7 +762,7 @@ export const ReportComplaint = () => {
                 </span>
               ) : aiResult ? (
                 <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] text-[10px] font-bold border border-teal-200">
-                  AI Source: {aiResult.predictionSource || "mobilenet"}
+                  AI Classified
                 </span>
               ) : (
                 <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200">
@@ -1000,7 +995,7 @@ export const ReportComplaint = () => {
                   <Cpu className="w-3.5 h-3.5" /> Classification & Triage Details
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                  Source: {!aiResult || category !== (aiResult.category || aiResult.predictedCategory) ? "Manual Citizen Selection" : (aiResult.predictionSource === "mobilenet" ? "MobileNetV3 Model" : aiResult.predictionSource === "gemini_vision" ? "Gemini Vision" : "Rules Heuristic")}
+                  Classification: {!aiResult || category !== (aiResult.category || aiResult.predictedCategory) ? "Manual Citizen Selection" : (aiResult.needsReview ? "Pending Verification" : "Automated Analysis")}
                 </span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
@@ -1026,7 +1021,7 @@ export const ReportComplaint = () => {
               {aiResult?.requestId && (
                 <div className="pt-1 border-t border-slate-100 text-[10px] text-[#94A3B8] font-mono flex items-center justify-between">
                   <span>Trace ID: {aiResult.requestId}</span>
-                  <span>Model: {aiResult.modelLoaded ? (aiResult.modelVersion || "mobilenet_v3_small_v1 (verified)") : "vision_fallback"}</span>
+                  <span>Status: {aiResult.needsReview ? "Officer Review Required" : "Automated Verification Complete"}</span>
                 </div>
               )}
             </div>

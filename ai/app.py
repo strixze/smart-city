@@ -63,8 +63,13 @@ from schemas import (
     validate_subcategory,
 )
 
-from classifier import classify_complaint, get_model_status, reload_model
-from utils import cleanup_temp_file
+from classifier import (
+    classify_complaint,
+    classify_heuristic_vision,
+    get_model_status,
+    reload_model,
+)
+from utils import cleanup_temp_file, get_git_commit_id
 
 # --------------------------------------------------
 # Flask application
@@ -127,6 +132,16 @@ def add_cors_headers(response):
 # Health endpoint
 # --------------------------------------------------
 
+def get_service_port() -> int:
+    """Returns service port: AI_PORT locally (default 8000), or Render's dynamic PORT in production."""
+    if os.environ.get("AI_PORT"):
+        return int(os.environ["AI_PORT"])
+    port_env = os.environ.get("PORT")
+    if port_env and port_env != "3000":
+        return int(port_env)
+    return 8000
+
+
 @app.route("/health", methods=["GET"])
 def health():
     """Return service, architecture, and model health verification."""
@@ -145,11 +160,16 @@ def health():
         model_status.get("device"),
     )
 
+    port = get_service_port()
+    commit_id = get_git_commit_id()
+
     return jsonify({
         "status": "online",
         "service": "Smart City Civic AI Microservice",
         "version": "1.0.0",
-        "port": int(os.environ.get("AI_PORT", 8000)),
+        "port": port,
+        "gitCommit": commit_id,
+        "primaryClassifier": "gemini_vision",
         "modelLoaded": is_model_loaded,
         "modelVerified": is_model_verified,
         "modelName": model_status.get("model_name"),
@@ -165,12 +185,13 @@ def health():
         "geminiConfigured": bool(gemini_key),
         "fallbackClassificationEnabled": True,
         "capabilities": [
-            "mobilenet_v3_small_transfer_learning",
+            "gemini-vision-primary-classification",
+            "structured-json-validation",
             "multimodal-vision-inspection",
             "civic-taxonomy-classification",
             "emergency-hazard-escalation",
             "department-routing",
-            "dual-engine-local-and-gemini",
+            "explicit-fallback-handling",
         ],
     }), 200
 
@@ -279,6 +300,10 @@ def analyze():
 
     description = ""
     temp_path = None
+    diagnostic_req = (
+        request.args.get("diagnostic", "").lower() in ["true", "1", "yes"]
+        or request.form.get("diagnostic", "").lower() in ["true", "1", "yes"]
+    )
     request_id = (
         request.headers.get("X-Request-Id")
         or request.form.get("requestId")
@@ -297,6 +322,8 @@ def analyze():
             and "multipart/form-data" in request.content_type
         ):
             description = request.form.get("description", "")
+            if request.form.get("diagnostic", "").lower() in ["true", "1", "yes"]:
+                diagnostic_req = True
 
             if "image" in request.files:
                 file = request.files["image"]
@@ -341,6 +368,8 @@ def analyze():
             data = request.get_json(silent=True) or {}
 
             description = data.get("description", "")
+            if data.get("diagnostic") is True:
+                diagnostic_req = True
             b64_image = data.get("image_base64")
             if not request.headers.get("X-Request-Id") and data.get("requestId"):
                 request_id = data.get("requestId")
@@ -410,7 +439,7 @@ def analyze():
         )
 
         # ------------------------------------------
-        # Run the classifier
+        # Run the primary classifier
         # ------------------------------------------
 
         inference_start = time.perf_counter()
@@ -420,6 +449,7 @@ def analyze():
             description=description,
             use_llm=True,
             request_id=request_id,
+            run_diagnostic=diagnostic_req,
         )
 
         inference_ms = (
@@ -433,21 +463,50 @@ def analyze():
 
         result["requestId"] = request_id
 
-        # Diagnostic logging (Safe, no credentials logged)
+        # Diagnostic logging per Requirement 4
+        features_dict = result.get("features") or {}
+        img_info = (
+            f"{features_dict.get('width', 0)}x{features_dict.get('height', 0)}"
+            if features_dict.get("width")
+            else ("Uploaded" if temp_path else "None")
+        )
+        img_fmt = features_dict.get("format", "N/A") if features_dict else "N/A"
+        commit_id = result.get("commitId") or get_git_commit_id()
+
         logger.info(
-            "CLASSIFICATION DIAGNOSTIC | ReqID: %s | Source: %s | ModelLoaded: %s | "
-            "VisionApiCalled: %s | FallbackUsed: %s | FinalCat: %s | Subcat: %s | "
-            "Conf: %s | Latency: %.2f ms",
+            "CLASSIFICATION DIAGNOSTIC | ReqID: %s | Commit: %s | Source: %s | "
+            "Img: %s (%s) | Clues: %s | Scores: %s | Tied: %s | Uncertain: %s | "
+            "FinalCat: %s | Subcat: %s | Conf: %.2f | Latency: %.2f ms",
             request_id,
+            commit_id,
             result.get("predictionSource", "unknown"),
-            result.get("modelLoaded", False),
-            result.get("predictionSource") == "gemini_vision",
-            result.get("fallbackUsed", False),
+            img_info,
+            img_fmt,
+            result.get("visualClues", []),
+            result.get("categoryScores", {}),
+            result.get("isTied", False),
+            result.get("isUncertain", False),
             result.get("predictedCategory", result.get("category", "Unknown")),
             result.get("predictedSubcategory", result.get("subcategory", "")),
             result.get("confidence", 0.0),
             inference_ms,
         )
+
+        logger.info(
+            "WINNING RATIONALE | ReqID: %s | Winning: %s",
+            request_id,
+            result.get("reason", "")[:150],
+        )
+
+        if "diagnostics" in result and "mobilenet" in result["diagnostics"]:
+            mb = result["diagnostics"]["mobilenet"]
+            logger.info(
+                "MOBILENET DIAGNOSTIC (AUXILIARY) | ReqID: %s | Pred: %s | Conf: %s | Latency: %s ms | OverrodeHeuristic: False",
+                request_id,
+                mb.get("category"),
+                mb.get("confidence"),
+                mb.get("inference_time_ms"),
+            )
 
         return jsonify(result), 200
 
@@ -462,15 +521,17 @@ def analyze():
             "predictedCategory": "Other",
             "predictedSubcategory": "General Issue",
             "priority": "MEDIUM",
-            "confidence": 0.5,
+            "confidence": 0.35,
             "department": "General Municipal Grievance Cell",
-            "reason": "Automated fallback due to processing error",
+            "reason": f"Automated fallback due to processing error: {sanitized_error}",
             "isFallback": True,
             "fallbackUsed": True,
             "fallbackReason": f"Processing exception: {sanitized_error}",
-            "predictionSource": "rules",
+            "predictionSource": "heuristic_vision",
+            "source": "heuristic_vision",
             "modelLoaded": get_model_status().get("loaded", False),
             "requestId": request_id,
+            "commitId": get_git_commit_id(),
         }), 500
 
     finally:
@@ -488,13 +549,12 @@ def analyze():
                 )
 
 
-
 # --------------------------------------------------
 # Start the service
 # --------------------------------------------------
 
 if __name__ == "__main__":
-    port = int(os.environ.get("AI_PORT", 8000))
+    port = get_service_port()
 
     logger.info("=" * 65)
     logger.info(

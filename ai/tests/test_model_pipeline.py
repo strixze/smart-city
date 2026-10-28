@@ -22,6 +22,9 @@ AI_DIR = os.path.dirname(CURRENT_DIR)
 if AI_DIR not in sys.path:
     sys.path.insert(0, AI_DIR)
 
+from dotenv import load_dotenv
+load_dotenv(os.path.join(AI_DIR, ".env"))
+
 from schemas import CIVIC_TAXONOMY
 from classifier import (
     MOBILENET_LOADER,
@@ -72,18 +75,42 @@ class TestAiModelPipeline(unittest.TestCase):
         self.assertFalse(is_valid, "Architecture verification must reject 99-class model when expecting 6")
 
     def test_street_light_image_classification(self):
-        """Test 3 & 4: Classification of a Street Light image reports 'mobilenet'."""
+        """Test 3 & 4: Image classification uses Gemini vision as primary classifier."""
         sample_img_path = os.path.join(AI_DIR, "data", "Street Light", "street_light_001.jpg")
         self.assertTrue(os.path.exists(sample_img_path), f"Sample image {sample_img_path} must exist")
 
-        result = classify_complaint(image_path=sample_img_path, request_id="test-req-001")
+        # Primary flow: Gemini Vision executes as primary
+        result = classify_complaint(
+            image_path=sample_img_path,
+            description="Damaged street light pole dark at night",
+            request_id="test-req-001"
+        )
         self.assertIsNotNone(result, "classify_complaint must return a valid dict")
         self.assertEqual(result["predictedCategory"], "Street Light", "Sample must predict Street Light")
-        self.assertEqual(result["predictionSource"], "mobilenet", "Prediction source must be 'mobilenet'")
-        self.assertTrue(result["modelLoaded"], "modelLoaded must be True")
-        self.assertFalse(result["fallbackUsed"], "fallbackUsed must be False on successful model inference")
-        self.assertGreater(result["confidence"], 0.5, "Confidence must be reasonable for trained sample")
+        self.assertEqual(result["predictionSource"], "gemini_vision", "Primary source must be 'gemini_vision'")
+        self.assertEqual(result["source"], "gemini", "Source field must be 'gemini'")
+        self.assertGreater(result["confidence"], 0.5, "Confidence must be reasonable for sample")
         self.assertEqual(result["requestId"], "test-req-001", "requestId must match")
+
+        # Optional Diagnostic flow: MobileNetV3 can be explicitly requested without overriding primary
+        diag_res = classify_complaint(
+            image_path=sample_img_path,
+            description="Damaged street light pole dark at night",
+            request_id="test-req-diag-001",
+            run_diagnostic=True
+        )
+        self.assertEqual(diag_res["predictedCategory"], "Street Light")
+        self.assertEqual(diag_res["predictionSource"], "gemini_vision")
+        self.assertIn("diagnostics", diag_res)
+        self.assertIn("mobilenet", diag_res["diagnostics"])
+        mb_diag = diag_res["diagnostics"]["mobilenet"]
+        self.assertEqual(mb_diag["category"], "Street Light")
+        self.assertFalse(mb_diag.get("overrode_primary", True))
+
+        # Direct MobileNetV3 checkpoint verification
+        mb_cat, mb_conf, top_preds, latency = MOBILENET_LOADER.predict(sample_img_path)
+        self.assertEqual(mb_cat, "Street Light")
+        self.assertGreater(mb_conf, 0.5)
 
     def test_rule_based_fallback_metadata(self):
         """Test 5 & 6: Explicit fallback metadata when model is unavailable or bypassed."""

@@ -258,7 +258,7 @@ export const ImageAuthenticityTest = ({
                   <h3 id="image-authenticity-title" className="text-base font-bold text-[#0F172A]">
                     AI Image Authenticity Assessment
                   </h3>
-                  <p className="text-xs text-[#64748B]">Powered by Google Gemini Vision Engine</p>
+                  <p className="text-xs text-[#64748B]">Automated Visual Verification Engine</p>
                 </div>
               </div>
               <button
@@ -273,19 +273,17 @@ export const ImageAuthenticityTest = ({
 
             {/* Modal Content */}
             <div className="p-4 sm:p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-              {/* Target & Model Details */}
+              {/* Target Details */}
               <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 border border-[#E2E8F0] text-xs">
                 <div className="flex items-center gap-1.5 text-slate-700">
                   <Layers className="w-3.5 h-3.5 text-[#0D9488]" />
                   <span className="font-semibold">Evidence Target:</span>
                   <span className="font-bold text-[#0F172A]">{targetDisplayName}</span>
                 </div>
-                {testResult.model && (
-                  <div className="flex items-center gap-1 text-[11px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
-                    <Cpu className="w-3 h-3 text-slate-400" />
-                    <span>{testResult.model}</span>
-                  </div>
-                )}
+                <div className="flex items-center gap-1 text-[11px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+                  <Cpu className="w-3 h-3 text-slate-400" />
+                  <span>Visual Analysis</span>
+                </div>
               </div>
 
               {/* Assessment Banner */}
