@@ -1,0 +1,542 @@
+{
+  "target_classes": [
+    "Roads",
+    "Street Light",
+    "Waste Management"
+  ],
+  "classes": [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+  ],
+  "class_to_idx": {
+    "Drainage": 0,
+    "Other": 1,
+    "Roads": 2,
+    "Street Light": 3,
+    "Waste Management": 4,
+    "Water Supply": 5
+  },
+  "waste_management_test_samples": [
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-dark-blue-garbage-bin-filled-with-plastic-bottles-paper-assorted-waste-debris_908344-251538.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-dark-gray-garbage-bin-filled-with-various-types-trash-debris-outdoors_908344-250836.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-garbage-bin-street-with-scattered-trash-plastic-bottles-debris_908344-251015.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-and-cardboard-urban-waste-pollution-environmental-problem-photo.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-photo.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-green-construction-dumpster-filled-with-cardboard-boxes-and-building-waste-at.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-outdoor-garbage-bin.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-recycling-container-surrounded-by-black-trash-bags-full-garbage-bin-urban-setting_937679-86346.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-trash-bag-with-food-waste-and-garbage-on-the-dirty-concrete-photo.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-trash-dumpsters-one.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\an-overflowing-container-filled-with-a-variety-of-drink-cans.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1016_000117.JPG",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1285_000127.JPG",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\dropped-dumpsters-with-fallen-out-trash-ground_1268-15846.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1169_000005.JPG",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_569_000068.jpg",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\environment-garbage-pile-plastic-bags-white-background_1339860-3085.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\free-photo-of-pile-of-trash-in-an-alley.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\free-photo-of-pile-of-trash-with-discarded-mattress-outdoors.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\free-photo-of-trash-around-a-garbage-bin.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\free-photo-of-urban-alleyway-with-overflowing-garbage-heaps.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\old-garbage-can-full-garbage-png-isolated-transparent-background_723616-13226.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\old-garbage-landfill-near-large-260nw-2127642269.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\people-dropping-their-garbage-bag-to-van-during-the-lockdown-due-to-the-covid-19-virus-corona.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\photo-1718104717552-7addaf35fe4b_fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\transparent-garbage-bags-dumped-in-the-city-street-photo.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\ai-generated-8294134_640.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\fashion-garbage.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1375_000075.jpg"
+  ],
+  "roads_test_samples": [
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\360_F_249175320_yNuiZ8dv8uZPShrZ6vIzuwc6F7fZZVCN.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\several-holes-street-potholes-visible-gray-asphalt-road-shows-significant-wear-tear-large-cracks-468309444.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\several-potholes-on-the-road.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\view-of-a-dirt-road-in-a-village-with-a-natural-concept-free-photo.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\75509053194f05b262f9268fd1c01de8.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\depositphotos_72691739-stock-photo-damaged-roadway.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-due-to-the-heavy-rainfall-that-has-been-lashing-mumbai-since-last-night-potholes.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-potholes-at-dadar-bridge-on-tulsi-pipe-road.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-potholes-at-santacruz-flyover-due-to-heavy-rain-on-august-30-2017-in-mumbai-india.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-potholes-seen-on-ghodbunder-road-and-the-poor-condition-of-the-road-led-to-a.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-private-contract-worker-carries-the-prepared-material-to-fill-potholes-between.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-the-recent-heavy-spell-of-showers-has-increased-the-problem-of-commuters-as-huge.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\a-crack-in-the-road-that-is-showing-a-crack-in-the-road-photo.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-153132.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-171111.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\tar-road-filled-big-potholes-south-africa-massive-craters-very-poorly-maintained-due-to-poor-service-delivery-455476386.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-in-the-asphalt-paved-road.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-large-deep-montreal-street-canada-69837660.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-large-deep-montreal-street-canada-75735131.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-road-water-red-house-bricks-inside-to-repair-pothole-road-water-red-house-bricks-451982271.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-with-water-on-urban-street-surface-photo.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\a-hole-in-the-road.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\truck-parked-next-to-several-potholes-on-a-city-street.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\360_F_1061105493_xYm7difE5jL0S8EZ0lxMGDfcVvRXVJjG.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\360_F_608384568_afwDm6HOSLWhWmpDUIPvqhwkkMS5RiMJ.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\360_F_77575060_xyNr5g3OCWlE63NJXPJniUSrGHuyEVG2.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\asphalt-collapsed-on-the-road.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\asphalt-cracked-road-collapsed-by-landslide.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\severe-road-damage-caused-by-earthquake-photo.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\3acc6e47642696f9d142abef59314101.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\a-large-deep-pothole-with-exposed-gravel-and-broken-asphalt-on-a-damaged-road-with-faded-lane-markings-photo.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Roads\\philadelphia-damaged-road-1.webp"
+  ],
+  "streetlight_test_samples": [
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-light-thats-down-earth-260nw-686026135.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-light.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-lights-are-melted-by-the-heat-of-a-burning-car-after-a-night-of-rioting.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-lights-down-during-roadworks.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-lights-utility-fallen-pole-vehicle-crash-street.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\vintage-broken-street-lamp-bird-s-nest-inside-243263825.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\vintage-old-street-classic-iron-lantern-house-wall-close-up-streetlight-broken-vintage-old-street-classic-iron-lantern-115759188.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\vintage-street-light.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\storm-damage-3.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\storm-damaged-traffic-light.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\vertical-shot-of-traffic-lights-wrapped-with-an-adhesive-tape.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\124901085-detail-of-damaged-surveillance-camera-on-street-lamp-pole-on-the-ground-vandalism-act-on-french.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\lamppost-16937416.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\lamppost-against-sky-10968613.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\lamppost-with-broken-banner.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\157324827-one-old-broken-spotlight-with-a-white-lamp-on-a-concrete-pillar-overgrown-with-dry-vegetation.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\177934569-road-traffic-lights-close-up-destroyed-broken-on-the-floor-vehicle-collision-at-inter-section.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\214129888-modern-street-lamp-with-broken-glass-and-visible-dirty-white-glass-bulb-on-blue-sky-background.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\40299262-electrical-street-lamp-on-white-isolated-background.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\Decorative-Light-Post.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\360_F_2189326312_fOsJbwS3E7f1kZNVROWTdfql5zCfrjnC.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\120354189-broken-street-lamp-on-green-pole-and-sky-like-background-texture.webp",
+    "d:\\safe\\smart-city\\ai\\data\\Street Light\\178367342-a-road-sign-lying-on-the-lawn-blown-down-by-the-wind.webp"
+  ],
+  "all_test_samples": [
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-dark-blue-garbage-bin-filled-with-plastic-bottles-paper-assorted-waste-debris_908344-251538.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-dark-gray-garbage-bin-filled-with-various-types-trash-debris-outdoors_908344-250836.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-garbage-bin-street-with-scattered-trash-plastic-bottles-debris_908344-251015.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-and-cardboard-urban-waste-pollution-environmental-problem-photo.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-photo.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-green-construction-dumpster-filled-with-cardboard-boxes-and-building-waste-at.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-outdoor-garbage-bin.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-recycling-container-surrounded-by-black-trash-bags-full-garbage-bin-urban-setting_937679-86346.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-trash-bag-with-food-waste-and-garbage-on-the-dirty-concrete-photo.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\overflowing-trash-dumpsters-one.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\an-overflowing-container-filled-with-a-variety-of-drink-cans.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1016_000117.JPG",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1285_000127.JPG",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\dropped-dumpsters-with-fallen-out-trash-ground_1268-15846.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1169_000005.JPG",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_569_000068.jpg",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\environment-garbage-pile-plastic-bags-white-background_1339860-3085.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\free-photo-of-pile-of-trash-in-an-alley.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\free-photo-of-pile-of-trash-with-discarded-mattress-outdoors.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\free-photo-of-trash-around-a-garbage-bin.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\free-photo-of-urban-alleyway-with-overflowing-garbage-heaps.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\old-garbage-can-full-garbage-png-isolated-transparent-background_723616-13226.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\old-garbage-landfill-near-large-260nw-2127642269.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\people-dropping-their-garbage-bag-to-van-during-the-lockdown-due-to-the-covid-19-virus-corona.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\photo-1718104717552-7addaf35fe4b_fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\transparent-garbage-bags-dumped-in-the-city-street-photo.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\ai-generated-8294134_640.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\fashion-garbage.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Waste Management\\taco_1375_000075.jpg",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\360_F_249175320_yNuiZ8dv8uZPShrZ6vIzuwc6F7fZZVCN.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\several-holes-street-potholes-visible-gray-asphalt-road-shows-significant-wear-tear-large-cracks-468309444.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\several-potholes-on-the-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\view-of-a-dirt-road-in-a-village-with-a-natural-concept-free-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\75509053194f05b262f9268fd1c01de8.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\depositphotos_72691739-stock-photo-damaged-roadway.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-due-to-the-heavy-rainfall-that-has-been-lashing-mumbai-since-last-night-potholes.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-potholes-at-dadar-bridge-on-tulsi-pipe-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-potholes-at-santacruz-flyover-due-to-heavy-rain-on-august-30-2017-in-mumbai-india.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-potholes-seen-on-ghodbunder-road-and-the-poor-condition-of-the-road-led-to-a.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-private-contract-worker-carries-the-prepared-material-to-fill-potholes-between.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\mumbai-india-the-recent-heavy-spell-of-showers-has-increased-the-problem-of-commuters-as-huge.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\a-crack-in-the-road-that-is-showing-a-crack-in-the-road-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-153132.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-171111.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\tar-road-filled-big-potholes-south-africa-massive-craters-very-poorly-maintained-due-to-poor-service-delivery-455476386.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-in-the-asphalt-paved-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-large-deep-montreal-street-canada-69837660.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-large-deep-montreal-street-canada-75735131.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-road-water-red-house-bricks-inside-to-repair-pothole-road-water-red-house-bricks-451982271.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\pothole-with-water-on-urban-street-surface-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\a-hole-in-the-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\truck-parked-next-to-several-potholes-on-a-city-street.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\360_F_1061105493_xYm7difE5jL0S8EZ0lxMGDfcVvRXVJjG.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\360_F_608384568_afwDm6HOSLWhWmpDUIPvqhwkkMS5RiMJ.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\360_F_77575060_xyNr5g3OCWlE63NJXPJniUSrGHuyEVG2.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\asphalt-collapsed-on-the-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\asphalt-cracked-road-collapsed-by-landslide.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\severe-road-damage-caused-by-earthquake-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\3acc6e47642696f9d142abef59314101.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\a-large-deep-pothole-with-exposed-gravel-and-broken-asphalt-on-a-damaged-road-with-faded-lane-markings-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Roads\\philadelphia-damaged-road-1.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-light-thats-down-earth-260nw-686026135.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-light.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-lights-are-melted-by-the-heat-of-a-burning-car-after-a-night-of-rioting.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-lights-down-during-roadworks.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\traffic-lights-utility-fallen-pole-vehicle-crash-street.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\vintage-broken-street-lamp-bird-s-nest-inside-243263825.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\vintage-old-street-classic-iron-lantern-house-wall-close-up-streetlight-broken-vintage-old-street-classic-iron-lantern-115759188.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\vintage-street-light.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\storm-damage-3.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\storm-damaged-traffic-light.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\vertical-shot-of-traffic-lights-wrapped-with-an-adhesive-tape.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\124901085-detail-of-damaged-surveillance-camera-on-street-lamp-pole-on-the-ground-vandalism-act-on-french.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\lamppost-16937416.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\lamppost-against-sky-10968613.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\lamppost-with-broken-banner.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\157324827-one-old-broken-spotlight-with-a-white-lamp-on-a-concrete-pillar-overgrown-with-dry-vegetation.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\177934569-road-traffic-lights-close-up-destroyed-broken-on-the-floor-vehicle-collision-at-inter-section.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\214129888-modern-street-lamp-with-broken-glass-and-visible-dirty-white-glass-bulb-on-blue-sky-background.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\40299262-electrical-street-lamp-on-white-isolated-background.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\Decorative-Light-Post.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\360_F_2189326312_fOsJbwS3E7f1kZNVROWTdfql5zCfrjnC.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\120354189-broken-street-lamp-on-green-pole-and-sky-like-background-texture.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "d:\\safe\\smart-city\\ai\\data\\Street Light\\178367342-a-road-sign-lying-on-the-lawn-blown-down-by-the-wind.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    }
+  ],
+  "counts": {
+    "waste_management_test": 29,
+    "roads_test": 32,
+    "streetlight_test": 23,
+    "total_test": 84
+  },
+  "created_at": "2026-11-01T14:52:37.577522Z"
+}

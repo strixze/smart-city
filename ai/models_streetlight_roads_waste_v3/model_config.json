@@ -1,0 +1,73 @@
+{
+  "model_name": "MobileNetV3-Small-Civic-StreetlightRoadsWasteV3",
+  "architecture": "mobilenet_v3_small",
+  "version": "1.3.0-streetlight-roads-waste-v3",
+  "num_classes": 6,
+  "classes": [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+  ],
+  "class_to_idx": {
+    "Drainage": 0,
+    "Other": 1,
+    "Roads": 2,
+    "Street Light": 3,
+    "Waste Management": 4,
+    "Water Supply": 5
+  },
+  "input_size": [
+    3,
+    224,
+    224
+  ],
+  "image_size": 224,
+  "input_mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "input_std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "starting_checkpoint": "d:\\safe\\smart-city\\ai\\models_roads_waste_v2\\best_model.pth",
+  "best_epoch": 10,
+  "best_val_loss": 0.1693,
+  "best_val_acc": 0.95,
+  "trained_at": "2026-11-01T14:53:54.415343Z",
+  "dataset_samples": {
+    "total_real_images": 544,
+    "waste_management": {
+      "total": 189,
+      "train": 132,
+      "val": 28,
+      "test": 29
+    },
+    "roads": {
+      "total": 205,
+      "train": 143,
+      "val": 30,
+      "test": 32
+    },
+    "street_light": {
+      "total": 150,
+      "train": 105,
+      "val": 22,
+      "test": 23
+    },
+    "train_total": 380,
+    "val_total": 80,
+    "test_total": 84
+  },
+  "real_data_classes": [
+    "Waste Management",
+    "Roads",
+    "Street Light"
+  ],
+  "training_notes": "Fine-tuned jointly on verified real Street Light (150), Roads (205), and Waste Management (189) imagery. Initialized from Roads + Waste Management checkpoint (ai/models_roads_waste_v2/best_model.pth). Full 6-class output architecture preserved. Remaining three classes (Drainage, Other, Water Supply) remain unrepresented by real datasets and route to heuristic vision fallback."
+}

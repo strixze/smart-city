@@ -1,0 +1,51 @@
+{
+  "model_name": "MobileNetV3-Small-Civic-RealWasteExperiment",
+  "architecture": "mobilenet_v3_small",
+  "version": "1.1.0-experiment",
+  "num_classes": 6,
+  "classes": [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+  ],
+  "class_to_idx": {
+    "Drainage": 0,
+    "Other": 1,
+    "Roads": 2,
+    "Street Light": 3,
+    "Waste Management": 4,
+    "Water Supply": 5
+  },
+  "input_size": [
+    3,
+    224,
+    224
+  ],
+  "image_size": 224,
+  "input_mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "input_std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "best_epoch": 8,
+  "best_val_loss": 0.0027,
+  "trained_at": "2026-10-28T09:27:41.306990Z",
+  "dataset_samples": {
+    "total_real_waste_images": 189,
+    "train": 132,
+    "val": 28,
+    "test": 29
+  },
+  "real_data_classes": [
+    "Waste Management"
+  ],
+  "training_notes": "Trained exclusively on verified real Waste Management images. Five other classes preserved in output layer but unrepresented by real data."
+}

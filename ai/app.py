@@ -169,7 +169,10 @@ def health():
         "version": "1.0.0",
         "port": port,
         "gitCommit": commit_id,
-        "primaryClassifier": "gemini_vision",
+        "primaryClassifier": "mobilenet_v3",
+        "fallbackClassifier": "heuristic_vision",
+        "activeCheckpoint": model_status.get("weights_path"),
+        "modelDirectory": model_status.get("models_dir"),
         "modelLoaded": is_model_loaded,
         "modelVerified": is_model_verified,
         "modelName": model_status.get("model_name"),
@@ -177,6 +180,8 @@ def health():
         "modelVersion": model_status.get("version"),
         "modelDevice": model_status.get("device"),
         "modelClasses": model_status.get("classes", []),
+        "realDataClasses": model_status.get("real_data_classes", []),
+        "isSingleClassRealTrained": model_status.get("is_single_class_real_trained", False),
         "modelNumClasses": model_status.get("num_classes", 0),
         "modelLoadTimeMs": model_status.get("load_time_ms", 0.0),
         "modelError": model_status.get("error"),
@@ -185,9 +190,9 @@ def health():
         "geminiConfigured": bool(gemini_key),
         "fallbackClassificationEnabled": True,
         "capabilities": [
-            "gemini-vision-primary-classification",
-            "structured-json-validation",
-            "multimodal-vision-inspection",
+            "mobilenet-v3-primary-classification",
+            "heuristic-vision-calibrated-fallback",
+            "real-waste-management-fine-tuning",
             "civic-taxonomy-classification",
             "emergency-hazard-escalation",
             "department-routing",
@@ -438,8 +443,14 @@ def analyze():
             bool(description.strip()),
         )
 
+        use_gemini_req = (
+            request.form.get("use_gemini", "").lower() in ["true", "1", "yes"]
+            or request.args.get("use_gemini", "").lower() in ["true", "1", "yes"]
+            or (request.is_json and bool((request.get_json(silent=True) or {}).get("use_gemini")))
+        )
+
         # ------------------------------------------
-        # Run the primary classifier
+        # Run the primary classifier (MobileNetV3 -> Heuristic Vision)
         # ------------------------------------------
 
         inference_start = time.perf_counter()
@@ -447,9 +458,10 @@ def analyze():
         result = classify_complaint(
             image_path=temp_path,
             description=description,
-            use_llm=True,
+            use_llm=False,
             request_id=request_id,
             run_diagnostic=diagnostic_req,
+            use_gemini=use_gemini_req,
         )
 
         inference_ms = (

@@ -247,38 +247,39 @@ class TestHeuristicVisionPrimary(unittest.TestCase):
         res_data = res.get_json()
         self.assertIsNotNone(res_data)
 
-    def test_11_analyze_endpoint_normal_flow_does_not_invoke_mobilenet(self):
-        """Test 11: Priority check - MobileNetV3 is NOT invoked during normal heuristic-primary flow."""
-        sample_path = os.path.join(self.data_dir, "Street Light", "street_light_001.jpg")
-
-        with patch.object(MOBILENET_LOADER, "predict", wraps=MOBILENET_LOADER.predict) as mock_predict:
-            with open(sample_path, "rb") as f:
-                data = {
-                    "image": (f, "street_light_001.jpg"),
-                    "description": "Street light pole on 5th Street"
-                }
-                res = self.app_client.post("/analyze", data=data, content_type="multipart/form-data")
-
-            self.assertEqual(res.status_code, 200)
-            res_json = res.get_json()
-
-            # Primary assertions: Gemini Vision is primary
-            self.assertEqual(res_json["predictionSource"], "gemini_vision")
-            self.assertEqual(res_json["source"], "gemini")
-            self.assertEqual(res_json["predictedCategory"], "Street Light")
-            self.assertFalse(res_json["fallbackUsed"])
-
-            # CRITICAL CONSTRAINT ASSERTION: MobileNetV3 predict was NOT invoked!
-            self.assertEqual(mock_predict.call_count, 0, "MobileNetV3 must NOT be invoked in primary flow!")
-
-    def test_12_analyze_endpoint_optional_diagnostic_does_not_override_primary(self):
-        """Test 12: MobileNetV3 runs only when explicitly requested as diagnostic, without overriding."""
-        sample_path = os.path.join(self.data_dir, "Street Light", "street_light_001.jpg")
+    def test_11_analyze_endpoint_mobilenet_primary_for_real_waste(self):
+        """Test 11: Priority check - MobileNetV3 runs as primary for verified real Waste Management images."""
+        waste_dir = os.path.join(self.data_dir, "Waste Management")
+        waste_files = [f for f in os.listdir(waste_dir) if f.lower().endswith(('.webp', '.jpg', '.jpeg'))]
+        self.assertTrue(len(waste_files) > 0, "Waste management samples must exist")
+        sample_path = os.path.join(waste_dir, waste_files[0])
 
         with open(sample_path, "rb") as f:
             data = {
-                "image": (f, "street_light_001.jpg"),
-                "description": "Street light pole on 5th Street",
+                "image": (f, waste_files[0]),
+                "description": "Overflowing garbage dump in urban alleyway"
+            }
+            res = self.app_client.post("/analyze", data=data, content_type="multipart/form-data")
+
+        self.assertEqual(res.status_code, 200)
+        res_json = res.get_json()
+
+        # Primary assertions: MobileNetV3 is primary for real waste images
+        self.assertEqual(res_json["predictionSource"], "mobilenet")
+        self.assertEqual(res_json["source"], "mobilenet")
+        self.assertEqual(res_json["predictedCategory"], "Waste Management")
+        self.assertFalse(res_json["fallbackUsed"])
+        self.assertFalse(res_json["isFallback"])
+        self.assertGreaterEqual(res_json["confidence"], 0.70)
+
+    def test_12_analyze_endpoint_heuristic_fallback_for_untrained_category(self):
+        """Test 12: Heuristic vision runs when category has no real training data in checkpoint."""
+        sample_path = os.path.join(self.data_dir, "Drainage", "drainage_001.jpg")
+
+        with open(sample_path, "rb") as f:
+            data = {
+                "image": (f, "drainage_001.jpg"),
+                "description": "Clogged drain overflowing dirty sewage on street",
                 "diagnostic": "true"
             }
             res = self.app_client.post("/analyze", data=data, content_type="multipart/form-data")
@@ -286,16 +287,14 @@ class TestHeuristicVisionPrimary(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         res_json = res.get_json()
 
-        # Gemini must remain the primary source and result
-        self.assertEqual(res_json["predictionSource"], "gemini_vision")
-        self.assertEqual(res_json["predictedCategory"], "Street Light")
-
-        # Diagnostic payload must be attached under diagnostics.mobilenet
-        self.assertIn("diagnostics", res_json)
-        self.assertIn("mobilenet", res_json["diagnostics"])
-        mobilenet_diag = res_json["diagnostics"]["mobilenet"]
-        self.assertFalse(mobilenet_diag.get("overrode_primary", True))
-        self.assertIn("category", mobilenet_diag)
+        # Heuristic vision must execute as the fallback for categories without real training data
+        self.assertEqual(res_json["predictionSource"], "heuristic_vision")
+        self.assertEqual(res_json["source"], "heuristic_vision")
+        self.assertEqual(res_json["predictedCategory"], "Drainage")
+        self.assertTrue(res_json["fallbackUsed"])
+        self.assertTrue(res_json["isFallback"])
+        self.assertIn("MobileNetV3", res_json["fallbackReason"])
+        self.assertEqual(res_json["primaryModelAttempted"], "mobilenet_v3")
 
     def test_13_emergency_hazard_escalation(self):
         """Test 13: Emergency hazard terms escalate priority to CRITICAL."""

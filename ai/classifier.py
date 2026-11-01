@@ -68,6 +68,38 @@ def verify_model_architecture(model: Any, expected_classes: int = 6, image_size:
         return False
 
 
+def resolve_active_models_dir() -> str:
+    """
+    Resolves the directory containing the active MobileNetV3 model checkpoint and configuration.
+    Priority:
+    1. MOBILENET_MODEL_DIR environment variable if specified and directory exists.
+    2. ai/models_streetlight_roads_waste_v3/ if best_model.pth and model_config.json exist.
+    3. ai/models_roads_waste_v2/ as fallback.
+    4. ai/models_real_data_experiment/ as fallback.
+    5. ai/models/ as production fallback.
+    """
+    env_dir = os.environ.get("MOBILENET_MODEL_DIR")
+    if env_dir and os.path.isdir(env_dir):
+        return env_dir
+
+    v3_dir = os.path.join(os.path.dirname(__file__), "models_streetlight_roads_waste_v3")
+    if (os.path.exists(os.path.join(v3_dir, "best_model.pth")) and
+            os.path.exists(os.path.join(v3_dir, "model_config.json"))):
+        return v3_dir
+
+    v2_dir = os.path.join(os.path.dirname(__file__), "models_roads_waste_v2")
+    if (os.path.exists(os.path.join(v2_dir, "best_model.pth")) and
+            os.path.exists(os.path.join(v2_dir, "model_config.json"))):
+        return v2_dir
+
+    exp_dir = os.path.join(os.path.dirname(__file__), "models_real_data_experiment")
+    if (os.path.exists(os.path.join(exp_dir, "best_model.pth")) and
+            os.path.exists(os.path.join(exp_dir, "model_config.json"))):
+        return exp_dir
+
+    return os.path.join(os.path.dirname(__file__), "models")
+
+
 class MobileNetV3ModelLoader:
     """
     Singleton loader for the fine-tuned MobileNetV3 Small civic classification model.
@@ -75,19 +107,22 @@ class MobileNetV3ModelLoader:
     """
 
     def __init__(self, models_dir: Optional[str] = None):
-        self.models_dir = models_dir or os.path.join(os.path.dirname(__file__), "models")
+        self.models_dir = models_dir or resolve_active_models_dir()
         self.weights_path = os.path.join(self.models_dir, "best_model.pth")
         self.config_path = os.path.join(self.models_dir, "model_config.json")
         self.is_loaded = False
         self.model = None
         self.config: Dict[str, Any] = {}
         self.classes: List[str] = []
+        self.real_data_classes: List[str] = []
         self.num_classes: int = 0
         self.load_error: Optional[str] = None
         self.load_time_ms: float = 0.0
         self.device = torch.device("cpu") if TORCH_AVAILABLE else None
         self.transform = None
         self.softmax = None
+        self.model_name = "MobileNetV3-Small"
+        self.version = "1.0.0"
 
         self._load()
 
@@ -109,10 +144,13 @@ class MobileNetV3ModelLoader:
 
         t0 = time.perf_counter()
         try:
-            with open(self.config_path, "r") as f:
+            with open(self.config_path, "r", encoding="utf-8") as f:
                 self.config = json.load(f)
 
             self.classes = self.config.get("classes", [])
+            self.real_data_classes = self.config.get("real_data_classes", ["Waste Management"])
+            self.model_name = self.config.get("model_name", "MobileNetV3-Small-Civic")
+            self.version = self.config.get("version", "1.1.0-experiment")
             self.num_classes = len(self.classes)
             image_size = self.config.get("image_size", 224)
             mean = self.config.get("input_mean", [0.485, 0.456, 0.406])
@@ -151,8 +189,9 @@ class MobileNetV3ModelLoader:
             self.is_loaded = True
             self.load_error = None
             self.load_time_ms = round((time.perf_counter() - t0) * 1000, 2)
-            print(f"[MobileNetV3 Loader] Successfully loaded and verified '{self.config.get('model_name', 'MobileNetV3-Small')}' "
-                  f"({self.num_classes} classes) in {self.load_time_ms} ms on {self.device}.")
+            print(f"[MobileNetV3 Loader] Successfully loaded active checkpoint: '{self.weights_path}' "
+                  f"(version: '{self.version}', name: '{self.model_name}') with {self.num_classes} classes in {self.load_time_ms} ms on {self.device}. "
+                  f"Real-data verified classes: {self.real_data_classes}.")
 
         except Exception as e:
             self.is_loaded = False
@@ -205,11 +244,15 @@ class MobileNetV3ModelLoader:
     def get_status(self) -> Dict[str, Any]:
         return {
             "loaded": self.is_loaded,
-            "model_name": self.config.get("model_name", "MobileNetV3-Small-Civic") if self.is_loaded else None,
+            "model_name": self.model_name if self.is_loaded else None,
             "architecture": "mobilenet_v3_small",
-            "version": self.config.get("version", "1.0.0") if self.is_loaded else None,
+            "version": self.version if self.is_loaded else None,
+            "weights_path": self.weights_path,
+            "models_dir": self.models_dir,
             "device": str(self.device) if self.device else None,
             "classes": self.classes,
+            "real_data_classes": self.real_data_classes,
+            "is_single_class_real_trained": len(self.real_data_classes) == 1,
             "num_classes": self.num_classes,
             "load_time_ms": self.load_time_ms,
             "error": self.load_error,
@@ -471,7 +514,8 @@ def classify_heuristic_vision(
     description: str = "",
     request_id: Optional[str] = None,
     include_diagnostics: bool = False,
-    preloaded_img: Optional[Any] = None
+    preloaded_img: Optional[Any] = None,
+    fallback_reason: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Primary civic grievance classification engine.
@@ -799,8 +843,9 @@ def classify_heuristic_vision(
         predictedSubcategory=selected_sub,
         modelLoaded=MOBILENET_LOADER.is_loaded,
         modelVersion=None,
-        fallbackUsed=False,
-        fallbackReason=None,
+        isFallback=bool(fallback_reason),
+        fallbackUsed=bool(fallback_reason),
+        fallbackReason=fallback_reason,
         requestId=request_id,
         features=features.to_dict() if features.valid else None,
         is_uncertain=is_uncertain,
@@ -942,61 +987,248 @@ def classify_local(
     )
 
 
+MOBILENET_REAL_DATA_CONFIDENCE_THRESHOLD = 0.70
+
+
+def check_prediction_reliability(
+    mb_cat: str,
+    mb_conf: float,
+    image_path: str,
+    description: str,
+    real_classes: List[str]
+) -> Tuple[bool, Optional[str]]:
+    """
+    Evaluates whether a MobileNetV3 prediction is reliable and supported by verified training data.
+    Enforces requirements:
+    1. The predicted category must be in real_classes (classes with verified real training data).
+    2. Confidence must meet empirical threshold (0.70).
+    3. Category-specific sanity check:
+       Inspects description keywords and visual features for conflicting civic indicators.
+       If clear conflicting evidence exists, the prediction is flagged for review and routed to fallback.
+    """
+    if mb_cat not in real_classes:
+        return False, (
+            f"MobileNetV3 predicted '{mb_cat}' (confidence: {mb_conf:.3f}), but model checkpoint "
+            f"was trained on real data only for {real_classes}. Predictions for other classes cannot be certified without real training data."
+        )
+
+    if mb_conf < MOBILENET_REAL_DATA_CONFIDENCE_THRESHOLD:
+        return False, (
+            f"MobileNetV3 predicted '{mb_cat}', but confidence ({mb_conf:.3f}) was below "
+            f"the reliability threshold ({MOBILENET_REAL_DATA_CONFIDENCE_THRESHOLD:.2f}). Flagged for review."
+        )
+
+    # Sanity check against conflicting indicators
+    text_clean = clean_text(description).lower()
+
+    has_streetlight_kw = any(w in text_clean for w in ["street light", "streetlight", "lamp post", "street lamp", "lighting", "dark street", "flickering light", "broken pole", "light pole"])
+    has_road_kw = any(w in text_clean for w in ["pothole", "potholes", "crater", "craters", "damaged road", "asphalt", "broken road", "footpath", "sidewalk", "speed breaker"])
+    has_waste_kw = any(w in text_clean for w in ["garbage", "trash", "waste", "dustbin", "litter", "rubbish", "dump", "debris", "plastic"])
+    has_drain_kw = any(w in text_clean for w in ["drain", "drainage", "sewer", "sewage", "gutter", "waterlogging", "storm drain", "manhole"])
+    has_water_kw = any(w in text_clean for w in ["pipeline", "pipe leak", "water pipe", "burst pipe", "water supply", "drinking water", "no water", "water leakage"])
+
+    feats = extract_image_features(image_path)
+    conflicts = []
+
+    # Check for direct contradictions in user description
+    if mb_cat == "Roads":
+        if has_waste_kw:
+            conflicts.append("Waste Management")
+        if has_streetlight_kw:
+            conflicts.append("Street Light")
+        if has_drain_kw:
+            conflicts.append("Drainage")
+        if has_water_kw:
+            conflicts.append("Water Supply")
+    elif mb_cat == "Waste Management":
+        if has_road_kw:
+            conflicts.append("Roads")
+        if has_streetlight_kw:
+            conflicts.append("Street Light")
+        if has_drain_kw:
+            conflicts.append("Drainage")
+        if has_water_kw:
+            conflicts.append("Water Supply")
+    elif mb_cat == "Street Light":
+        if has_road_kw:
+            conflicts.append("Roads")
+        if has_waste_kw:
+            conflicts.append("Waste Management")
+        if has_drain_kw:
+            conflicts.append("Drainage")
+        if has_water_kw:
+            conflicts.append("Water Supply")
+
+    # Visual conflict check: night street lighting with luminaire fixture when predicting non-streetlight
+    if mb_cat != "Street Light" and (has_streetlight_kw and feats.has_localized_light_source) and "Street Light" not in conflicts:
+        conflicts.append("Street Light")
+
+    if conflicts:
+        return False, (
+            f"MobileNetV3 predicted '{mb_cat}' (confidence: {mb_conf:.3f}), but input evidence "
+            f"indicates conflicting civic indicators ({', '.join(conflicts)}). "
+            f"Flagged for review; falling back to heuristic vision."
+        )
+
+    return True, None
+
+
 def classify_complaint(
     image_path: Optional[str] = None,
     description: str = "",
-    use_llm: bool = True,
+    use_llm: bool = False,
     request_id: Optional[str] = None,
-    run_diagnostic: bool = False
+    run_diagnostic: bool = False,
+    force_heuristic: bool = False,
+    use_gemini: bool = False
 ) -> Dict[str, Any]:
     """
     Main civic classification orchestrator:
-    Priority 1 (PRIMARY): Gemini Vision is the primary classification engine
-    for every image-based civic complaint.
-    - Sends actual image bytes and structured prompt to Gemini.
-    - Classifies strictly into the 6 supported civic categories:
-      Drainage, Other, Roads, Street Light, Waste Management, Water Supply.
-    - Returns structured JSON with category, subcategory, department, priority,
-      description, reason, and needsReview.
-    - If Gemini fails or errors, explicitly falls back to rule-based classification
-      (with isFallback: True, fallbackUsed: True, predictionSource: 'rules').
-    - MobileNetV3 and heuristic vision are NOT the primary engines.
-    - MobileNetV3 is available ONLY as an optional diagnostic via run_diagnostic=True.
-    """
-    has_image = bool(image_path and os.path.exists(image_path) and os.path.getsize(image_path) > 0)
+    Priority 1 (PRIMARY): Fine-tuned MobileNetV3 Small computer vision model.
+    - Evaluated first for every image-based civic complaint.
+    - Employs a strict reliability policy: predictions are accepted ONLY when:
+      1) The predicted category is backed by verified real training data (Waste Management, Roads, Street Light).
+      2) The prediction confidence meets or exceeds the empirical threshold (0.70).
+      3) 'Do not treat softmax confidence alone as proof of correctness':
+         Image and description are sanity checked for conflicting non-category evidence.
+    - If MobileNetV3 cannot provide a reliable prediction (or is unavailable),
+      the system explicitly routes to Heuristic Vision as the secondary engine.
 
-    if has_image:
-        result = classify_with_gemini(
+    Priority 2 (FALLBACK): Calibrated Heuristic Computer Vision.
+    - Analyzes visual cues (asphalt textures, garbage clusters, water/sky color ratios, etc.).
+    - If heuristic vision is uncertain or tied, returns an honest review-required payload.
+
+    Priority 3 (OPTIONAL / DIAGNOSTIC): Gemini Vision.
+    - NEVER invoked by default. Only called if explicitly requested via use_gemini=True.
+    """
+    # 0. Explicit Gemini override (only when explicitly requested)
+    if use_gemini and os.environ.get("GEMINI_API_KEY") and GENAI_AVAILABLE:
+        return classify_with_gemini(
             image_path=image_path,
             description=description,
             request_id=request_id
         )
 
-        if run_diagnostic:
+    has_image = bool(image_path and os.path.exists(image_path) and os.path.getsize(image_path) > 0)
+
+    if has_image:
+        mb_cat = None
+        mb_conf = 0.0
+        top_preds = []
+        mb_lat = 0.0
+        fallback_reason = None
+        real_classes = getattr(MOBILENET_LOADER, "real_data_classes", ["Waste Management", "Roads", "Street Light"]) or ["Waste Management", "Roads", "Street Light"]
+
+        # Step 1: Attempt Primary MobileNetV3 Model
+        if not force_heuristic and MOBILENET_LOADER.is_loaded and MOBILENET_LOADER.model is not None:
             try:
-                mb_cat, mb_conf, top_preds, mb_lat = MOBILENET_LOADER.predict(image_path)
-                result["diagnostics"] = {
-                    "mobilenet": {
-                        "category": mb_cat,
-                        "confidence": mb_conf,
-                        "top_predictions": top_preds,
-                        "inference_time_ms": mb_lat,
-                        "overrode_primary": False
-                    }
-                }
-            except Exception as diag_err:
-                result["diagnostics"] = {"mobilenet_error": str(diag_err)}
+                mb_cat, mb_conf, top_preds, mb_lat = MOBILENET_LOADER.predict(image_path, top_k=6)
 
-        return result
+                # Reliability Policy Evaluation
+                is_reliable, reject_reason = check_prediction_reliability(
+                    mb_cat=mb_cat,
+                    mb_conf=mb_conf,
+                    image_path=image_path,
+                    description=description,
+                    real_classes=real_classes
+                )
 
-    # Pure text complaint (no image)
-    if os.environ.get("GEMINI_API_KEY") and GENAI_AVAILABLE and use_llm:
-        return classify_with_gemini(
-            image_path=None,
+                if is_reliable:
+                    # ACCEPTED: Supported by real training data, meets confidence threshold, no conflicts
+                    clean_desc = clean_text(description)
+                    cat_data = CIVIC_TAXONOMY.get(mb_cat, CIVIC_TAXONOMY.get("Waste Management", {}))
+                    is_hazard, hazard_priority, matched_hazards = detect_hazard_keywords(clean_desc)
+                    default_sub = "Street Light Damaged" if mb_cat == "Street Light" else ("Pothole" if mb_cat == "Roads" else ("Garbage Dump" if mb_cat == "Waste Management" else "Other"))
+                    subcategories = cat_data.get("subcategories", [default_sub])
+                    selected_sub = default_sub
+                    if clean_desc:
+                        for sub in subcategories:
+                            sub_tokens = [w.lower() for w in re.findall(r"\w+", sub)]
+                            if any(w in clean_desc for w in sub_tokens if len(w) > 3):
+                                selected_sub = sub
+                                break
+                    else:
+                        selected_sub = subcategories[0] if subcategories else default_sub
+
+                    priority = hazard_priority if is_hazard else cat_data.get("default_priority", PRIORITY_MEDIUM)
+                    reason = (
+                        f"Classified as {mb_cat} with high confidence ({mb_conf * 100:.1f}%) "
+                        f"by fine-tuned MobileNetV3 Small (trained on verified real imagery)."
+                    )
+                    if is_hazard:
+                        reason += f" Priority escalated to {priority} due to critical hazard indicators: [{', '.join(matched_hazards)}]."
+
+                    diag_payload = None
+                    if run_diagnostic:
+                        diag_payload = {
+                            "mobilenet": {
+                                "category": mb_cat,
+                                "confidence": round(mb_conf, 4),
+                                "top_predictions": top_preds,
+                                "inference_time_ms": mb_lat,
+                                "trained_on_real_data": True,
+                                "real_data_classes": real_classes,
+                                "checkpoint_path": MOBILENET_LOADER.weights_path,
+                                "checkpoint_version": MOBILENET_LOADER.version
+                            }
+                        }
+
+                    res = ClassificationResult(
+                        category=mb_cat,
+                        subcategory=selected_sub,
+                        priority=priority,
+                        confidence=round(mb_conf, 4),
+                        reason=reason,
+                        department=get_department_for_category(mb_cat),
+                        description=description or f"Reported {mb_cat} issue",
+                        needsReview=False,
+                        model=MOBILENET_LOADER.model_name,
+                        modelVersion=MOBILENET_LOADER.version,
+                        source="mobilenet",
+                        predictionSource="mobilenet",
+                        predictedCategory=mb_cat,
+                        predictedSubcategory=selected_sub,
+                        modelLoaded=True,
+                        isFallback=False,
+                        fallbackUsed=False,
+                        fallbackReason=None,
+                        requestId=request_id,
+                        commit_id=get_git_commit_id(),
+                        diagnostics=diag_payload
+                    )
+                    res_dict = res.to_dict()
+                    res_dict["latency_ms"] = mb_lat
+                    res_dict["topPredictions"] = top_preds
+                    return res_dict
+
+                else:
+                    fallback_reason = reject_reason
+            except Exception as exc:
+                fallback_reason = f"MobileNetV3 inference exception: {str(exc)}."
+        else:
+            fallback_reason = (
+                f"MobileNetV3 model is not loaded: {MOBILENET_LOADER.load_error or 'Weights missing or unverified'}."
+            )
+
+        # Step 2: Fallback to Heuristic Vision
+        heuristic_res = classify_heuristic_vision(
+            image_path=image_path,
             description=description,
-            request_id=request_id
+            request_id=request_id,
+            include_diagnostics=run_diagnostic,
+            fallback_reason=fallback_reason
         )
+        heuristic_res["primaryModelAttempted"] = "mobilenet_v3"
+        heuristic_res["primaryModelDiagnostics"] = {
+            "predictedCategory": mb_cat,
+            "confidence": round(mb_conf, 4) if mb_conf else 0.0,
+            "topPredictions": top_preds,
+            "realDataClasses": real_classes,
+            "reason": fallback_reason
+        }
+        return heuristic_res
 
+    # Step 3: Pure text complaint (no image)
     return classify_text_heuristic(
         description=description,
         request_id=request_id,

@@ -1,0 +1,39 @@
+{
+  "evaluation_timestamp": "2026-10-28T09:27:57.433268Z",
+  "held_out_test_set_size": 29,
+  "target_class": "Waste Management",
+  "baseline_model": {
+    "checkpoint": "D:\\safe\\smart-city\\ai\\models\\best_model.pth",
+    "correct_waste_predictions": 15,
+    "accuracy_recall_on_real_waste": 0.5172,
+    "mean_confidence": 0.4292,
+    "predictions_breakdown": {
+      "Drainage": 5,
+      "Other": 7,
+      "Roads": 2,
+      "Street Light": 0,
+      "Waste Management": 15,
+      "Water Supply": 0
+    }
+  },
+  "experimental_model": {
+    "checkpoint": "D:\\safe\\smart-city\\ai\\models_real_data_experiment\\best_model.pth",
+    "correct_waste_predictions": 29,
+    "accuracy_recall_on_real_waste": 1.0,
+    "mean_confidence": 1.0,
+    "predictions_breakdown": {
+      "Drainage": 0,
+      "Other": 0,
+      "Roads": 0,
+      "Street Light": 0,
+      "Waste Management": 29,
+      "Water Supply": 0
+    }
+  },
+  "comparison_summary": {
+    "recall_improvement": 0.4828,
+    "recall_improvement_pct": "+48.28%",
+    "confidence_delta": 0.5708
+  },
+  "methodological_limitations": "Because real labeled images are currently available only for Waste Management, this evaluation strictly measures Waste Management recall and classification sensitivity on held-out real data. It cannot validate full 6-class precision, false positive rates, or macro-F1 across Drainage, Other, Roads, Street Light, and Water Supply until real labeled datasets for those 5 categories are added."
+}
