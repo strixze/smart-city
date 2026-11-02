@@ -164,7 +164,7 @@ EMERGENCY_KEYWORDS = [
 
 @dataclass
 class ImageFeatures:
-    """Extracted visual signals from complaint image."""
+    """Extracted visual signals and statistical metrics from complaint image."""
     valid: bool = False
     is_dark: bool = False
     is_greyish: bool = False
@@ -173,6 +173,25 @@ class ImageFeatures:
     brightness: float = 0.0
     contrast: float = 0.0
     aspect_ratio: float = 1.0
+    width: int = 0
+    height: int = 0
+    format: Optional[str] = None
+    brightness_std: float = 0.0
+    dynamic_range: float = 0.0
+    p10: float = 0.0
+    p99: float = 0.0
+    hotspot_ratio: float = 1.0
+    sharpness: float = 0.0
+    saturation_mean: float = 0.0
+    color_divergence: float = 0.0
+    has_localized_light_source: bool = False
+    is_murky_liquid: bool = False
+    is_asphalt: bool = False
+    is_high_clutter: bool = False
+    is_water_pipe: bool = False
+    is_blurry: bool = False
+    is_flat: bool = False
+    is_tiny: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -186,10 +205,12 @@ class ClassificationResult:
     confidence: float
     reason: str
     department: str
-    model: str = "SmartCity-CivicVision-v1.0"
+    description: Optional[str] = None
+    needsReview: bool = False
+    model: str = "SmartCity-HeuristicVision-v1.0"
     isFallback: bool = False
-    source: str = "local-heuristic-vision"
-    predictionSource: str = "rules"
+    source: str = "heuristic_vision"
+    predictionSource: str = "heuristic_vision"
     predictedCategory: str = ""
     predictedSubcategory: str = ""
     modelLoaded: bool = False
@@ -198,18 +219,48 @@ class ClassificationResult:
     fallbackReason: Optional[str] = None
     requestId: Optional[str] = None
     features: Optional[Dict[str, Any]] = None
+    is_uncertain: bool = False
+    is_tied: bool = False
+    tied_categories: List[str] = field(default_factory=list)
+    visual_clues: List[str] = field(default_factory=list)
+    category_scores: Dict[str, float] = field(default_factory=dict)
+    commit_id: Optional[str] = None
+    diagnostics: Optional[Dict[str, Any]] = None
 
     def __post_init__(self):
         if not self.predictedCategory:
             self.predictedCategory = self.category
         if not self.predictedSubcategory:
             self.predictedSubcategory = self.subcategory
+        if not self.description:
+            self.description = self.reason
 
     def to_dict(self) -> Dict[str, Any]:
         data = asdict(self)
         if self.features is None:
             data.pop("features", None)
+        if self.diagnostics is None:
+            data.pop("diagnostics", None)
+        # CamelCase aliases for API consumer consistency
+        data["visualClues"] = self.visual_clues
+        data["categoryScores"] = self.category_scores
+        data["isUncertain"] = self.is_uncertain
+        data["isTied"] = self.is_tied
+        data["tiedCategories"] = self.tied_categories
+        data["needsReview"] = bool(self.needsReview)
+        data["description"] = self.description or self.reason
+        if self.commit_id:
+            data["commitId"] = self.commit_id
         return data
+
+SUPPORTED_CIVIC_CATEGORIES: List[str] = [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+]
 
 def validate_category(category: str) -> bool:
     """Checks whether a category exists in master taxonomy."""

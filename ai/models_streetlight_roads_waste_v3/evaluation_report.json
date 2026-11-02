@@ -1,0 +1,130 @@
+{
+  "evaluation_timestamp": "2026-11-01T14:53:57.666837Z",
+  "new_model_checkpoint": "d:\\safe\\smart-city\\ai\\models_streetlight_roads_waste_v3\\best_model.pth",
+  "base_v2_checkpoint": "d:\\safe\\smart-city\\ai\\models_roads_waste_v2\\best_model.pth",
+  "test_counts": {
+    "roads": 32,
+    "street_light": 23,
+    "waste_management": 29,
+    "total_test": 84
+  },
+  "overall_test_metrics": {
+    "accuracy": 0.9524,
+    "accuracy_pct": "95.24%",
+    "macro_precision": 0.9549,
+    "macro_recall": 0.9583,
+    "macro_f1": 0.9543,
+    "mean_confidence": 0.8992
+  },
+  "per_class_metrics": {
+    "Roads": {
+      "class_index": 2,
+      "test_support": 32,
+      "accuracy": 0.875,
+      "precision": 1.0,
+      "recall": 0.875,
+      "f1_score": 0.9333,
+      "mean_confidence": 0.8825
+    },
+    "Street Light": {
+      "class_index": 3,
+      "test_support": 23,
+      "accuracy": 1.0,
+      "precision": 0.9583,
+      "recall": 1.0,
+      "f1_score": 0.9787,
+      "mean_confidence": 0.8801
+    },
+    "Waste Management": {
+      "class_index": 4,
+      "test_support": 29,
+      "accuracy": 1.0,
+      "precision": 0.9062,
+      "recall": 1.0,
+      "f1_score": 0.9508,
+      "mean_confidence": 0.9328
+    }
+  },
+  "confusion_matrix_6class": {
+    "classes": [
+      "Drainage",
+      "Other",
+      "Roads",
+      "Street Light",
+      "Waste Management",
+      "Water Supply"
+    ],
+    "matrix": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        28,
+        1,
+        3,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        23,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        29,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "comparison_with_previous_v2_model": {
+    "roads_accuracy_previous": 0.9062,
+    "roads_accuracy_new": 0.875,
+    "roads_delta": -0.0312,
+    "roads_performance_preserved": true,
+    "waste_management_accuracy_previous": 0.9655,
+    "waste_management_accuracy_new": 1.0,
+    "waste_management_delta": 0.0345,
+    "waste_performance_preserved": true,
+    "street_light_accuracy_previous": 0.0,
+    "street_light_accuracy_new": 1.0,
+    "street_light_improvement_delta": 1.0,
+    "street_light_classification_improved": true
+  },
+  "unsupported_categories_limitations": {
+    "classes_without_real_training_data": [
+      "Drainage",
+      "Other",
+      "Water Supply"
+    ],
+    "explanation": "Real labeled datasets are available only for Roads (205 images), Street Light (150 images), and Waste Management (189 images). The 6-class output layer contract is preserved, but the model has NOT learned the remaining three classes (Drainage, Other, Water Supply) from real imagery. Any complaint classified outside the verified real classes continues to use the calibrated heuristic vision fallback."
+  }
+}

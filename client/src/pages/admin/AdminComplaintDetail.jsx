@@ -307,12 +307,10 @@ export const AdminComplaintDetail = () => {
           <div>
             <p className="text-[#64748B] font-semibold uppercase text-[10px]">Prediction Source</p>
             <p className="font-bold text-[#0D9488] mt-0.5">
-              {complaint.predictionSource === "mobilenet"
-                ? "MobileNetV3 (PyTorch)"
-                : complaint.predictionSource === "gemini_vision"
-                ? "Gemini Vision AI"
+              {complaint.predictionSource === "gemini_vision" || complaint.predictionSource === "mobilenet"
+                ? "Visual AI Analysis"
                 : complaint.predictionSource === "rules"
-                ? "Rule-Based Heuristic"
+                ? "Rule-Based System"
                 : complaint.predictionSource === "manual"
                 ? "Manual Citizen Override"
                 : "Auto-Assigned"}
@@ -323,7 +321,7 @@ export const AdminComplaintDetail = () => {
         {/* Prediction Pipeline Diagnostic Metadata */}
         <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-[#64748B] flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-3">
-            <span>Model: <strong className="text-slate-800">{complaint.modelLoaded ? (complaint.modelVersion || "mobilenet_v3_small_v1") : "Inactive"}</strong></span>
+            <span>Engine: <strong className="text-slate-800">{complaint.modelLoaded ? "Active" : "Inactive"}</strong></span>
             <span>Fallback: <strong className={complaint.fallbackUsed ? "text-amber-700" : "text-emerald-700"}>{complaint.fallbackUsed ? (complaint.fallbackReason || "Yes") : "No"}</strong></span>
           </div>
           {complaint.requestId && (
