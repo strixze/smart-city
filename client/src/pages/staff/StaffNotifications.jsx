@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import StaffLayout from "../../components/staff/StaffLayout";
 import PushNotificationBanner from "../../components/PushNotificationBanner";
 import { useNotification } from "../../context/notificationContext";
@@ -20,6 +21,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 export const StaffNotifications = () => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState("all"); // 'all' | 'unread'
   const {
     notifications,
@@ -84,15 +86,15 @@ export const StaffNotifications = () => {
 
   return (
     <StaffLayout
-      title="Alerts & Assignments"
-      subtitle="Real-time field dispatches, status updates, and priority escalations"
+      title={t("staff.notifications.title", "Alerts & Assignments")}
+      subtitle={t("staff.notifications.subtitle", "Real-time field dispatches, status updates, and priority escalations")}
       actions={
         notifications.some((n) => !n.isRead) ? (
           <button
             onClick={handleMarkAll}
             className="px-3.5 py-1.5 rounded-lg bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-xs font-semibold text-[#0F172A] flex items-center gap-1.5 shadow-2xs transition-colors"
           >
-            <Check className="w-3.5 h-3.5 text-[#0D9488]" /> Mark All Read
+            <Check className="w-3.5 h-3.5 text-[#0D9488]" /> {t("citizen.notifications.markAllRead", "Mark All Read")}
           </button>
         ) : null
       }
@@ -105,10 +107,10 @@ export const StaffNotifications = () => {
           {/* Header & Tabs */}
           <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-[#0F172A]">All Field Alerts</span>
+              <span className="text-sm font-bold text-[#0F172A]">{t("staff.notifications.title", "All Field Alerts")}</span>
               {unreadCount > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#F0FDFA] text-[#0D9488] border border-[#CCFBF1]">
-                  {unreadCount} unread
+                  {unreadCount} {t("citizen.notifications.unreadTab", "unread")}
                 </span>
               )}
             </div>
@@ -123,7 +125,7 @@ export const StaffNotifications = () => {
                     : "text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                All ({notifications.length})
+                {t("common.all", "All")} ({notifications.length})
               </button>
               <button
                 type="button"
@@ -134,7 +136,7 @@ export const StaffNotifications = () => {
                     : "text-[#64748B] hover:text-[#0D9488]"
                 }`}
               >
-                Unread ({unreadCount})
+                {t("citizen.notifications.unreadTab", "Unread")} ({unreadCount})
               </button>
             </div>
           </div>
@@ -150,12 +152,12 @@ export const StaffNotifications = () => {
                 <Inbox className="w-6 h-6" />
               </div>
               <p className="text-sm font-bold text-[#0F172A]">
-                {filter === "unread" ? "No unread alerts" : "No alerts recorded"}
+                {filter === "unread" ? t("citizen.notifications.noUnread", "No unread alerts") : t("citizen.notifications.noNotifications", "No alerts recorded")}
               </p>
               <p className="text-xs text-[#64748B] mt-1 max-w-sm mx-auto">
                 {filter === "unread"
-                  ? "All dispatch notifications have been acknowledged."
-                  : "Field task assignments and municipal alerts will appear here in real time."}
+                  ? t("citizen.notifications.allCaughtUp", "All dispatch notifications have been acknowledged.")
+                  : t("citizen.notifications.noNotificationsSub", "Field task assignments and municipal alerts will appear here in real time.")}
               </p>
             </div>
           ) : (
@@ -198,7 +200,7 @@ export const StaffNotifications = () => {
                           onClick={() => handleMarkOne(n._id)}
                           className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#F8FAFC] text-xs font-semibold text-[#0D9488] border border-[#E2E8F0] hover:border-[#0D9488]/40 flex items-center gap-1 transition-all shadow-2xs whitespace-nowrap"
                         >
-                          Inspect Task <ArrowRight className="w-3 h-3" />
+                          {t("staff.tasks.viewTask", "Inspect Task")} <ArrowRight className="w-3 h-3" />
                         </Link>
                       )}
                     </div>

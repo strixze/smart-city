@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContex";
 import { useNotification } from "../../context/notificationContext";
+import LanguageSwitcher from "../LanguageSwitcher";
 import {
   Menu,
   Search,
@@ -15,13 +17,16 @@ import {
 import dayjs from "dayjs";
 
 export const CitizenHeader = ({
-  title = "Dashboard",
-  subtitle = "Track your civic complaints and help build a better city",
+  title,
+  subtitle,
   onToggleSidebar,
   searchQuery,
   onSearchChange,
   actions = null
 }) => {
+  const { t } = useTranslation();
+  const headerTitle = title || t("nav.dashboard");
+  const headerSubtitle = subtitle !== undefined ? subtitle : t("citizen.dashboard.subtitle");
   const { user, logout } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotification();
   const [showNotifMenu, setShowNotifMenu] = useState(false);
@@ -81,18 +86,22 @@ export const CitizenHeader = ({
 
         <div className="min-w-0">
           <h1 className="text-lg sm:text-xl font-extrabold text-[#0F172A] tracking-tight truncate">
-            {title}
+            {headerTitle}
           </h1>
-          {subtitle && (
+          {headerSubtitle && (
             <p className="text-xs text-[#64748B] mt-0.5 truncate hidden sm:block">
-              {subtitle}
+              {headerSubtitle}
             </p>
           )}
         </div>
       </div>
 
-      {/* Right Controls: Search, Notifications, Profile */}
-      <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
+      {/* Right Controls: Language, Search, Notifications, Profile */}
+      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        {/* Language Switcher */}
+        <LanguageSwitcher variant="segmented" className="hidden sm:inline-flex" />
+        <LanguageSwitcher variant="compact" className="sm:hidden" />
+
         {/* Search input (if onSearchChange provided) */}
         {onSearchChange !== undefined && (
           <div className="relative hidden md:block w-56 lg:w-64">
@@ -100,7 +109,7 @@ export const CitizenHeader = ({
               type="text"
               value={searchQuery || ""}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search complaints..."
+              placeholder={t("citizen.complaints.searchPlaceholder") || "Search complaints..."}
               className="w-full pl-9 pr-4 py-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0D9488] focus:bg-white transition-colors"
             />
             <Search className="w-3.5 h-3.5 text-[#94A3B8] absolute left-3 top-2.5" />
@@ -113,7 +122,7 @@ export const CitizenHeader = ({
             type="button"
             onClick={() => setShowNotifMenu(!showNotifMenu)}
             className="relative p-2 bg-white border border-[#E2E8F0] rounded-xl text-[#64748B] hover:text-[#0F172A] hover:border-[#CBD5E1] shadow-2xs transition-colors"
-            title="Notifications"
+            title={t("nav.notifications")}
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
@@ -128,9 +137,9 @@ export const CitizenHeader = ({
             <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-[#E2E8F0] rounded-2xl shadow-xl z-50 overflow-hidden text-[#0F172A]">
               <div className="p-3.5 px-4 border-b border-[#F1F5F9] flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-bold text-[#0F172A]">My Alerts</h4>
+                  <h4 className="text-xs font-bold text-[#0F172A]">{t("citizen.notifications.title")}</h4>
                   <p className="text-[11px] text-[#64748B]">
-                    {unreadCount} unread update{unreadCount === 1 ? "" : "s"}
+                    {unreadCount} {t("citizen.notifications.unread", "unread")}
                   </p>
                 </div>
                 {unreadCount > 0 && (
@@ -139,7 +148,7 @@ export const CitizenHeader = ({
                     onClick={markAllAsRead}
                     className="text-[11px] font-semibold text-[#0D9488] hover:underline flex items-center gap-1"
                   >
-                    <Check className="w-3 h-3" /> Mark all read
+                    <Check className="w-3 h-3" /> {t("citizen.notifications.markAllRead")}
                   </button>
                 )}
               </div>
@@ -147,7 +156,7 @@ export const CitizenHeader = ({
               <div className="max-h-72 overflow-y-auto divide-y divide-[#F1F5F9]">
                 {notifications.length === 0 ? (
                   <div className="p-8 text-center text-xs text-[#94A3B8]">
-                    No notifications recorded.
+                    {t("citizen.notifications.noNotifications")}
                   </div>
                 ) : (
                   notifications.slice(0, 6).map((n) => (
@@ -187,7 +196,7 @@ export const CitizenHeader = ({
                   onClick={() => setShowNotifMenu(false)}
                   className="text-xs font-semibold text-[#0D9488] hover:underline inline-flex items-center gap-1"
                 >
-                  View all notifications <ChevronRight className="w-3 h-3" />
+                  {t("citizen.dashboard.viewAll")} <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
             </div>
@@ -231,7 +240,7 @@ export const CitizenHeader = ({
                 className="flex items-center gap-2 px-3.5 py-2 hover:bg-[#F8FAFC] text-[#334155]"
               >
                 <User className="w-3.5 h-3.5" />
-                <span>My Profile</span>
+                <span>{t("nav.profile")}</span>
               </Link>
               <button
                 type="button"
@@ -239,7 +248,7 @@ export const CitizenHeader = ({
                 className="w-full flex items-center gap-2 px-3.5 py-2 hover:bg-rose-50 text-rose-600 text-left"
               >
                 <LogOut className="w-3.5 h-3.5" />
-                <span>Logout</span>
+                <span>{t("common.logout")}</span>
               </button>
             </div>
           )}

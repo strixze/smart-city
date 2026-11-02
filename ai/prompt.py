@@ -122,10 +122,10 @@ def build_civic_analysis_prompt(description: str = "", has_image: bool = False) 
 \"\"\"{citizen_desc}\"\"\"
 
 ### Analysis Instructions:
-1. {'Carefully examine the visual evidence in the image and cross-reference with any citizen description.' if has_image else 'Analyze the citizen grievance description.'}
-2. Select the `category` strictly from the 6 supported categories:
+1. {'Carefully examine the visual evidence in the image and cross-reference with any citizen description.' if has_image else 'Analyze the citizen grievance description.'} Note: The citizen description may be in English, Marathi (मराठी in Devanagari), or Marathi written phonetically. Accurately understand grievances reported in either language.
+2. Select the `category` strictly from the 6 supported canonical English categories:
    ["Drainage", "Other", "Roads", "Street Light", "Waste Management", "Water Supply"].
-3. Select an appropriate `subcategory` under that category.
+3. Select an appropriate `subcategory` under that category (must be in English).
 4. Assign the corresponding municipal `department`.
 5. Set `priority` based on severity and life-safety impact ("LOW", "MEDIUM", "HIGH", or "CRITICAL").
 6. Provide an objective, clear 1-2 sentence `description` summarizing the civic defect observed.

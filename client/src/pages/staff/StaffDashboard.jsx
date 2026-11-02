@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContex";
 import { useNotification } from "../../context/notificationContext";
 import { staffApi, getImageUrl } from "../../api/client";
@@ -7,6 +8,7 @@ import StaffLayout from "../../components/staff/StaffLayout";
 import StaffTaskMap from "../../components/staff/StaffTaskMap";
 import StatusBadge from "../../components/StatusBadge";
 import PriorityBadge from "../../components/PriorityBadge";
+import { getLocalizedCategory, getLocalizedStatus, formatDate } from "../../utils/formatters";
 import {
   ClipboardList,
   Clock,
@@ -35,6 +37,7 @@ dayjs.extend(relativeTime);
 export const StaffDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { notifications } = useNotification();
 
   const [loading, setLoading] = useState(true);
@@ -118,8 +121,8 @@ export const StaffDashboard = () => {
 
   return (
     <StaffLayout
-      title="Field Operations"
-      subtitle="Manage your assigned tasks, inspect issues, and submit completion proof"
+      title={t("staff.dashboard.title", "Field Operations")}
+      subtitle={t("staff.dashboard.subtitle", "Manage your assigned tasks, inspect issues, and submit completion proof")}
     >
       <div className="space-y-6">
         {/* WELCOME SECTION */}
@@ -128,7 +131,7 @@ export const StaffDashboard = () => {
           <div className="space-y-3 z-10 max-w-lg">
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] tracking-tight">
-                Welcome back, {firstName}!
+                {t("citizen.dashboard.greeting", "Welcome back")}, {firstName}!
               </h2>
               <p className="text-xs sm:text-sm text-[#475569] mt-1 leading-relaxed">
                 You have {data.stats.assigned || pendingCount || 3} assigned tasks today. Keep the city clean and safe.
@@ -138,7 +141,7 @@ export const StaffDashboard = () => {
               to="/staff/tasks"
               className="inline-flex items-center gap-2 px-4 py-2 bg-[#0D9488] hover:bg-[#0F766E] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors"
             >
-              <Send className="w-3.5 h-3.5 rotate-45" /> View My Tasks
+              <Send className="w-3.5 h-3.5 rotate-45" /> {t("nav.tasks", "View My Tasks")}
             </Link>
           </div>
 
@@ -215,9 +218,9 @@ export const StaffDashboard = () => {
               <Trophy className="w-5 h-5 text-amber-200" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-[#0F172A]">Your Work Matters</h4>
+              <h4 className="text-xs font-bold text-[#0F172A]">{t("staff.dashboard.yourWorkMatters", "Your Work Matters")}</h4>
               <p className="text-[11px] text-[#64748B] mt-0.5 leading-snug">
-                Cleaner neighborhoods create healthier communities.
+                {t("staff.dashboard.cleanerNeighborhoods", "Cleaner neighborhoods create healthier communities.")}
               </p>
             </div>
           </div>
@@ -235,11 +238,11 @@ export const StaffDashboard = () => {
                 <ClipboardList className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#64748B]">Assigned Tasks</p>
+                <p className="text-xs font-bold text-[#64748B]">{t("staff.dashboard.assignedToMe", "Assigned Tasks")}</p>
                 <p className="text-2xl font-extrabold text-[#0F172A] tracking-tight mt-0.5">
                   {data.stats.assigned || pendingCount || 3}
                 </p>
-                <p className="text-[11px] text-[#94A3B8]">Pending field visit</p>
+                <p className="text-[11px] text-[#94A3B8]">{t("staff.dashboard.pendingFieldVisit", "Pending field visit")}</p>
               </div>
             </div>
             <div className="w-7 h-7 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform flex-shrink-0">
@@ -257,11 +260,11 @@ export const StaffDashboard = () => {
                 <Clock className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#64748B]">In Progress</p>
+                <p className="text-xs font-bold text-[#64748B]">{t("status.IN_PROGRESS", "In Progress")}</p>
                 <p className="text-2xl font-extrabold text-[#0F172A] tracking-tight mt-0.5">
                   {data.stats.inProgress || inProgressCount || 2}
                 </p>
-                <p className="text-[11px] text-[#94A3B8]">Active fieldwork</p>
+                <p className="text-[11px] text-[#94A3B8]">{t("staff.dashboard.activeFieldwork", "Active fieldwork")}</p>
               </div>
             </div>
             <div className="w-7 h-7 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform flex-shrink-0">
@@ -279,11 +282,11 @@ export const StaffDashboard = () => {
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#64748B]">Completed</p>
+                <p className="text-xs font-bold text-[#64748B]">{t("status.RESOLVED", "Completed")}</p>
                 <p className="text-2xl font-extrabold text-[#0F172A] tracking-tight mt-0.5">
                   {data.stats.resolved || resolvedCount || 18}
                 </p>
-                <p className="text-[11px] text-[#94A3B8]">This month</p>
+                <p className="text-[11px] text-[#94A3B8]">{t("staff.dashboard.thisMonth", "This month")}</p>
               </div>
             </div>
             <div className="w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform flex-shrink-0">
@@ -301,11 +304,11 @@ export const StaffDashboard = () => {
                 <AlertCircle className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#64748B]">Overdue</p>
+                <p className="text-xs font-bold text-[#64748B]">{t("staff.dashboard.urgentAttention", "Overdue")}</p>
                 <p className="text-2xl font-extrabold text-[#0F172A] tracking-tight mt-0.5">
                   {data.stats.highPriority || 2}
                 </p>
-                <p className="text-[11px] text-[#94A3B8]">Past due date</p>
+                <p className="text-[11px] text-[#94A3B8]">{t("staff.dashboard.pastDueDate", "Past due date")}</p>
               </div>
             </div>
             <div className="w-7 h-7 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center group-hover:translate-x-0.5 transition-transform flex-shrink-0">
@@ -325,9 +328,9 @@ export const StaffDashboard = () => {
                   <ClipboardList className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#0F172A]">My Assigned Tasks</h3>
+                  <h3 className="text-sm font-bold text-[#0F172A]">{t("staff.tasks.title", "My Assigned Tasks")}</h3>
                   <p className="text-[11px] text-[#64748B]">
-                    Tasks allocated to you for inspection and resolution
+                    {t("staff.dashboard.tasksAllocated", "Tasks allocated to you for inspection and resolution")}
                   </p>
                 </div>
               </div>
@@ -343,7 +346,7 @@ export const StaffDashboard = () => {
                       setSearchQuery(e.target.value);
                       setCurrentPage(1);
                     }}
-                    placeholder="Search tasks..."
+                    placeholder={t("staff.tasks.searchPlaceholder", "Search tasks...")}
                     className="w-40 sm:w-52 pl-8 pr-3 py-1.5 text-xs bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0D9488]"
                   />
                 </div>
@@ -371,7 +374,7 @@ export const StaffDashboard = () => {
                     : "border-transparent text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                All ({tasks.length})
+                {t("common.all", "All")} ({tasks.length})
               </button>
               <button
                 type="button"
@@ -385,7 +388,7 @@ export const StaffDashboard = () => {
                     : "border-transparent text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                Pending ({pendingCount})
+                {t("status.Pending", "Pending")} ({pendingCount})
               </button>
               <button
                 type="button"
@@ -399,7 +402,7 @@ export const StaffDashboard = () => {
                     : "border-transparent text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                In Progress ({inProgressCount})
+                {t("status.IN_PROGRESS", "In Progress")} ({inProgressCount})
               </button>
               <button
                 type="button"
@@ -413,7 +416,7 @@ export const StaffDashboard = () => {
                     : "border-transparent text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                Completed ({resolvedCount})
+                {t("status.RESOLVED", "Completed")} ({resolvedCount})
               </button>
             </div>
 
@@ -424,20 +427,20 @@ export const StaffDashboard = () => {
               </div>
             ) : paginatedTasks.length === 0 ? (
               <div className="py-12 text-center text-xs text-[#94A3B8]">
-                No assigned tasks match your filter.
+                {t("staff.tasks.empty", "No assigned tasks match your filter.")}
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-[#F1F5F9] text-[#64748B] font-bold text-[10px] uppercase tracking-wider">
-                      <th className="pb-2.5 px-2">ID</th>
-                      <th className="pb-2.5 px-2">Issue Details</th>
-                      <th className="pb-2.5 px-2">Location</th>
-                      <th className="pb-2.5 px-2">Priority</th>
-                      <th className="pb-2.5 px-2">Status</th>
-                      <th className="pb-2.5 px-2">Due Date</th>
-                      <th className="pb-2.5 px-2 text-right">Actions</th>
+                      <th className="pb-2.5 px-2">{t("common.id", "ID")}</th>
+                      <th className="pb-2.5 px-2">{t("citizen.complaintDetail.detailsTitle", "Issue Details")}</th>
+                      <th className="pb-2.5 px-2">{t("citizen.report.step2", "Location")}</th>
+                      <th className="pb-2.5 px-2">{t("citizen.complaintDetail.priority", "Priority")}</th>
+                      <th className="pb-2.5 px-2">{t("citizen.complaintDetail.status", "Status")}</th>
+                      <th className="pb-2.5 px-2">{t("staff.dashboard.dueDate", "Due Date")}</th>
+                      <th className="pb-2.5 px-2 text-right">{t("common.actions", "Actions")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#F1F5F9]">
@@ -478,7 +481,7 @@ export const StaffDashboard = () => {
                                   {task.title}
                                 </Link>
                                 <span className="text-[10px] text-[#64748B] block truncate mt-0.5">
-                                  {task.category}
+                                  {getLocalizedCategory(task.category, t)}
                                 </span>
                               </div>
                             </div>
@@ -504,7 +507,7 @@ export const StaffDashboard = () => {
 
                           {/* Due Date */}
                           <td className="py-3 px-2 whitespace-nowrap text-[#64748B] text-[11px]">
-                            {dayjs(task.createdAt).format("MMM D, YYYY")}
+                            {formatDate(task.createdAt, i18n.language)}
                             <span className="block text-[10px] text-[#94A3B8]">
                               {dayjs(task.createdAt).format("hh:mm A")}
                             </span>
@@ -517,21 +520,21 @@ export const StaffDashboard = () => {
                                 to={`/staff/tasks/${task._id}`}
                                 className="inline-flex items-center px-3 py-1.5 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold text-xs rounded-lg shadow-2xs transition-colors"
                               >
-                                Start Work
+                                {t("staff.tasks.startWork", "Start Work")}
                               </Link>
                             ) : task.status === "IN_PROGRESS" ? (
                               <Link
                                 to={`/staff/tasks/${task._id}`}
                                 className="inline-flex items-center px-3 py-1.5 bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold text-xs rounded-lg shadow-2xs transition-colors"
                               >
-                                Submit Proof
+                                {t("staff.tasks.submitProof", "Submit Proof")}
                               </Link>
                             ) : (
                               <Link
                                 to={`/staff/tasks/${task._id}`}
                                 className="inline-flex items-center px-3 py-1.5 bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-[#0F172A] font-semibold text-xs rounded-lg shadow-2xs transition-colors"
                               >
-                                View
+                                {t("common.view", "View")}
                               </Link>
                             )}
                           </td>
@@ -546,8 +549,8 @@ export const StaffDashboard = () => {
             {/* Footer Pagination */}
             <div className="flex items-center justify-between pt-3 border-t border-[#F1F5F9] text-xs text-[#64748B]">
               <span>
-                Showing {paginatedTasks.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to{" "}
-                {Math.min(currentPage * itemsPerPage, filteredTasks.length)} of {filteredTasks.length} tasks
+                {t("common.showing", "Showing")} {paginatedTasks.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} -{" "}
+                {Math.min(currentPage * itemsPerPage, filteredTasks.length)} / {filteredTasks.length}
               </span>
 
               <div className="flex items-center gap-1">
@@ -597,13 +600,13 @@ export const StaffDashboard = () => {
                   <div className="w-6 h-6 rounded-lg bg-[#F0FDFA] text-[#0D9488] border border-[#CCFBF1] flex items-center justify-center">
                     <AlertCircle className="w-3.5 h-3.5" />
                   </div>
-                  <h3 className="text-sm font-bold text-[#0F172A]">Recent Alerts</h3>
+                  <h3 className="text-sm font-bold text-[#0F172A]">{t("staff.dashboard.recentAlerts", "Recent Alerts")}</h3>
                 </div>
                 <Link
                   to="/staff/notifications"
                   className="text-xs font-semibold text-[#0D9488] hover:underline"
                 >
-                  View all
+                  {t("common.viewAll", "View all")}
                 </Link>
               </div>
 
@@ -636,11 +639,11 @@ export const StaffDashboard = () => {
                       <span className="w-2 h-2 rounded-full bg-[#EF4444] mt-1.5 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1">
-                          <p className="font-bold text-[#0F172A] truncate">New task assigned</p>
+                          <p className="font-bold text-[#0F172A] truncate">{t("staff.dashboard.newAssignedAlert", "New task assigned")}</p>
                           <span className="text-[10px] text-[#94A3B8] font-mono">1h ago</span>
                         </div>
                         <p className="text-[11px] text-[#64748B] line-clamp-1 mt-0.5">
-                          Overflowing garbage bin (#SC-2026-000024)
+                          {t("categories.Waste Management", "Waste Management")} (#SC-2026-000024)
                         </p>
                       </div>
                     </div>
@@ -648,11 +651,11 @@ export const StaffDashboard = () => {
                       <span className="w-2 h-2 rounded-full bg-[#F59E0B] mt-1.5 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1">
-                          <p className="font-bold text-[#0F172A] truncate">Deadline approaching</p>
+                          <p className="font-bold text-[#0F172A] truncate">{t("staff.dashboard.deadlineApproaching", "Deadline approaching")}</p>
                           <span className="text-[10px] text-[#94A3B8] font-mono">4h ago</span>
                         </div>
                         <p className="text-[11px] text-[#64748B] line-clamp-1 mt-0.5">
-                          Clogged drain (#SC-2026-000022)
+                          {t("categories.Drainage", "Drainage")} (#SC-2026-000022)
                         </p>
                       </div>
                     </div>
@@ -660,11 +663,11 @@ export const StaffDashboard = () => {
                       <span className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-1">
-                          <p className="font-bold text-[#0F172A] truncate">Status updated</p>
+                          <p className="font-bold text-[#0F172A] truncate">{t("staff.dashboard.statusUpdated", "Status updated")}</p>
                           <span className="text-[10px] text-[#94A3B8] font-mono">6h ago</span>
                         </div>
                         <p className="text-[11px] text-[#64748B] line-clamp-1 mt-0.5">
-                          Streetlight not working marked in progress
+                          {t("categories.Street Light", "Street Light")} {t("status.IN_PROGRESS", "In Progress")}
                         </p>
                       </div>
                     </div>
@@ -679,7 +682,7 @@ export const StaffDashboard = () => {
                 <div className="w-6 h-6 rounded-lg bg-[#F0FDFA] text-[#0D9488] border border-[#CCFBF1] flex items-center justify-center">
                   <Zap className="w-3.5 h-3.5" />
                 </div>
-                <h3 className="text-sm font-bold text-[#0F172A]">Quick Actions</h3>
+                <h3 className="text-sm font-bold text-[#0F172A]">{t("staff.dashboard.quickActions", "Quick Actions")}</h3>
               </div>
 
               <div className="grid grid-cols-2 gap-2.5 pt-1">
@@ -688,7 +691,7 @@ export const StaffDashboard = () => {
                   className="px-3 py-2 bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-[#0F172A] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
                 >
                   <FileText className="w-3.5 h-3.5 text-[#64748B]" />
-                  <span>View Work Log</span>
+                  <span>{t("staff.dashboard.viewWorkLog", "View Work Log")}</span>
                 </Link>
 
                 <Link
@@ -696,7 +699,7 @@ export const StaffDashboard = () => {
                   className="px-3 py-2 bg-[#0D9488] hover:bg-[#0F766E] text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
                 >
                   <Camera className="w-3.5 h-3.5" />
-                  <span>Capture Evidence</span>
+                  <span>{t("staff.dashboard.captureEvidence", "Capture Evidence")}</span>
                 </Link>
               </div>
             </div>

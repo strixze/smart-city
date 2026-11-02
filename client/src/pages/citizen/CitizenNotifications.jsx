@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import CitizenLayout from "../../components/citizen/CitizenLayout";
 import PushNotificationBanner from "../../components/PushNotificationBanner";
 import { useNotification } from "../../context/notificationContext";
@@ -22,6 +23,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 export const CitizenNotifications = () => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState("all"); // 'all' | 'unread'
   const {
     notifications,
@@ -93,15 +95,15 @@ export const CitizenNotifications = () => {
 
   return (
     <CitizenLayout
-      title="Notifications"
-      subtitle="Real-time updates regarding your filed complaints and municipal actions"
+      title={t("nav.notifications", "Notifications")}
+      subtitle={t("staff.notifications.subtitle", "Real-time updates regarding your filed complaints and municipal actions")}
       actions={
         notifications.some((n) => !n.isRead) ? (
           <button
             onClick={handleMarkAll}
             className="px-3.5 py-1.5 rounded-lg bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-xs font-semibold text-[#0F172A] flex items-center gap-1.5 shadow-2xs transition-colors"
           >
-            <Check className="w-3.5 h-3.5 text-[#0D9488]" /> Mark All Read
+            <Check className="w-3.5 h-3.5 text-[#0D9488]" /> {t("staff.notifications.markAllRead", "Mark All Read")}
           </button>
         ) : null
       }
@@ -115,10 +117,10 @@ export const CitizenNotifications = () => {
           {/* Header & Filter Tabs */}
           <div className="p-4 sm:p-5 border-b border-[#F1F5F9] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-[#0F172A]">All Alerts</span>
+              <span className="text-sm font-bold text-[#0F172A]">{t("nav.notifications", "All Alerts")}</span>
               {unreadCount > 0 && (
                 <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#F0FDFA] text-[#0D9488] border border-[#CCFBF1]">
-                  {unreadCount} unread
+                  {unreadCount} {t("staff.notifications.unread", "unread")}
                 </span>
               )}
             </div>
@@ -133,7 +135,7 @@ export const CitizenNotifications = () => {
                     : "text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                All ({notifications.length})
+                {t("common.all", "All")} ({notifications.length})
               </button>
               <button
                 type="button"
@@ -144,7 +146,7 @@ export const CitizenNotifications = () => {
                     : "text-[#64748B] hover:text-[#0D9488]"
                 }`}
               >
-                Unread ({unreadCount})
+                {t("staff.notifications.unread", "Unread")} ({unreadCount})
               </button>
             </div>
           </div>

@@ -1,7 +1,9 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle, AlertOctagon, ShieldAlert, ArrowDown } from "lucide-react";
 
 export const PriorityBadge = ({ priority }) => {
+  const { t } = useTranslation();
   const configs = {
     LOW: {
       label: "Low",
@@ -38,7 +40,7 @@ export const PriorityBadge = ({ priority }) => {
       className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs border ${config.bg}`}
     >
       <Icon className="w-3 h-3" />
-      <span>{config.label}</span>
+      <span>{t(`priority.${priority}`, config.label)}</span>
     </span>
   );
 };

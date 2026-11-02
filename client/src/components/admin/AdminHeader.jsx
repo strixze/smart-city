@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useNotification } from "../../context/notificationContext";
+import LanguageSwitcher from "../LanguageSwitcher";
 import {
   Menu,
   Calendar,
@@ -13,13 +15,16 @@ import {
 import dayjs from "dayjs";
 
 export const AdminHeader = ({
-  title = "Operations Center",
-  subtitle = "Here's what's happening in your city today.",
+  title,
+  subtitle,
   onToggleSidebar,
   onRefresh,
   refreshing = false,
   actions = null
 }) => {
+  const { t } = useTranslation();
+  const headerTitle = title || t("admin.dashboard.title");
+  const headerSubtitle = subtitle !== undefined ? subtitle : t("admin.dashboard.subtitle");
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotification();
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const notifRef = useRef(null);
@@ -64,17 +69,21 @@ export const AdminHeader = ({
 
         <div className="min-w-0">
           <h1 className="text-lg sm:text-xl font-extrabold text-[#0F172A] tracking-tight truncate">
-            {title}
+            {headerTitle}
           </h1>
-          {subtitle && (
+          {headerSubtitle && (
             <p className="text-xs text-[#64748B] mt-0.5 truncate hidden sm:block">
-              {subtitle}
+              {headerSubtitle}
             </p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        {/* Language Switcher */}
+        <LanguageSwitcher variant="segmented" className="hidden sm:inline-flex" />
+        <LanguageSwitcher variant="compact" className="sm:hidden" />
+
         {/* Date Pill matching reference */}
         <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 bg-[#FFFFFF] border border-[#E2E8F0] rounded-xl text-xs font-semibold text-[#0F172A] shadow-xs">
           <Calendar className="w-3.5 h-3.5 text-[#64748B]" />
@@ -88,7 +97,7 @@ export const AdminHeader = ({
             onClick={onRefresh}
             disabled={refreshing}
             className="p-2 bg-white border border-[#E2E8F0] rounded-xl text-[#64748B] hover:text-[#0D9488] hover:border-teal-200 shadow-xs transition-colors"
-            title="Refresh live data"
+            title={t("common.refresh")}
           >
             <RefreshCw
               className={`w-4 h-4 ${refreshing ? "animate-spin text-[#0D9488]" : ""}`}
@@ -102,7 +111,7 @@ export const AdminHeader = ({
             type="button"
             onClick={() => setShowNotifMenu(!showNotifMenu)}
             className="relative p-2 bg-white border border-[#E2E8F0] rounded-xl text-[#64748B] hover:text-[#0F172A] hover:border-[#CBD5E1] shadow-xs transition-colors"
-            title="Notifications"
+            title={t("nav.notifications")}
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
@@ -117,9 +126,9 @@ export const AdminHeader = ({
             <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-[#E2E8F0] rounded-2xl shadow-xl z-50 overflow-hidden text-[#0F172A]">
               <div className="p-3.5 px-4 border-b border-[#F1F5F9] flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-bold text-[#0F172A]">Notifications</h4>
+                  <h4 className="text-xs font-bold text-[#0F172A]">{t("admin.notifications.title")}</h4>
                   <p className="text-[11px] text-[#64748B]">
-                    {unreadCount} unread system alert{unreadCount === 1 ? "" : "s"}
+                    {unreadCount} {t("citizen.notifications.unread", "unread")}
                   </p>
                 </div>
                 {unreadCount > 0 && (
@@ -128,7 +137,7 @@ export const AdminHeader = ({
                     onClick={markAllAsRead}
                     className="text-[11px] font-semibold text-[#0D9488] hover:underline flex items-center gap-1"
                   >
-                    <Check className="w-3 h-3" /> Mark all read
+                    <Check className="w-3 h-3" /> {t("citizen.notifications.markAllRead")}
                   </button>
                 )}
               </div>
@@ -176,7 +185,7 @@ export const AdminHeader = ({
                   onClick={() => setShowNotifMenu(false)}
                   className="text-xs font-semibold text-[#0D9488] hover:underline inline-flex items-center gap-1"
                 >
-                  View all alerts <ChevronRight className="w-3 h-3" />
+                  {t("citizen.dashboard.viewAll")} <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
             </div>

@@ -29,10 +29,11 @@ CIVIC_TAXONOMY: Dict[str, Dict[str, Any]] = {
         "keywords": [
             "garbage", "trash", "waste", "dustbin", "bin", "litter", "rubbish",
             "dump", "dumping", "filth", "debris", "plastic", "compost", "smell",
-            "stink", "foul odor", "uncollected", "sweep", "dead dog", "carcass"
+            "stink", "foul odor", "uncollected", "sweep", "dead dog", "carcass",
+            "कचरा", "कचऱ्याचा", "कचराकुंडी", "घाण", "दुर्गंधी", "कचरा पेटी", "उकिरडा"
         ],
         "default_priority": PRIORITY_HIGH,
-        "hazard_keywords": ["biohazard", "toxic", "medical waste", "chemical dump", "carcass"]
+        "hazard_keywords": ["biohazard", "toxic", "medical waste", "chemical dump", "carcass", "विषारी कचरा"]
     },
     "Roads": {
         "department": "Public Works Department (PWD) - Roads & Bridges",
@@ -47,10 +48,11 @@ CIVIC_TAXONOMY: Dict[str, Dict[str, Any]] = {
         "keywords": [
             "pothole", "road", "footpath", "sidewalk", "asphalt", "cracks", "pavement",
             "hole", "crater", "tar", "divider", "speed breaker", "carriageway",
-            "kerb", "curb", "uneven road", "broken tiles", "cobblestone"
+            "kerb", "curb", "uneven road", "broken tiles", "cobblestone",
+            "खड्डा", "खड्डे", "रस्ता", "रस्त्यावर", "फुटपाथ", "डांबर", "दुभाजक"
         ],
         "default_priority": PRIORITY_HIGH,
-        "hazard_keywords": ["open manhole", "missing manhole", "deep crater", "caved in", "road collapse", "accident"]
+        "hazard_keywords": ["open manhole", "missing manhole", "deep crater", "caved in", "road collapse", "accident", "मोठा खड्डा", "अपघात"]
     },
     "Drainage": {
         "department": "Municipal Water Supply & Sewerage Board (Drainage Wing)",
@@ -64,10 +66,11 @@ CIVIC_TAXONOMY: Dict[str, Dict[str, Any]] = {
         "keywords": [
             "drain", "drainage", "sewage", "sewer", "gutter", "clog", "choke",
             "overflow", "stagnant", "manhole", "dirty water", "foul water",
-            "waterlogging", "flooding", "black water", "stormwater", "sludge"
+            "waterlogging", "flooding", "black water", "stormwater", "sludge",
+            "गटार", "गटारे", "नाले", "सांडपाणी", "तुंबले", "गटार तुंबणे", "पाणी साचले", "ड्रेनेज"
         ],
         "default_priority": PRIORITY_HIGH,
-        "hazard_keywords": ["overflowing sewage", "flood", "flooding", "sewer burst", "submerged"]
+        "hazard_keywords": ["overflowing sewage", "flood", "flooding", "sewer burst", "submerged", "गटाराचे पाणी", "पूर"]
     },
     "Water Supply": {
         "department": "Municipal Water Supply & Sewerage Board (Water Wing)",
@@ -81,10 +84,11 @@ CIVIC_TAXONOMY: Dict[str, Dict[str, Any]] = {
         "keywords": [
             "water", "leak", "leaking", "pipe", "pipeline", "burst", "supply",
             "drinking water", "tap", "valve", "main line", "water shortage",
-            "muddy water", "dirty water", "no water", "contamination"
+            "muddy water", "dirty water", "no water", "contamination",
+            "पाणीपुरवठा", "पाणी", "पाईप", "गळती", "पाईपलाईन", "नळ", "पिण्याचे पाणी", "पाणी नाही"
         ],
         "default_priority": PRIORITY_HIGH,
-        "hazard_keywords": ["pipeline burst", "burst pipe", "contaminated drinking water", "massive leak"]
+        "hazard_keywords": ["pipeline burst", "burst pipe", "contaminated drinking water", "massive leak", "पाईप फुटली", "दूषित पाणी"]
     },
     "Street Light": {
         "department": "Electrical Engineering & Public Lighting Division",
@@ -100,12 +104,13 @@ CIVIC_TAXONOMY: Dict[str, Dict[str, Any]] = {
             "street light", "streetlight", "street lamp", "lamp post", "lighting",
             "dark street", "flickering light", "broken pole", "light pole", "light bulb",
             "sodium lamp", "led street light", "unlit", "blackout", "no light",
-            "pole damaged", "light fixture", "streetlamp", "unlit street"
+            "pole damaged", "light fixture", "streetlamp", "unlit street",
+            "पथदिवा", "पथदिवे", "लाईट", "लाइट", "खांब", "अंधार", "स्ट्रीट लाईट", "दिवा बंद"
         ],
         "default_priority": PRIORITY_MEDIUM,
         "hazard_keywords": [
             "live wire", "hanging wire", "electric shock", "sparking", "fallen pole",
-            "exposed wire", "pole collapsed", "falling pole", "electrocution"
+            "exposed wire", "pole collapsed", "falling pole", "electrocution", "विजेची तार", "शॉक"
         ]
     },
     "Street Infrastructure": {

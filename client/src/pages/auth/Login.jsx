@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContex";
 import Navbar from "../../components/Navbar";
 import SmartCityLogo from "../../components/SmartCityLogo";
@@ -18,6 +19,7 @@ import {
 } from "lucide-react";
 
 export const Login = () => {
+  const { t } = useTranslation();
   const { login, isLoggedIn, role } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -65,13 +67,13 @@ export const Login = () => {
   const validate = () => {
     const errors = {};
     if (!email.trim()) {
-      errors.email = "Email address is required";
+      errors.email = t("validation.emailInvalid", "Email address is required");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      errors.email = "Please enter a valid email address";
+      errors.email = t("validation.emailInvalid", "Please enter a valid email address");
     }
 
     if (!password) {
-      errors.password = "Password is required";
+      errors.password = t("validation.passwordMinLength", "Password is required");
     }
 
     setValidationErrors(errors);
@@ -126,10 +128,10 @@ export const Login = () => {
               <SmartCityLogo variant="dark-text" size="lg" to="/" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-              Welcome back
+              {t("auth.login.title")}
             </h1>
             <p className="text-xs sm:text-sm text-[#64748B] mt-1 max-w-sm mx-auto">
-              Sign in to manage, track, or resolve municipal civic complaints
+              {t("auth.login.subtitle")}
             </p>
           </div>
 
@@ -137,7 +139,7 @@ export const Login = () => {
           <div className="bg-white rounded-2xl p-4 sm:p-4.5 border border-[#E2E8F0] shadow-xs mb-5">
             <div className="flex items-center justify-between text-xs font-semibold text-[#475569] mb-2.5">
               <span className="flex items-center gap-1.5 font-bold text-[#0D9488]">
-                <Sparkles className="w-3.5 h-3.5 text-[#0D9488]" /> 1-Click Evaluation Accounts
+                <Sparkles className="w-3.5 h-3.5 text-[#0D9488]" /> {t("auth.login.demoAccounts")}
               </span>
               <span className="text-[10px] text-[#94A3B8] font-medium">Auto-fills credentials</span>
             </div>
@@ -150,7 +152,7 @@ export const Login = () => {
                 aria-label="Fill Admin credentials"
               >
                 <Shield className="w-4 h-4 text-purple-600" />
-                <span>Admin</span>
+                <span>{t("auth.login.demoAdmin")}</span>
               </button>
 
               <button
@@ -160,7 +162,7 @@ export const Login = () => {
                 aria-label="Fill Staff credentials"
               >
                 <Briefcase className="w-4 h-4 text-amber-600" />
-                <span>Staff</span>
+                <span>{t("auth.login.demoStaff")}</span>
               </button>
 
               <button
@@ -170,7 +172,7 @@ export const Login = () => {
                 aria-label="Fill Citizen credentials"
               >
                 <User className="w-4 h-4 text-teal-600" />
-                <span>Citizen</span>
+                <span>{t("auth.login.demoCitizen")}</span>
               </button>
             </div>
           </div>
@@ -195,7 +197,7 @@ export const Login = () => {
                   htmlFor="email"
                   className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1.5"
                 >
-                  Email Address
+                  {t("auth.login.emailLabel")}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
@@ -215,7 +217,7 @@ export const Login = () => {
                       }
                       if (serverError) setServerError("");
                     }}
-                    placeholder="name@example.com"
+                    placeholder={t("auth.login.emailPlaceholder")}
                     disabled={loading}
                     className={`w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] border rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] transition-all focus:outline-none focus:bg-white disabled:opacity-50 ${
                       validationErrors.email
@@ -237,7 +239,7 @@ export const Login = () => {
                   htmlFor="password"
                   className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1.5"
                 >
-                  Password
+                  {t("auth.login.passwordLabel")}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
@@ -303,11 +305,11 @@ export const Login = () => {
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Signing In...
+                    {t("auth.login.signingIn")}
                   </>
                 ) : (
                   <>
-                    Sign In <ArrowRight className="w-4 h-4" />
+                    {t("auth.login.signInBtn")} <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
@@ -316,12 +318,12 @@ export const Login = () => {
             {/* Footer Navigation Link */}
             <div className="mt-6 pt-5 border-t border-[#F1F5F9] text-center">
               <p className="text-xs text-[#64748B]">
-                New citizen?{" "}
+                {t("auth.login.noAccount")}{" "}
                 <Link
                   to="/register"
                   className="font-semibold text-[#0D9488] hover:text-[#0F766E] hover:underline"
                 >
-                  Register citizen account
+                  {t("auth.login.createAccount")}
                 </Link>
               </p>
             </div>

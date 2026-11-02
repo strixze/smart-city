@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/authContex";
 import { useNotification } from "../context/notificationContext";
 import SmartCityLogo from "./SmartCityLogo";
+import LanguageSwitcher from "./LanguageSwitcher";
 import {
   Bell,
   LogOut,
@@ -21,6 +23,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 export const Navbar = ({ onToggleSidebar }) => {
+  const { t } = useTranslation();
   const { user, role, logout } = useAuth();
   const {
     notifications,
@@ -79,20 +82,20 @@ export const Navbar = ({ onToggleSidebar }) => {
     if (role === "ADMIN") {
       return (
         <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200">
-          <Shield className="w-3.5 h-3.5 text-teal-600" /> Admin Portal
+          <Shield className="w-3.5 h-3.5 text-teal-600" /> {t("nav.adminPortal")}
         </span>
       );
     }
     if (role === "STAFF") {
       return (
         <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-          <Briefcase className="w-3.5 h-3.5 text-amber-600" /> Staff ({user?.department || "Field"})
+          <Briefcase className="w-3.5 h-3.5 text-amber-600" /> {t("nav.staffPortal")} ({user?.department || "Field"})
         </span>
       );
     }
     return (
       <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-        <User className="w-3.5 h-3.5 text-slate-500" /> Citizen
+        <User className="w-3.5 h-3.5 text-slate-500" /> {t("nav.citizenPortal")}
       </span>
     );
   };
@@ -105,17 +108,17 @@ export const Navbar = ({ onToggleSidebar }) => {
           <div className="max-w-7xl mx-auto flex items-center gap-1.5 sm:gap-2 text-center w-full justify-center min-w-0 pr-2">
             <Megaphone className="w-3.5 h-3.5 text-[#0D9488] flex-shrink-0" />
             <span className="font-bold text-[#0D9488] tracking-wider text-[10px] sm:text-xs uppercase whitespace-nowrap">
-              SMARTCITY CIVIC SERVICES
+              {t("app.title")}
             </span>
             <span className="text-[#0D9488] opacity-60 hidden sm:inline">•</span>
             <span className="font-medium text-[#0D9488] text-[11px] sm:text-xs truncate sm:overflow-visible">
-              A cleaner, safer city starts with you
+              {t("app.subtitle")}
             </span>
             <Link
               to="/citizen/report"
               className="hidden lg:inline font-semibold text-[#0D9488] underline ml-2 hover:opacity-80 whitespace-nowrap"
             >
-              Report an issue &rarr;
+              {t("nav.reportComplaint")} &rarr;
             </Link>
           </div>
           <button
@@ -159,7 +162,7 @@ export const Navbar = ({ onToggleSidebar }) => {
                       : "text-[#0F172A] hover:text-[#0D9488]"
                   }`}
                 >
-                  Home
+                  {t("nav.home")}
                   {location.pathname === "/" && (
                     <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#0D9488] rounded-full" />
                   )}
@@ -168,25 +171,28 @@ export const Navbar = ({ onToggleSidebar }) => {
                   to="/citizen/report"
                   className="text-[#475569] hover:text-[#0D9488] transition-colors"
                 >
-                  Report an Issue
+                  {t("nav.reportComplaint")}
                 </Link>
                 <Link
                   to="/citizen/complaints"
                   className="text-[#475569] hover:text-[#0D9488] transition-colors"
                 >
-                  Track Complaint
+                  {t("nav.myComplaints")}
                 </Link>
                 <a
                   href="#how-it-works"
                   className="text-[#475569] hover:text-[#0D9488] transition-colors"
                 >
-                  How It Works
+                  {t("home.howItWorksTitle")}
                 </a>
               </nav>
             )}
 
-            {/* Right: Actions */}
-            <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Right: Language Switcher & Actions */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <LanguageSwitcher variant="segmented" className="hidden sm:inline-flex" />
+              <LanguageSwitcher variant="compact" className="sm:hidden" />
+
               {user ? (
                 <>
                   {/* In-App Notifications Bell */}
@@ -344,7 +350,7 @@ export const Navbar = ({ onToggleSidebar }) => {
                           onClick={() => setShowUserMenu(false)}
                           className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                         >
-                          <User className="w-4 h-4 text-slate-400" /> My Profile
+                          <User className="w-4 h-4 text-slate-400" /> {t("nav.profile")}
                         </Link>
 
                         <button
@@ -355,7 +361,7 @@ export const Navbar = ({ onToggleSidebar }) => {
                           }}
                           className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 text-left transition-colors"
                         >
-                          <LogOut className="w-4 h-4" /> Sign Out
+                          <LogOut className="w-4 h-4" /> {t("common.logout")}
                         </button>
                       </div>
                     )}
@@ -374,13 +380,13 @@ export const Navbar = ({ onToggleSidebar }) => {
                     to="/login"
                     className="hidden sm:inline-block px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-[#0F172A] hover:text-[#0D9488] transition-colors whitespace-nowrap"
                   >
-                    Log in
+                    {t("common.login")}
                   </Link>
                   <Link
                     to="/register"
                     className="px-2.5 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white bg-[#0D9488] hover:bg-[#0f766e] rounded-xl shadow-xs transition-all whitespace-nowrap flex-shrink-0"
                   >
-                    Get Started
+                    {t("common.register")}
                   </Link>
                   <button
                     onClick={() => setMobileNavOpen(!mobileNavOpen)}
@@ -398,40 +404,44 @@ export const Navbar = ({ onToggleSidebar }) => {
         {/* Mobile public dropdown menu */}
         {!user && mobileNavOpen && (
           <div className="md:hidden border-t border-[#E2E8F0] bg-white px-4 py-4 space-y-2.5 shadow-lg animate-in slide-in-from-top-2">
+            <div className="pb-2 border-b border-slate-100 flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-500">{t("common.language")}</span>
+              <LanguageSwitcher variant="segmented" />
+            </div>
             <Link
               to="/"
               onClick={() => setMobileNavOpen(false)}
               className="block py-2 text-sm font-semibold text-[#0D9488]"
             >
-              Home
+              {t("nav.home")}
             </Link>
             <Link
               to="/citizen/report"
               onClick={() => setMobileNavOpen(false)}
               className="block py-2 text-sm font-medium text-[#475569] hover:text-[#0D9488]"
             >
-              Report an Issue
+              {t("nav.reportComplaint")}
             </Link>
             <Link
               to="/citizen/complaints"
               onClick={() => setMobileNavOpen(false)}
               className="block py-2 text-sm font-medium text-[#475569] hover:text-[#0D9488]"
             >
-              Track Complaint
+              {t("nav.myComplaints")}
             </Link>
             <a
               href="#how-it-works"
               onClick={() => setMobileNavOpen(false)}
               className="block py-2 text-sm font-medium text-[#475569] hover:text-[#0D9488]"
             >
-              How It Works
+              {t("home.howItWorksTitle")}
             </a>
             <a
               href="#features"
               onClick={() => setMobileNavOpen(false)}
               className="block py-2 text-sm font-medium text-[#475569] hover:text-[#0D9488]"
             >
-              Features
+              {t("home.featuresTitle")}
             </a>
             <div className="pt-3 border-t border-slate-100 flex items-center gap-3">
               <Link
@@ -439,14 +449,14 @@ export const Navbar = ({ onToggleSidebar }) => {
                 onClick={() => setMobileNavOpen(false)}
                 className="flex-1 py-2 text-center text-sm font-semibold text-[#0F172A] border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
               >
-                Log in
+                {t("common.login")}
               </Link>
               <Link
                 to="/register"
                 onClick={() => setMobileNavOpen(false)}
                 className="flex-1 py-2 text-center text-sm font-semibold text-white bg-[#0D9488] hover:bg-[#0f766e] rounded-xl transition-colors shadow-xs"
               >
-                Get Started
+                {t("common.register")}
               </Link>
             </div>
           </div>

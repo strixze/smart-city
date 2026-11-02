@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { adminApi } from "../../api/client";
+import { getLocalizedCategory } from "../../utils/formatters";
 import {
   Users,
   UserPlus,
@@ -29,6 +31,7 @@ const DEPARTMENTS = [
 ];
 
 export const AdminStaff = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [staffList, setStaffList] = useState([]);
@@ -80,14 +83,19 @@ export const AdminStaff = () => {
   const handleCreateStaff = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.password || !formData.department) {
-      toast.error("Please fill all required fields.");
+      toast.error(t("validation.descRequired") || "Please fill all required fields.");
+      return;
+    }
+
+    if (formData.phone && !/^[0-9\s+()-]{7,15}$/.test(formData.phone.trim())) {
+      toast.error(t("validation.phoneInvalid"));
       return;
     }
 
     try {
       setActionLoading(true);
       await adminApi.createStaff(formData);
-      toast.success(`Staff account for ${formData.name} created successfully!`);
+      toast.success(t("admin.staff.staffCreatedSuccess"));
       setShowAddModal(false);
       setFormData({
         name: "",
@@ -108,8 +116,8 @@ export const AdminStaff = () => {
 
   return (
     <AdminLayout
-      title="Staff & Field Operations"
-      subtitle="Configure municipal department teams, monitor workloads, and provision field credentials"
+      title={t("admin.staff.title")}
+      subtitle={t("admin.staff.subtitle")}
       onRefresh={() => fetchStaff(true)}
       refreshing={refreshing}
       actions={
@@ -118,7 +126,7 @@ export const AdminStaff = () => {
           onClick={() => setShowAddModal(true)}
           className="px-3.5 py-1.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white font-semibold text-xs shadow-xs flex items-center gap-1.5 transition-colors"
         >
-          <UserPlus className="w-3.5 h-3.5" /> Add Field Officer
+          <UserPlus className="w-3.5 h-3.5" /> {t("admin.staff.addStaffBtn")}
         </button>
       }
     >
@@ -131,22 +139,22 @@ export const AdminStaff = () => {
         ) : staffList.length === 0 ? (
           <div className="py-16 text-center text-[#64748B]">
             <Users className="w-10 h-10 mx-auto text-[#CBD5E1] mb-2" />
-            <p className="text-base font-semibold text-[#0F172A]">No field staff found</p>
-            <p className="text-xs text-[#94A3B8] mt-1">Click "Add Field Officer" to create staff accounts.</p>
+            <p className="text-base font-semibold text-[#0F172A]">{t("admin.staff.noStaff")}</p>
+            <p className="text-xs text-[#94A3B8] mt-1">{t("admin.staff.noStaffSub")}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-[#0F172A]">
               <thead>
                 <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0] text-[#64748B] text-[11px] font-semibold">
-                  <th className="py-3.5 px-4 font-semibold">Staff Member</th>
-                  <th className="py-3.5 px-4 font-semibold">Department</th>
-                  <th className="py-3.5 px-4 font-semibold">Employee ID</th>
-                  <th className="py-3.5 px-4 font-semibold">Contact</th>
-                  <th className="py-3.5 px-4 font-semibold text-center">Active Tasks</th>
-                  <th className="py-3.5 px-4 font-semibold text-center">Resolved Tasks</th>
-                  <th className="py-3.5 px-4 font-semibold">Status</th>
-                  <th className="py-3.5 px-4 font-semibold text-right">Action</th>
+                  <th className="py-3.5 px-4 font-semibold">{t("admin.staff.staffMember")}</th>
+                  <th className="py-3.5 px-4 font-semibold">{t("citizen.report.categoryLabel")}</th>
+                  <th className="py-3.5 px-4 font-semibold">{t("admin.staff.employeeId")}</th>
+                  <th className="py-3.5 px-4 font-semibold">{t("admin.staff.contact")}</th>
+                  <th className="py-3.5 px-4 font-semibold text-center">{t("staff.profile.activeTasks")}</th>
+                  <th className="py-3.5 px-4 font-semibold text-center">{t("staff.profile.completedTasks")}</th>
+                  <th className="py-3.5 px-4 font-semibold">{t("common.status")}</th>
+                  <th className="py-3.5 px-4 font-semibold text-right">{t("common.action", "Action")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F1F5F9]">
@@ -167,7 +175,7 @@ export const AdminStaff = () => {
                     </td>
                     <td className="py-3.5 px-4">
                       <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200 text-xs font-semibold">
-                        {staff.department}
+                        {getLocalizedCategory(staff.department, t)}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 font-mono text-xs text-[#64748B]">
@@ -175,7 +183,7 @@ export const AdminStaff = () => {
                     </td>
                     <td className="py-3.5 px-4 text-[#475569]">
                       <p>{staff.email}</p>
-                      <p className="text-[11px] text-[#94A3B8]">{staff.phone || "No phone"}</p>
+                      <p className="text-[11px] text-[#94A3B8]">{staff.phone || t("admin.detail.noPhone")}</p>
                     </td>
                     <td className="py-3.5 px-4 text-center">
                       <span className="font-bold text-xs text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
@@ -195,7 +203,7 @@ export const AdminStaff = () => {
                             : "bg-slate-100 text-slate-600 border-slate-200"
                         }`}
                       >
-                        {staff.isActive ? "ACTIVE" : "INACTIVE"}
+                        {staff.isActive ? (t("common.active", "ACTIVE")) : (t("common.inactive", "INACTIVE"))}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right">
@@ -208,7 +216,7 @@ export const AdminStaff = () => {
                             : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
                         }`}
                       >
-                        {staff.isActive ? "Deactivate" : "Activate"}
+                        {staff.isActive ? t("admin.staff.deactivate") : t("admin.staff.activate")}
                       </button>
                     </td>
                   </tr>
@@ -229,8 +237,8 @@ export const AdminStaff = () => {
                   <UserPlus className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[#0F172A]">Add Field Staff Member</h3>
-                  <p className="text-xs text-[#64748B]">Provision credentials for departmental field officers</p>
+                  <h3 className="text-base font-bold text-[#0F172A]">{t("admin.staff.addStaffModalTitle")}</h3>
+                  <p className="text-xs text-[#64748B]">{t("admin.staff.addOfficerSub")}</p>
                 </div>
               </div>
               <button
@@ -245,7 +253,7 @@ export const AdminStaff = () => {
             <form onSubmit={handleCreateStaff} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-[#64748B] mb-1">
-                  Full Name *
+                  {t("admin.staff.staffName")} *
                 </label>
                 <input
                   type="text"
@@ -260,7 +268,7 @@ export const AdminStaff = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-[#64748B] mb-1">
-                    Official Email *
+                    {t("admin.staff.staffEmail")} *
                   </label>
                   <input
                     type="email"
@@ -274,7 +282,7 @@ export const AdminStaff = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-[#64748B] mb-1">
-                    Login Password *
+                    {t("auth.login.passwordLabel")} *
                   </label>
                   <input
                     type="password"
@@ -290,7 +298,7 @@ export const AdminStaff = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-[#64748B] mb-1">
-                    Department *
+                    {t("admin.staff.staffDepartment")} *
                   </label>
                   <select
                     value={formData.department}
@@ -299,7 +307,7 @@ export const AdminStaff = () => {
                   >
                     {DEPARTMENTS.map((dept) => (
                       <option key={dept} value={dept}>
-                        {dept}
+                        {getLocalizedCategory(dept, t)}
                       </option>
                     ))}
                   </select>
@@ -307,7 +315,7 @@ export const AdminStaff = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-[#64748B] mb-1">
-                    Designation
+                    {t("admin.staff.designation")}
                   </label>
                   <input
                     type="text"
@@ -322,7 +330,7 @@ export const AdminStaff = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-[#64748B] mb-1">
-                    Employee ID
+                    {t("admin.staff.employeeId")}
                   </label>
                   <input
                     type="text"
@@ -335,7 +343,7 @@ export const AdminStaff = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-[#64748B] mb-1">
-                    Phone Number
+                    {t("admin.staff.staffPhone")}
                   </label>
                   <input
                     type="tel"
@@ -353,14 +361,14 @@ export const AdminStaff = () => {
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
                   className="px-5 py-2 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-colors"
                 >
-                  {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Staff Account"}
+                  {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("admin.staff.createStaffBtn")}
                 </button>
               </div>
             </form>

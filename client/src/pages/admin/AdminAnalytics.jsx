@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { adminApi } from "../../api/client";
+import { getLocalizedCategory, getLocalizedPriority } from "../../utils/formatters";
 import {
   TrendingUp,
   Clock,
@@ -171,6 +173,7 @@ const CardSparkline = ({ data, color, gradientId }) => {
 };
 
 export const AdminAnalytics = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
@@ -437,8 +440,8 @@ export const AdminAnalytics = () => {
 
   return (
     <AdminLayout
-      title="Municipal Grievance Analytics"
-      subtitle="Aggregated operations intelligence and resolution performance from live city records"
+      title={t("admin.analytics.title")}
+      subtitle={t("admin.analytics.subtitle")}
       onRefresh={() => fetchAnalytics(true)}
       refreshing={refreshing}
     >
@@ -454,7 +457,7 @@ export const AdminAnalytics = () => {
             onClick={() => fetchAnalytics(true)}
             className="font-bold underline hover:no-underline text-rose-900"
           >
-            Retry
+            {t("common.retry", "Retry")}
           </button>
         </div>
       )}
@@ -469,7 +472,7 @@ export const AdminAnalytics = () => {
                 <TrendingUp className="w-4 h-4" />
               </div>
               <span className="text-[11px] font-bold text-[#64748B] tracking-wider uppercase truncate">
-                Resolution Rate
+                {t("admin.dashboard.resolvedPercentage")}
               </span>
             </div>
             <div className="text-3xl sm:text-[32px] font-extrabold text-[#0F172A] tracking-tight leading-none">
@@ -477,8 +480,8 @@ export const AdminAnalytics = () => {
             </div>
             <p className="text-xs text-[#64748B] mt-1.5 font-medium truncate">
               {loading
-                ? "Calculating cases..."
-                : `${kpis.resolvedComplaints} of ${kpis.totalComplaints} closed cases`}
+                ? t("common.loading")
+                : `${kpis.resolvedComplaints} / ${kpis.totalComplaints} ${t("admin.analytics.closedCases")}`}
             </p>
           </div>
           <CardSparkline
@@ -496,14 +499,14 @@ export const AdminAnalytics = () => {
                 <Clock className="w-4 h-4" />
               </div>
               <span className="text-[11px] font-bold text-[#64748B] tracking-wider uppercase truncate">
-                Average Resolution Time
+                {t("admin.analytics.avgResolutionTime")}
               </span>
             </div>
             <div className="text-3xl sm:text-[32px] font-extrabold text-[#0F172A] tracking-tight leading-none">
-              {loading ? "--" : `${kpis.avgResolutionTimeHours} Hours`}
+              {loading ? "--" : `${kpis.avgResolutionTimeHours} ${t("admin.analytics.hours")}`}
             </div>
             <p className="text-xs text-[#64748B] mt-1.5 font-medium truncate">
-              Target SLA: {kpis.targetSlaHours} Hours
+              {t("admin.analytics.targetSla")}: {kpis.targetSlaHours} {t("admin.analytics.hours")}
             </p>
           </div>
           <CardSparkline
@@ -521,14 +524,14 @@ export const AdminAnalytics = () => {
                 <CheckCircle2 className="w-4 h-4" />
               </div>
               <span className="text-[11px] font-bold text-[#64748B] tracking-wider uppercase truncate">
-                Citizen Satisfaction
+                {t("admin.analytics.citizenSatisfaction")}
               </span>
             </div>
             <div className="text-3xl sm:text-[32px] font-extrabold text-[#0F172A] tracking-tight leading-none">
               {loading ? "--" : `${kpis.citizenSatisfaction}%`}
             </div>
             <p className="text-xs text-[#64748B] mt-1.5 font-medium truncate">
-              Confirmed resolution rate
+              {t("admin.analytics.confirmedResolutionRate")}
             </p>
           </div>
           <CardSparkline
@@ -545,10 +548,10 @@ export const AdminAnalytics = () => {
         <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#E2E8F0] shadow-xs flex flex-col justify-between">
           <div className="mb-4">
             <h3 className="text-sm font-bold text-[#0F172A] tracking-tight">
-              Complaints Volume by Municipal Department
+              {t("admin.analytics.categoryDistribution")}
             </h3>
             <p className="text-xs text-[#64748B] mt-0.5">
-              Distribution across city service areas
+              {t("admin.analytics.distributionCityAreas")}
             </p>
           </div>
 
@@ -559,7 +562,7 @@ export const AdminAnalytics = () => {
               </div>
             ) : categoryData.length === 0 ? (
               <div className="h-full flex items-center justify-center text-xs text-[#94A3B8]">
-                No department complaint records recorded.
+                {t("common.noData")}
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -579,8 +582,9 @@ export const AdminAnalytics = () => {
                     axisLine={{ stroke: "#E2E8F0" }}
                     interval={0}
                     tickFormatter={(val) => {
-                      if (val.length > 13) return `${val.slice(0, 11)}...`;
-                      return val;
+                      const localized = getLocalizedCategory(val, t);
+                      if (localized.length > 13) return `${localized.slice(0, 11)}...`;
+                      return localized;
                     }}
                   />
                   <YAxis
@@ -589,7 +593,7 @@ export const AdminAnalytics = () => {
                     axisLine={false}
                     allowDecimals={false}
                     label={{
-                      value: "Number of Complaints",
+                      value: t("admin.analytics.complaintsCount"),
                       angle: -90,
                       position: "insideLeft",
                       offset: 24,
@@ -600,13 +604,13 @@ export const AdminAnalytics = () => {
                   />
                   <Tooltip
                     content={
-                      <CustomChartTooltip unit="complaints" />
+                      <CustomChartTooltip unit={t("citizen.dashboard.reportNew", "cases")} />
                     }
                     cursor={{ fill: "#F8FAFC" }}
                   />
                   <Bar
                     dataKey="value"
-                    name="Complaints"
+                    name={t("citizen.dashboard.totalComplaints", "Complaints")}
                     radius={[4, 4, 0, 0]}
                     maxBarSize={58}
                     isAnimationActive={false}
@@ -637,10 +641,10 @@ export const AdminAnalytics = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
             <div>
               <h3 className="text-sm font-bold text-[#0F172A] tracking-tight">
-                Complaint Trends
+                {t("admin.analytics.monthlyTrends")}
               </h3>
               <p className="text-xs text-[#64748B] mt-0.5">
-                Monthly complaints received across all departments
+                {t("admin.analytics.monthlyTrendsSub")}
               </p>
             </div>
 
@@ -678,11 +682,11 @@ export const AdminAnalytics = () => {
               <div className="flex items-center gap-3 text-xs font-semibold">
                 <div className="flex items-center gap-1.5 text-[#0F172A]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
-                  <span>Received</span>
+                  <span>{t("admin.analytics.received")}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[#0F172A]">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#3B82F6]" />
-                  <span>Resolved</span>
+                  <span>{t("status.RESOLVED")}</span>
                 </div>
               </div>
             </div>
@@ -695,7 +699,7 @@ export const AdminAnalytics = () => {
               </div>
             ) : filteredTrendsData.length === 0 ? (
               <div className="h-full flex items-center justify-center text-xs text-[#94A3B8]">
-                No monthly trend data recorded.
+                {t("common.noData")}
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -736,7 +740,7 @@ export const AdminAnalytics = () => {
                   <Area
                     type="monotone"
                     dataKey="received"
-                    name="Received"
+                    name={t("admin.analytics.received")}
                     stroke="#10B981"
                     strokeWidth={2.5}
                     fillOpacity={1}
@@ -748,7 +752,7 @@ export const AdminAnalytics = () => {
                   <Area
                     type="monotone"
                     dataKey="resolved"
-                    name="Resolved"
+                    name={t("status.RESOLVED")}
                     stroke="#3B82F6"
                     strokeWidth={2.5}
                     fillOpacity={1}
@@ -770,10 +774,10 @@ export const AdminAnalytics = () => {
         <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#E2E8F0] shadow-xs flex flex-col justify-between">
           <div className="mb-2">
             <h3 className="text-sm font-bold text-[#0F172A] tracking-tight">
-              Complaints by Department
+              {t("admin.analytics.complaintsByDept")}
             </h3>
             <p className="text-xs text-[#64748B] mt-0.5">
-              Percentage distribution
+              {t("admin.analytics.percentDistribution")}
             </p>
           </div>
 
@@ -786,7 +790,7 @@ export const AdminAnalytics = () => {
                 </div>
               ) : categoryData.length === 0 ? (
                 <div className="w-full h-full flex items-center justify-center text-xs text-[#94A3B8]">
-                  No data
+                  {t("common.noData")}
                 </div>
               ) : (
                 <>
@@ -811,7 +815,7 @@ export const AdminAnalytics = () => {
                         ))}
                       </Pie>
                       <Tooltip
-                        content={<CustomChartTooltip unit="complaints" />}
+                        content={<CustomChartTooltip unit="cases" />}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -821,7 +825,7 @@ export const AdminAnalytics = () => {
                       {kpis.totalComplaints}
                     </span>
                     <span className="text-[11px] font-semibold text-[#64748B] mt-0.5">
-                      Total
+                      {t("citizen.dashboard.totalComplaints", "Total")}
                     </span>
                   </div>
                 </>
@@ -841,7 +845,7 @@ export const AdminAnalytics = () => {
                       style={{ backgroundColor: getCategoryColor(cat.name) }}
                     />
                     <span className="text-[#334155] font-medium truncate">
-                      {cat.name}
+                      {getLocalizedCategory(cat.name, t)}
                     </span>
                   </div>
                   <span className="font-bold text-[#0F172A] flex-shrink-0">
@@ -861,12 +865,12 @@ export const AdminAnalytics = () => {
           <div className="flex items-start justify-between gap-2 mb-2">
             <div>
               <h3 className="text-sm font-bold text-[#0F172A] tracking-tight">
-                Resolution Time vs. Complaint Volume
+                {t("admin.analytics.resolutionVsVolume")}
               </h3>
               <p className="text-xs text-[#64748B] mt-0.5">
                 {scatterMode === "department"
-                  ? "Each point represents a department"
-                  : "Each point represents an individual complaint"}
+                  ? t("admin.analytics.deptMode")
+                  : t("admin.analytics.caseMode")}
               </p>
             </div>
 
@@ -911,14 +915,14 @@ export const AdminAnalytics = () => {
                     <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
                     <XAxis
                       dataKey="complaintVolume"
-                      name="Number of Complaints"
+                      name={t("admin.analytics.complaintsCount")}
                       type="number"
                       domain={[0, "auto"]}
                       tick={{ fill: "#64748B", fontSize: 10 }}
                       tickLine={false}
                       axisLine={{ stroke: "#E2E8F0" }}
                       label={{
-                        value: "Number of Complaints",
+                        value: t("admin.analytics.complaintsCount"),
                         position: "insideBottom",
                         offset: -8,
                         fill: "#94A3B8",
@@ -928,14 +932,14 @@ export const AdminAnalytics = () => {
                     />
                     <YAxis
                       dataKey="avgResolutionTimeHours"
-                      name="Average Resolution Time (Hours)"
+                      name={t("admin.analytics.avgResolutionTime")}
                       type="number"
                       domain={[0, "auto"]}
                       tick={{ fill: "#64748B", fontSize: 10 }}
                       tickLine={false}
                       axisLine={false}
                       label={{
-                        value: "Average Resolution Time (Hours)",
+                        value: `${t("admin.analytics.avgResolutionTime")} (${t("admin.analytics.hours")})`,
                         angle: -90,
                         position: "insideLeft",
                         offset: 24,
@@ -984,14 +988,14 @@ export const AdminAnalytics = () => {
                     />
                     <YAxis
                       dataKey="resolutionTimeHours"
-                      name="Resolution Time (Hours)"
+                      name={t("admin.analytics.avgResolutionTime")}
                       type="number"
                       domain={[0, "auto"]}
                       tick={{ fill: "#64748B", fontSize: 10 }}
                       tickLine={false}
                       axisLine={false}
                       label={{
-                        value: "Resolution Time (Hours)",
+                        value: `${t("admin.analytics.avgResolutionTime")} (${t("admin.analytics.hours")})`,
                         angle: -90,
                         position: "insideLeft",
                         offset: 24,
@@ -1032,7 +1036,7 @@ export const AdminAnalytics = () => {
                       className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                       style={{ backgroundColor: getCategoryColor(cat.name) }}
                     />
-                    <span className="truncate">{cat.name}</span>
+                    <span className="truncate">{getLocalizedCategory(cat.name, t)}</span>
                   </div>
                 ))
               ) : (
@@ -1042,7 +1046,7 @@ export const AdminAnalytics = () => {
                       className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                       style={{ backgroundColor: PRIORITY_COLORS[p] }}
                     />
-                    <span>{p}</span>
+                    <span>{getLocalizedPriority(p, t)}</span>
                   </div>
                 ))
               )}
@@ -1054,10 +1058,10 @@ export const AdminAnalytics = () => {
         <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#E2E8F0] shadow-xs flex flex-col justify-between">
           <div className="mb-2">
             <h3 className="text-sm font-bold text-[#0F172A] tracking-tight">
-              Urgency & Priority Classification Distribution
+              {t("admin.analytics.priorityDistribution")}
             </h3>
             <p className="text-xs text-[#64748B] mt-0.5">
-              Total complaints by priority level
+              {t("admin.analytics.priorityLevelSub")}
             </p>
           </div>
 
@@ -1068,7 +1072,7 @@ export const AdminAnalytics = () => {
               </div>
             ) : priorityData.length === 0 ? (
               <div className="h-full flex items-center justify-center text-xs text-[#94A3B8]">
-                No priority records recorded.
+                {t("common.noData")}
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -1086,6 +1090,7 @@ export const AdminAnalytics = () => {
                     tick={{ fill: "#64748B", fontSize: 11, fontWeight: 500 }}
                     tickLine={false}
                     axisLine={{ stroke: "#E2E8F0" }}
+                    tickFormatter={(val) => getLocalizedPriority(val, t)}
                   />
                   <YAxis
                     tick={{ fill: "#64748B", fontSize: 11 }}
@@ -1093,7 +1098,7 @@ export const AdminAnalytics = () => {
                     axisLine={false}
                     allowDecimals={false}
                     label={{
-                      value: "Number of Complaints",
+                      value: t("admin.analytics.complaintsCount"),
                       angle: -90,
                       position: "insideLeft",
                       offset: 24,
@@ -1103,12 +1108,12 @@ export const AdminAnalytics = () => {
                     }}
                   />
                   <Tooltip
-                    content={<CustomChartTooltip unit="complaints" />}
+                    content={<CustomChartTooltip unit="cases" />}
                     cursor={{ fill: "#F8FAFC" }}
                   />
                   <Bar
                     dataKey="value"
-                    name="Complaints"
+                    name={t("citizen.dashboard.totalComplaints", "Complaints")}
                     radius={[4, 4, 0, 0]}
                     maxBarSize={48}
                     isAnimationActive={false}

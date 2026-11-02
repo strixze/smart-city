@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
 import SmartCityLogo from "../../components/SmartCityLogo";
 import {
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 
 export const NotFound = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleGoBack = () => {
@@ -128,7 +130,7 @@ export const NotFound = () => {
 
             {/* Floating Mini 404 Pill Badge */}
             <div className="absolute -bottom-2 bg-white/95 backdrop-blur-xs border border-[#E2E8F0] shadow-xs px-3.5 py-1 rounded-full text-xs font-black tracking-wider text-[#0D9488] z-20">
-              STATUS 404
+              {t("notFound.status", "STATUS 404")}
             </div>
           </div>
 
@@ -141,12 +143,11 @@ export const NotFound = () => {
 
           {/* Main Heading & Supporting Message */}
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-            Page Not Found
+            {t("notFound.title", "Page Not Found")}
           </h1>
 
           <p className="text-xs sm:text-sm text-[#64748B] mt-2 max-w-md mx-auto leading-relaxed">
-            The page you are looking for may have been moved, removed, or is temporarily unavailable.
-            Please verify the address or return to the main portal.
+            {t("notFound.description", "The page you are looking for may have been moved, removed, or is temporarily unavailable. Please verify the address or return to the main portal.")}
           </p>
 
           {/* Action Buttons: Primary (Homepage) & Secondary (Go Back) */}
@@ -156,7 +157,7 @@ export const NotFound = () => {
               className="w-full sm:w-auto min-w-[160px] py-2.5 sm:py-3 px-5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-2 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:ring-offset-2"
             >
               <Home className="w-4 h-4" />
-              <span>Go to Homepage</span>
+              <span>{t("notFound.goToHomepage", "Go to Homepage")}</span>
             </Link>
 
             <button
@@ -165,7 +166,7 @@ export const NotFound = () => {
               className="w-full sm:w-auto min-w-[140px] py-2.5 sm:py-3 px-5 rounded-xl bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] font-semibold text-xs sm:text-sm shadow-2xs transition-colors flex items-center justify-center gap-2 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-slate-300"
             >
               <ArrowLeft className="w-4 h-4 text-[#64748B]" />
-              <span>Go Back</span>
+              <span>{t("notFound.goBack", "Go Back")}</span>
             </button>
           </div>
 
@@ -173,7 +174,7 @@ export const NotFound = () => {
           <div className="mt-8 sm:mt-12 bg-white rounded-2xl p-4 sm:p-5 border border-[#E2E8F0] shadow-xs text-left max-w-lg mx-auto">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#475569] mb-3">
               <Compass className="w-4 h-4 text-[#0D9488]" />
-              <span>Popular Municipal Services</span>
+              <span>{t("notFound.popularServices", "Popular Municipal Services")}</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
@@ -184,7 +185,7 @@ export const NotFound = () => {
                 <div className="w-7 h-7 rounded-lg bg-teal-50 text-[#0D9488] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                   <MapPin className="w-3.5 h-3.5" />
                 </div>
-                <span>Report an Issue</span>
+                <span>{t("notFound.reportIssue", "Report an Issue")}</span>
               </Link>
 
               <Link
@@ -194,7 +195,7 @@ export const NotFound = () => {
                 <div className="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                   <FileText className="w-3.5 h-3.5" />
                 </div>
-                <span>Track Complaints</span>
+                <span>{t("notFound.trackComplaints", "Track Complaints")}</span>
               </Link>
 
               <Link
@@ -204,7 +205,7 @@ export const NotFound = () => {
                 <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                   <ShieldCheck className="w-3.5 h-3.5" />
                 </div>
-                <span>Staff & Admin Sign In</span>
+                <span>{t("notFound.staffSignIn", "Staff & Admin Sign In")}</span>
               </Link>
 
               <Link
@@ -214,14 +215,14 @@ export const NotFound = () => {
                 <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
                   <LifeBuoy className="w-3.5 h-3.5" />
                 </div>
-                <span>Civic Help & Services</span>
+                <span>{t("notFound.civicHelp", "Civic Help & Services")}</span>
               </Link>
             </div>
           </div>
 
           {/* Municipal Footer Notice */}
           <p className="text-[11px] text-[#94A3B8] mt-6 sm:mt-8">
-            SmartCity Civic Operations & Grievance Redressal System • Municipal Corporation
+            {t("notFound.footer", "SmartCity Civic Operations & Grievance Redressal System • Municipal Corporation")}
           </p>
         </div>
       </main>

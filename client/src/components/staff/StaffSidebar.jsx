@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContex";
 import { useNotification } from "../../context/notificationContext";
 import {
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 
 export const StaffSidebar = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -32,47 +34,45 @@ export const StaffSidebar = ({ isOpen, onClose }) => {
 
   const navItems = [
     {
-      name: "Dashboard",
+      name: t("nav.dashboard"),
       path: "/staff/dashboard",
       icon: LayoutDashboard,
       isActive: currentPath === "/staff/dashboard"
     },
     {
-      name: "Assigned Tasks",
+      name: t("nav.tasks"),
       path: "/staff/tasks",
       icon: ClipboardList,
       isActive: currentPath === "/staff/tasks" && !statusParam
     },
     {
-      name: "Work Log",
+      name: t("common.status") + ": " + t("status.IN_PROGRESS"),
       path: "/staff/tasks?status=IN_PROGRESS",
       icon: CalendarDays,
       isActive: currentPath === "/staff/tasks" && statusParam === "IN_PROGRESS"
     },
     {
-      name: "Field Reports",
+      name: t("common.status") + ": " + t("status.RESOLVED"),
       path: "/staff/tasks?status=RESOLVED",
       icon: FileText,
       isActive: currentPath === "/staff/tasks" && statusParam === "RESOLVED"
     },
     {
-      name: "Alerts",
+      name: t("nav.workAlerts"),
       path: "/staff/notifications",
       icon: Bell,
       badge: unreadCount > 0 ? unreadCount : 3,
       isActive: currentPath === "/staff/notifications"
     },
     {
-      name: "Profile",
+      name: t("nav.profile"),
       path: "/staff/profile",
       icon: User,
       isActive: currentPath === "/staff/profile"
     }
   ];
 
-  const departmentLabel = user?.department
-    ? `STAFF (${user.department.toUpperCase()})`
-    : "STAFF (WASTE MANAGEMENT)";
+  const departmentLabel = `${t("nav.staffPortal").toUpperCase()} (${(user?.department || "FIELD").toUpperCase()})`;
 
   return (
     <>
@@ -205,7 +205,7 @@ export const StaffSidebar = ({ isOpen, onClose }) => {
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#64748B] hover:text-[#DC2626] hover:bg-rose-50 transition-colors"
           >
             <LogOut className="w-4 h-4 flex-shrink-0" />
-            <span>Logout</span>
+            <span>{t("common.logout")}</span>
           </button>
         </div>
       </aside>

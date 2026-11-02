@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContex";
 import { useNotification } from "../../context/notificationContext";
 import {
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 
 export const CitizenSidebar = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const { unreadCount } = useNotification();
   const navigate = useNavigate();
@@ -27,30 +29,30 @@ export const CitizenSidebar = ({ isOpen, onClose }) => {
 
   const navLinks = [
     {
-      name: "Dashboard",
+      name: t("nav.dashboard"),
       path: "/citizen/dashboard",
       icon: LayoutDashboard,
       exact: true
     },
     {
-      name: "My Complaints",
+      name: t("nav.myComplaints"),
       path: "/citizen/complaints",
       icon: FileText
     },
     {
-      name: "New Complaint",
+      name: t("nav.newComplaint"),
       path: "/citizen/report",
       icon: PlusCircle,
       isPrimaryAction: true
     },
     {
-      name: "Notifications",
+      name: t("nav.notifications"),
       path: "/citizen/notifications",
       icon: Bell,
       badge: unreadCount > 0 ? unreadCount : null
     },
     {
-      name: "Profile",
+      name: t("nav.profile"),
       path: "/citizen/profile",
       icon: User
     }
@@ -96,7 +98,7 @@ export const CitizenSidebar = ({ isOpen, onClose }) => {
                   Smart<span className="text-[#0D9488]">City</span>
                 </span>
                 <span className="text-[10px] text-[#64748B] font-medium tracking-wide">
-                  Civic Grievance Portal
+                  {t("app.tagline")}
                 </span>
               </div>
             </NavLink>
@@ -114,7 +116,7 @@ export const CitizenSidebar = ({ isOpen, onClose }) => {
           {/* Navigation Items */}
           <div className="px-3 py-4 space-y-4">
             <div className="px-3 pb-1 text-[10px] font-bold text-[#94A3B8] tracking-wider uppercase">
-              CITIZEN PORTAL
+              {t("nav.citizenPortal")}
             </div>
 
             <nav className="space-y-1">
@@ -179,7 +181,7 @@ export const CitizenSidebar = ({ isOpen, onClose }) => {
                   {user?.name || "Citizen"}
                 </span>
                 <span className="text-[10px] text-[#64748B] truncate">
-                  Citizen
+                  {t("nav.citizenPortal")}
                 </span>
               </div>
             </div>
@@ -192,7 +194,7 @@ export const CitizenSidebar = ({ isOpen, onClose }) => {
             className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-[#64748B] hover:text-rose-600 hover:bg-rose-50 transition-colors text-left"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Logout</span>
+            <span>{t("common.logout")}</span>
           </button>
         </div>
       </aside>
