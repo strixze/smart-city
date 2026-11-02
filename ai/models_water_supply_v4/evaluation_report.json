@@ -1,0 +1,170 @@
+{
+  "evaluation_timestamp": "2026-11-02T09:49:33.773648Z",
+  "new_model_checkpoint": "D:\\safe\\smart-city\\ai\\models_water_supply_v4\\best_model.pth",
+  "base_checkpoint": "D:\\safe\\smart-city\\ai\\models_drainage_v3\\best_model.pth",
+  "test_counts": {
+    "water_supply": 23,
+    "drainage": 31,
+    "roads": 32,
+    "street_light": 23,
+    "waste_management": 29,
+    "total_test": 138
+  },
+  "overall_test_metrics": {
+    "accuracy": 0.9058,
+    "accuracy_pct": "90.58%",
+    "macro_precision": 0.9042,
+    "macro_recall": 0.9073,
+    "macro_f1": 0.905,
+    "mean_confidence": 0.8246
+  },
+  "per_class_metrics": {
+    "Drainage": {
+      "class_index": 0,
+      "test_support": 31,
+      "accuracy": 0.8387,
+      "precision": 0.9286,
+      "recall": 0.8387,
+      "f1_score": 0.8814,
+      "mean_confidence": 0.7068
+    },
+    "Roads": {
+      "class_index": 2,
+      "test_support": 32,
+      "accuracy": 0.9062,
+      "precision": 0.9062,
+      "recall": 0.9062,
+      "f1_score": 0.9062,
+      "mean_confidence": 0.8948
+    },
+    "Street Light": {
+      "class_index": 3,
+      "test_support": 23,
+      "accuracy": 0.913,
+      "precision": 0.84,
+      "recall": 0.913,
+      "f1_score": 0.875,
+      "mean_confidence": 0.7976
+    },
+    "Waste Management": {
+      "class_index": 4,
+      "test_support": 29,
+      "accuracy": 0.9655,
+      "precision": 0.9333,
+      "recall": 0.9655,
+      "f1_score": 0.9492,
+      "mean_confidence": 0.9145
+    },
+    "Water Supply": {
+      "class_index": 5,
+      "test_support": 23,
+      "accuracy": 0.913,
+      "precision": 0.913,
+      "recall": 0.913,
+      "f1_score": 0.913,
+      "mean_confidence": 0.7993
+    }
+  },
+  "confusion_matrix_6class": {
+    "classes": [
+      "Drainage",
+      "Other",
+      "Roads",
+      "Street Light",
+      "Waste Management",
+      "Water Supply"
+    ],
+    "matrix": [
+      [
+        26,
+        0,
+        2,
+        2,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        29,
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        0,
+        0,
+        21,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        28,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        1,
+        0,
+        21
+      ]
+    ]
+  },
+  "pairwise_confusion_analysis": {
+    "drainage_vs_water_supply": {
+      "drainage_confused_as_water_supply": 1,
+      "water_supply_confused_as_drainage": 1
+    },
+    "roads_vs_drainage": {
+      "roads_confused_as_drainage": 0,
+      "drainage_confused_as_roads": 2
+    },
+    "waste_management_vs_drainage": {
+      "waste_confused_as_drainage": 0,
+      "drainage_confused_as_waste": 0
+    }
+  },
+  "comparison_with_previous_checkpoint": {
+    "water_supply_accuracy_previous": 0.0,
+    "water_supply_accuracy_new": 0.913,
+    "water_supply_improvement_delta": 0.913,
+    "water_supply_classification_improved": true,
+    "drainage_accuracy_previous": 0.8065,
+    "drainage_accuracy_new": 0.8387,
+    "drainage_delta": 0.0323,
+    "drainage_performance_preserved": true,
+    "roads_accuracy_previous": 0.9062,
+    "roads_accuracy_new": 0.9062,
+    "roads_delta": 0.0,
+    "roads_performance_preserved": true,
+    "street_light_accuracy_previous": 0.9565,
+    "street_light_accuracy_new": 0.913,
+    "street_light_delta": -0.0435,
+    "street_light_performance_preserved": true,
+    "waste_management_accuracy_previous": 0.9655,
+    "waste_management_accuracy_new": 0.9655,
+    "waste_management_delta": 0.0,
+    "waste_performance_preserved": true
+  },
+  "unsupported_categories_limitations": {
+    "classes_without_real_training_data": [
+      "Other"
+    ],
+    "explanation": "Real labeled datasets are available now for Water Supply (150 images), Drainage (202 images), Roads (205 images), Street Light (150 images), and Waste Management (189 images). The 6-class output layer contract is preserved, but the model has NOT learned the single remaining class (Other) from real imagery. Any complaint classified in Other continues to use the calibrated heuristic vision fallback."
+  }
+}

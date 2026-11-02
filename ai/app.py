@@ -204,11 +204,17 @@ def health():
 @app.route("/reload-model", methods=["POST"])
 def reload_model_weights():
     """Reloads model weights and configuration from disk without restarting service."""
-    status = reload_model()
+    import importlib
+    import classifier
+    importlib.reload(classifier)
+    req_data = request.get_json(silent=True) or {}
+    models_dir = req_data.get("models_dir")
+    status = classifier.reload_model(models_dir)
     logger.info(
-        "MODEL RELOAD | Loaded: %s | Classes: %s | Error: %s",
+        "MODEL RELOAD | Loaded: %s | Classes: %s | Version: %s | Error: %s",
         status.get("loaded"),
         status.get("classes"),
+        status.get("version"),
         status.get("error"),
     )
     return jsonify({
@@ -508,6 +514,16 @@ def analyze():
             "WINNING RATIONALE | ReqID: %s | Winning: %s",
             request_id,
             result.get("reason", "")[:150],
+        )
+
+        model_ver = result.get("modelVersion") or (get_model_status().get("version") if result.get("modelLoaded") else "N/A")
+        logger.info(
+            "[INFERENCE] Model version: %s | Prediction category: %s | Confidence: %.4f | Inference duration: %.2f ms | Fallback triggered: %s",
+            model_ver,
+            result.get("predictedCategory", result.get("category", "Unknown")),
+            result.get("confidence", 0.0),
+            inference_ms,
+            result.get("isFallback", False),
         )
 
         if "diagnostics" in result and "mobilenet" in result["diagnostics"]:
