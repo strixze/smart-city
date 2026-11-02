@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContex";
 import { useNotification } from "../../context/notificationContext";
+import LanguageSwitcher from "../LanguageSwitcher";
 import {
   Menu,
   Bell,
@@ -16,11 +18,14 @@ import {
 import dayjs from "dayjs";
 
 export const StaffHeader = ({
-  title = "Field Operations",
-  subtitle = "Manage your assigned tasks, inspect issues, and submit completion proof",
+  title,
+  subtitle,
   onToggleSidebar,
   actions = null
 }) => {
+  const { t } = useTranslation();
+  const headerTitle = title || t("staff.dashboard.title");
+  const headerSubtitle = subtitle !== undefined ? subtitle : t("staff.dashboard.subtitle");
   const { user, logout } = useAuth();
   const { notifications, unreadCount, markAsRead } = useNotification();
   const navigate = useNavigate();
@@ -67,18 +72,21 @@ export const StaffHeader = ({
 
         <div className="min-w-0">
           <h1 className="text-base sm:text-lg font-bold text-[#0F172A] tracking-tight leading-tight truncate">
-            {title}
+            {headerTitle}
           </h1>
-          {subtitle && (
+          {headerSubtitle && (
             <p className="text-xs text-[#64748B] hidden sm:block truncate">
-              {subtitle}
+              {headerSubtitle}
             </p>
           )}
         </div>
       </div>
 
-      {/* Right: Date filter / Bell / User Profile */}
+      {/* Right: Language / Date / Bell / User Profile */}
       <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <LanguageSwitcher variant="segmented" className="hidden sm:inline-flex" />
+        <LanguageSwitcher variant="compact" className="sm:hidden" />
+
         {actions}
 
         {/* Date Selector / Display Pill matching reference */}
@@ -94,7 +102,7 @@ export const StaffHeader = ({
             type="button"
             onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
             className="relative p-2 rounded-xl text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] border border-[#E2E8F0] transition-colors shadow-2xs"
-            aria-label="View notifications"
+            aria-label={t("nav.workAlerts")}
           >
             <Bell className="w-4 h-4" />
             {(unreadCount > 0 || notifications.length > 0) && (
@@ -108,9 +116,9 @@ export const StaffHeader = ({
             <div className="absolute right-0 mt-2 w-80 bg-white border border-[#E2E8F0] rounded-2xl shadow-xl z-50 overflow-hidden text-left animate-in fade-in zoom-in-95">
               <div className="p-3.5 border-b border-[#F1F5F9] flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-bold text-[#0F172A]">Staff Alerts</h4>
+                  <h4 className="text-xs font-bold text-[#0F172A]">{t("staff.notifications.title")}</h4>
                   <p className="text-[10px] text-[#64748B]">
-                    {unreadCount > 0 ? `${unreadCount} unacknowledged updates` : "All notifications read"}
+                    {unreadCount > 0 ? `${unreadCount} ${t("citizen.notifications.unread", "unread")}` : t("common.all")}
                   </p>
                 </div>
                 <Link
@@ -118,7 +126,7 @@ export const StaffHeader = ({
                   onClick={() => setNotifDropdownOpen(false)}
                   className="text-[11px] font-semibold text-[#0D9488] hover:underline"
                 >
-                  View all
+                  {t("citizen.dashboard.viewAll")}
                 </Link>
               </div>
 
@@ -215,7 +223,7 @@ export const StaffHeader = ({
                   className="flex items-center gap-2 px-3.5 py-1.5 text-xs text-[#334155] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
                 >
                   <User className="w-3.5 h-3.5 text-[#64748B]" />
-                  <span>Staff Profile</span>
+                  <span>{t("nav.profile")}</span>
                 </Link>
                 <Link
                   to="/staff/tasks"
@@ -223,7 +231,7 @@ export const StaffHeader = ({
                   className="flex items-center gap-2 px-3.5 py-1.5 text-xs text-[#334155] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
                 >
                   <ShieldCheck className="w-3.5 h-3.5 text-[#64748B]" />
-                  <span>My Tasks</span>
+                  <span>{t("nav.tasks")}</span>
                 </Link>
               </div>
 
@@ -234,7 +242,7 @@ export const StaffHeader = ({
                   className="w-full flex items-center gap-2 px-3.5 py-1.5 text-xs text-rose-600 hover:bg-rose-50"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span>Sign Out</span>
+                  <span>{t("common.logout")}</span>
                 </button>
               </div>
             </div>

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContex";
 import { complaintApi, getImageUrl } from "../../api/client";
 import CitizenLayout from "../../components/citizen/CitizenLayout";
+import { getLocalizedCategory, getLocalizedStatus, formatDate } from "../../utils/formatters";
 import {
   Plus,
   PlusCircle,
@@ -37,6 +39,7 @@ dayjs.extend(relativeTime);
 export const CitizenDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatusTab, setSelectedStatusTab] = useState("ALL");
@@ -130,19 +133,19 @@ export const CitizenDashboard = () => {
       case "ASSIGNED":
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#DBEAFE] text-[#1D4ED8] whitespace-nowrap">
-            In Progress
+            {getLocalizedStatus(status, t)}
           </span>
         );
       case "RESOLVED":
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#DCFCE7] text-[#166534] whitespace-nowrap">
-            Resolved
+            {getLocalizedStatus("RESOLVED", t)}
           </span>
         );
       case "REOPENED":
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#FEE2E2] text-[#B91C1C] whitespace-nowrap">
-            Reopened
+            {getLocalizedStatus("REOPENED", t)}
           </span>
         );
       case "SUBMITTED":
@@ -150,7 +153,7 @@ export const CitizenDashboard = () => {
       default:
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#FEF3C7] text-[#92400E] whitespace-nowrap">
-            Pending
+            {getLocalizedStatus(status || "Pending", t)}
           </span>
         );
     }
@@ -158,8 +161,8 @@ export const CitizenDashboard = () => {
 
   return (
     <CitizenLayout
-      title="Dashboard"
-      subtitle="Track your civic complaints and help build a better city"
+      title={t("nav.dashboard", "Dashboard")}
+      subtitle={t("citizen.dashboard.subtitle", "Track your civic complaints and help build a better city")}
       searchQuery={searchQuery}
       onSearchChange={(q) => {
         setSearchQuery(q);
@@ -173,10 +176,10 @@ export const CitizenDashboard = () => {
         {/* Left Side: Welcome Text + Report Button */}
         <div className="flex-1 min-w-0 z-10">
           <h2 className="text-xl sm:text-2xl font-extrabold text-[#0F172A] tracking-tight">
-            Welcome back, {firstName}!
+            {t("citizen.dashboard.greeting", "Welcome back")}, {firstName}!
           </h2>
           <p className="text-xs sm:text-sm text-[#64748B] mt-1.5 max-w-md leading-relaxed">
-            Report civic issues, track progress, and help make our city cleaner, safer and better for everyone.
+            {t("citizen.dashboard.subtitle", "Report civic issues, track progress, and help make our city cleaner, safer and better for everyone.")}
           </p>
           <div className="mt-4">
             <Link
@@ -184,7 +187,7 @@ export const CitizenDashboard = () => {
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs shadow-xs transition-colors"
             >
               <Plus className="w-4 h-4" />
-              <span>Report a Civic Issue</span>
+              <span>{t("citizen.dashboard.reportNew", "Report a Civic Issue")}</span>
             </Link>
           </div>
         </div>
@@ -253,7 +256,7 @@ export const CitizenDashboard = () => {
               <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
                 <FileText className="w-4 h-4" />
               </div>
-              <span className="text-xs font-bold text-[#64748B]">Total Complaints</span>
+              <span className="text-xs font-bold text-[#64748B]">{t("citizen.dashboard.totalComplaints", "Total Complaints")}</span>
             </div>
           </div>
           <div className="flex items-end justify-between mt-1">
@@ -290,7 +293,7 @@ export const CitizenDashboard = () => {
               <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
                 <Clock className="w-4 h-4" />
               </div>
-              <span className="text-xs font-bold text-[#64748B]">Pending</span>
+              <span className="text-xs font-bold text-[#64748B]">{t("status.Pending", "Pending")}</span>
             </div>
           </div>
           <div className="flex items-end justify-between mt-1">
@@ -327,7 +330,7 @@ export const CitizenDashboard = () => {
               <div className="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center flex-shrink-0">
                 <Wrench className="w-4 h-4" />
               </div>
-              <span className="text-xs font-bold text-[#64748B]">In Progress</span>
+              <span className="text-xs font-bold text-[#64748B]">{t("status.IN_PROGRESS", "In Progress")}</span>
             </div>
           </div>
           <div className="flex items-end justify-between mt-1">
@@ -364,7 +367,7 @@ export const CitizenDashboard = () => {
               <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
-              <span className="text-xs font-bold text-[#64748B]">Resolved</span>
+              <span className="text-xs font-bold text-[#64748B]">{t("status.RESOLVED", "Resolved")}</span>
             </div>
           </div>
           <div className="flex items-end justify-between mt-1">
@@ -400,9 +403,9 @@ export const CitizenDashboard = () => {
                 <FileText className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-[#0F172A]">My Complaints</h3>
+                <h3 className="text-sm font-bold text-[#0F172A]">{t("citizen.complaints.title", "My Complaints")}</h3>
                 <p className="text-[11px] text-[#64748B]">
-                  Track the status and progress of your submitted complaints
+                  {t("citizen.complaints.subtitle", "Track the status and progress of your submitted complaints")}
                 </p>
               </div>
             </div>
@@ -417,7 +420,7 @@ export const CitizenDashboard = () => {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  placeholder="Search your complaints..."
+                  placeholder={t("citizen.complaints.searchPlaceholder", "Search your complaints...")}
                   className="w-full pl-8 pr-3 py-1.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0D9488] focus:bg-white"
                 />
               </div>
@@ -445,7 +448,7 @@ export const CitizenDashboard = () => {
                   : "border-transparent text-[#64748B] hover:text-[#0F172A]"
               }`}
             >
-              All ({data.stats.total})
+              {t("common.all", "All")} ({data.stats.total})
             </button>
 
             <button
@@ -460,7 +463,7 @@ export const CitizenDashboard = () => {
                   : "border-transparent text-[#64748B] hover:text-[#0F172A]"
               }`}
             >
-              Pending ({data.stats.pending || data.stats.reopened || 0})
+              {t("status.Pending", "Pending")} ({data.stats.pending || data.stats.reopened || 0})
             </button>
 
             <button
@@ -475,7 +478,7 @@ export const CitizenDashboard = () => {
                   : "border-transparent text-[#64748B] hover:text-[#0F172A]"
               }`}
             >
-              In Progress ({data.stats.inProgress})
+              {t("status.IN_PROGRESS", "In Progress")} ({data.stats.inProgress})
             </button>
 
             <button
@@ -490,7 +493,7 @@ export const CitizenDashboard = () => {
                   : "border-transparent text-[#64748B] hover:text-[#0F172A]"
               }`}
             >
-              Resolved ({data.stats.resolved})
+              {t("status.RESOLVED", "Resolved")} ({data.stats.resolved})
             </button>
 
             <button
@@ -505,7 +508,7 @@ export const CitizenDashboard = () => {
                   : "border-transparent text-[#64748B] hover:text-[#0F172A]"
               }`}
             >
-              Reopened ({data.stats.reopened || 0})
+              {t("status.REOPENED", "Reopened")} ({data.stats.reopened || 0})
             </button>
           </div>
 
@@ -518,16 +521,16 @@ export const CitizenDashboard = () => {
             /* Friendly Empty State matching requirement */
             <div className="py-12 text-center text-[#64748B] bg-[#F8FAFC] rounded-2xl border border-dashed border-[#E2E8F0]">
               <FileText className="w-10 h-10 mx-auto text-[#CBD5E1] mb-2" />
-              <p className="text-sm font-bold text-[#0F172A]">No complaints yet</p>
+              <p className="text-sm font-bold text-[#0F172A]">{t("citizen.dashboard.noComplaints", "No complaints yet")}</p>
               <p className="text-xs text-[#64748B] mt-1">
-                Report a civic issue in your neighborhood to get started.
+                {t("citizen.dashboard.noComplaintsSub", "Report a civic issue in your neighborhood to get started.")}
               </p>
               <Link
                 to="/citizen/report"
                 className="mt-3.5 inline-flex items-center gap-1.5 px-4 py-2 bg-[#0D9488] hover:bg-[#0F766E] text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Report an Issue</span>
+                <span>{t("citizen.dashboard.reportNew", "Report an Issue")}</span>
               </Link>
             </div>
           ) : (
@@ -572,7 +575,7 @@ export const CitizenDashboard = () => {
                     {/* Middle: Category */}
                     <div className="hidden md:flex items-center gap-1.5 text-xs text-[#475569] font-medium flex-shrink-0">
                       {getCategoryIcon(c.category)}
-                      <span>{c.category}</span>
+                      <span>{getLocalizedCategory(c.category, t)}</span>
                     </div>
 
                     {/* Right: Status badge, Date, and chevron */}
@@ -581,7 +584,7 @@ export const CitizenDashboard = () => {
 
                       <div className="hidden sm:block text-right whitespace-nowrap">
                         <p className="text-xs font-medium text-[#0F172A]">
-                          {dayjs(c.createdAt).format("MMM D, YYYY")}
+                          {formatDate(c.createdAt, i18n.language)}
                         </p>
                         <p className="text-[10px] text-[#94A3B8] font-mono">
                           {dayjs(c.createdAt).fromNow()}
@@ -599,9 +602,9 @@ export const CitizenDashboard = () => {
           {/* Footer & Pagination */}
           <div className="pt-3 border-t border-[#F1F5F9] flex items-center justify-between text-xs text-[#64748B]">
             <span>
-              Showing {filteredComplaints.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to{" "}
-              {Math.min(currentPage * itemsPerPage, filteredComplaints.length)} of{" "}
-              {filteredComplaints.length} complaints
+              {t("common.showing", "Showing")} {filteredComplaints.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} -{" "}
+              {Math.min(currentPage * itemsPerPage, filteredComplaints.length)} {t("common.of", "of")}{" "}
+              {filteredComplaints.length}
             </span>
 
             {totalPages > 1 && (
@@ -650,8 +653,8 @@ export const CitizenDashboard = () => {
                 <Plus className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-[#0F172A]">Report a New Issue</h3>
-                <p className="text-[11px] text-[#64748B]">Click below to report a civic issue in your area</p>
+                <h3 className="text-sm font-bold text-[#0F172A]">{t("citizen.dashboard.reportNew", "Report a New Issue")}</h3>
+                <p className="text-[11px] text-[#64748B]">{t("citizen.dashboard.subtitle", "Click below to report a civic issue in your area")}</p>
               </div>
             </div>
             <Link
@@ -659,7 +662,7 @@ export const CitizenDashboard = () => {
               className="w-full py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-colors"
             >
               <Plus className="w-4 h-4" />
-              <span>Report a Civic Issue</span>
+              <span>{t("citizen.dashboard.reportNew", "Report a Civic Issue")}</span>
             </Link>
           </div>
 
@@ -668,13 +671,13 @@ export const CitizenDashboard = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
                 <Clock className="w-4 h-4 text-[#0D9488]" />
-                <span>Recent Updates</span>
+                <span>{t("staff.recentUpdates", "Recent Updates")}</span>
               </h3>
               <Link
                 to="/citizen/notifications"
                 className="text-xs font-semibold text-[#0D9488] hover:underline"
               >
-                View all
+                {t("common.viewAll", "View all")}
               </Link>
             </div>
 

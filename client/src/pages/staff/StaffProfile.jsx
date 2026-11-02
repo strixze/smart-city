@@ -1,6 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import StaffLayout from "../../components/staff/StaffLayout";
 import { useAuth } from "../../context/authContex";
+import { getLocalizedCategory } from "../../utils/formatters";
 import {
   Briefcase,
   Mail,
@@ -13,12 +15,13 @@ import {
 } from "lucide-react";
 
 export const StaffProfile = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   return (
     <StaffLayout
-      title="Staff Profile & Credentials"
-      subtitle="Official municipal field personnel details and account authorization"
+      title={t("staff.profile.title", "Staff Profile & Credentials")}
+      subtitle={t("staff.profile.subtitle", "Official municipal field personnel details and account authorization")}
     >
       <div className="max-w-3xl space-y-6">
         {/* Profile Card */}
@@ -45,10 +48,10 @@ export const StaffProfile = () => {
               </p>
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F0FDFA] text-[#0D9488] border border-[#CCFBF1]">
-                  <CheckCircle className="w-3.5 h-3.5" /> Verified Municipal Personnel
+                  <CheckCircle className="w-3.5 h-3.5" /> {t("staff.profile.verifiedPersonnel", "Verified Municipal Personnel")}
                 </span>
                 <span className="text-xs text-[#64748B] font-mono">
-                  Dept: {user?.department || "Waste Management"}
+                  {t("common.department", "Dept")}: {getLocalizedCategory(user?.department || "Waste Management", t)}
                 </span>
               </div>
             </div>
@@ -61,7 +64,7 @@ export const StaffProfile = () => {
                 <BadgeCheck className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-[#64748B]">Employee ID</p>
+                <p className="text-xs text-[#64748B]">{t("staff.profile.employeeId", "Employee ID")}</p>
                 <p className="font-semibold text-sm text-[#0F172A] truncate mt-0.5">
                   {user?.employeeId || "EMP-FLD-0428"}
                 </p>
@@ -73,7 +76,7 @@ export const StaffProfile = () => {
                 <Mail className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-[#64748B]">Official Email</p>
+                <p className="text-xs text-[#64748B]">{t("staff.profile.officialEmail", "Official Email")}</p>
                 <p className="font-semibold text-sm text-[#0F172A] truncate mt-0.5">
                   {user?.email || "amit.patil@smartcity.gov"}
                 </p>
@@ -85,7 +88,7 @@ export const StaffProfile = () => {
                 <Phone className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-[#64748B]">Official Contact</p>
+                <p className="text-xs text-[#64748B]">{t("staff.profile.officialContact", "Official Contact")}</p>
                 <p className="font-semibold text-sm text-[#0F172A] truncate mt-0.5">
                   {user?.phone || "+91 98220 12345"}
                 </p>
@@ -97,9 +100,9 @@ export const StaffProfile = () => {
                 <Shield className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-[#64748B]">System Role</p>
+                <p className="text-xs text-[#64748B]">{t("common.role", "System Role")}</p>
                 <p className="font-semibold text-sm text-[#0F172A] truncate mt-0.5">
-                  FIELD OPERATIONS OFFICER
+                  {t("staff.profile.officerRole", "FIELD OPERATIONS OFFICER")}
                 </p>
               </div>
             </div>
@@ -109,10 +112,10 @@ export const StaffProfile = () => {
         {/* Operational Scope & Protocol */}
         <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-xs space-y-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-[#64748B]">
-            Field Operational Protocol
+            {t("staff.profile.protocolTitle", "Field Operational Protocol")}
           </h4>
           <p className="text-xs text-[#64748B] leading-relaxed">
-            Staff members assigned to civic repair tasks must verify initial site conditions, maintain active telemetry when starting work, and attach clear photographic evidence before closing grievances. All actions are logged into the municipal audit trail.
+            {t("staff.profile.protocolText", "Staff members assigned to civic repair tasks must verify initial site conditions, maintain active telemetry when starting work, and attach clear photographic evidence before closing grievances. All actions are logged into the municipal audit trail.")}
           </p>
         </div>
       </div>

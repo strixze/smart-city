@@ -1,7 +1,9 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import CitizenLayout from "../../components/citizen/CitizenLayout";
 import { complaintApi, aiApi } from "../../api/client";
+import { getLocalizedCategory, getLocalizedSubcategory, getLocalizedPriority } from "../../utils/formatters";
 import {
   ArrowLeft,
   ArrowRight,
@@ -69,6 +71,7 @@ export const CATEGORY_SUBCATEGORIES = {
 
 export const ReportComplaint = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1); // 1: Image & AI, 2: Title & Desc, 3: Location, 4: Review
 
   // File & Image State
@@ -320,16 +323,16 @@ export const ReportComplaint = () => {
   };
 
   const steps = [
-    { number: 1, label: "Upload Photo" },
-    { number: 2, label: "Details" },
-    { number: 3, label: "Location" },
-    { number: 4, label: "Review" }
+    { number: 1, label: t("citizen.report.step1Title", "Upload Photo") },
+    { number: 2, label: t("citizen.report.step2Title", "Details") },
+    { number: 3, label: t("citizen.report.step3Title", "Location") },
+    { number: 4, label: t("citizen.report.step4Title", "Review") }
   ];
 
   return (
     <CitizenLayout
-      title="Report a Civic Issue"
-      subtitle="AI-powered grievance registration with automated department routing"
+      title={t("citizen.report.title", "Report a Civic Issue")}
+      subtitle={t("citizen.report.subtitle", "AI-powered grievance registration with automated department routing")}
       actions={
         <button
           type="button"
@@ -339,16 +342,16 @@ export const ReportComplaint = () => {
           }}
           className="px-3.5 py-1.5 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-xs font-semibold text-[#0F172A] shadow-2xs flex items-center gap-1.5 transition-colors"
         >
-          <ArrowLeft className="w-3.5 h-3.5" /> Back
+          <ArrowLeft className="w-3.5 h-3.5" /> {t("common.back", "Back")}
         </button>
       }
     >
       {/* 4-Step Indicator Bar */}
       <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#E2E8F0] shadow-xs">
         <div className="flex items-center justify-between max-w-xl mx-auto mb-2 text-xs font-semibold text-[#64748B]">
-          <span className="text-[#0D9488] font-bold">Step {currentStep} of {steps.length}</span>
+          <span className="text-[#0D9488] font-bold">{t("common.step", "Step")} {currentStep} {t("common.of", "of")} {steps.length}</span>
           <span className="text-[11px] bg-[#F8FAFC] text-[#64748B] px-2.5 py-0.5 rounded-full font-medium border border-[#E2E8F0]">
-            ~1 min estimated
+            ~1 min
           </span>
         </div>
         <div className="flex items-center justify-between max-w-xl mx-auto relative pt-1">
@@ -403,10 +406,10 @@ export const ReportComplaint = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#F1F5F9] pb-4">
             <div>
               <h3 className="text-base sm:text-lg font-bold text-[#0F172A]">
-                Upload Incident Photograph
+                {t("citizen.report.uploadPhoto", "Upload Incident Photograph")}
               </h3>
               <p className="text-xs text-[#64748B] mt-0.5">
-                Our vision model will inspect visual defect signatures to recommend the department and priority.
+                {t("citizen.report.uploadInstructions", "Our vision model will inspect visual defect signatures to recommend the department and priority.")}
               </p>
             </div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-[#0D9488] text-xs font-semibold w-fit border border-teal-200">
@@ -475,10 +478,10 @@ export const ReportComplaint = () => {
               <div className="max-w-md mx-auto space-y-4">
                 <div>
                   <p className="text-sm sm:text-base font-bold text-[#0F172A]">
-                    Attach Incident Photograph
+                    {t("citizen.report.uploadPhoto", "Attach Incident Photograph")}
                   </p>
                   <p className="text-xs text-[#64748B] mt-1 max-w-sm mx-auto">
-                    Capture a new photo on-site or choose an existing image from your device gallery.
+                    {t("citizen.report.authenticityNotice", "Capture a new photo on-site or choose an existing image from your device gallery.")}
                   </p>
                 </div>
 
@@ -496,10 +499,10 @@ export const ReportComplaint = () => {
                     </div>
                     <div className="text-center">
                       <span className="text-sm font-bold text-[#0F172A] group-hover:text-[#0D9488] block">
-                        Take Photo
+                        {t("citizen.report.capturePhoto", "Take Photo")}
                       </span>
                       <span className="text-[11px] text-[#64748B] block mt-0.5">
-                        Capture with camera
+                        {t("citizen.report.capturePhoto", "Capture with camera")}
                       </span>
                     </div>
                   </button>
@@ -516,17 +519,17 @@ export const ReportComplaint = () => {
                     </div>
                     <div className="text-center">
                       <span className="text-sm font-bold text-[#0F172A] group-hover:text-[#0D9488] block">
-                        Upload from Gallery
+                        {t("citizen.report.fromGallery", "Upload from Gallery")}
                       </span>
                       <span className="text-[11px] text-[#64748B] block mt-0.5">
-                        Choose existing image
+                        {t("citizen.report.fromGallery", "Choose existing image")}
                       </span>
                     </div>
                   </button>
                 </div>
 
                 <p className="text-[11px] text-[#94A3B8] pt-1">
-                  or drag & drop photo here • Supports JPG, PNG, WEBP up to 10MB
+                  {t("citizen.report.cameraNotice", "or drag & drop photo here • Supports JPG, PNG, WEBP up to 10MB")}
                 </p>
               </div>
             </div>
@@ -546,7 +549,7 @@ export const ReportComplaint = () => {
                     <div className="absolute inset-0 bg-teal-950/20 backdrop-blur-[1px] pointer-events-none" />
                     <div className="absolute top-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-teal-400/40 text-teal-300 text-xs font-mono backdrop-blur-md shadow-lg">
                       <span className="w-2 h-2 rounded-full bg-teal-400 animate-ping" />
-                      <span>AI SCANNER: ANALYZING PIXELS...</span>
+                      <span>{t("citizen.report.analyzingImage", "AI SCANNER: ANALYZING...")}</span>
                     </div>
                   </>
                 )}
@@ -577,7 +580,7 @@ export const ReportComplaint = () => {
                     title="Retake photo using camera"
                   >
                     <Camera className="w-3.5 h-3.5 text-[#0D9488]" />
-                    <span>Retake Photo</span>
+                    <span>{t("citizen.report.capturePhoto", "Retake Photo")}</span>
                   </button>
                   <button
                     type="button"
@@ -586,7 +589,7 @@ export const ReportComplaint = () => {
                     title="Choose a different image from gallery"
                   >
                     <UploadCloud className="w-3.5 h-3.5 text-[#0D9488]" />
-                    <span>Choose from Gallery</span>
+                    <span>{t("citizen.report.fromGallery", "Choose from Gallery")}</span>
                   </button>
                   <button
                     type="button"
@@ -595,7 +598,7 @@ export const ReportComplaint = () => {
                     title="Remove photo"
                   >
                     <X className="w-3.5 h-3.5" />
-                    <span>Remove</span>
+                    <span>{t("common.delete", "Remove")}</span>
                   </button>
                 </div>
               </div>
@@ -607,14 +610,14 @@ export const ReportComplaint = () => {
                     onClick={() => analyzeImageWithAI(imageFile)}
                     className="px-6 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs shadow-xs transition-all flex items-center gap-2"
                   >
-                    <Sparkles className="w-4 h-4" /> Analyze Image with AI
+                    <Sparkles className="w-4 h-4" /> {t("citizen.report.aiDiagnosis", "Analyze Image with AI")}
                   </button>
                   <button
                     type="button"
                     onClick={handleContinueManually}
                     className="px-5 py-2.5 rounded-xl border border-[#CBD5E1] bg-white hover:bg-[#F8FAFC] text-[#475569] font-bold text-xs shadow-xs transition-all flex items-center gap-1.5"
                   >
-                    Continue Manually <ArrowRight className="w-4 h-4" />
+                    {t("citizen.report.continueManually", "Continue Manually")} <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               )}
@@ -626,7 +629,7 @@ export const ReportComplaint = () => {
             <div className="p-4 rounded-xl bg-teal-50 border border-teal-200 flex items-center gap-3 text-[#0D9488]">
               <Loader2 className="w-5 h-5 animate-spin text-[#0D9488] flex-shrink-0" />
               <div>
-                <p className="text-xs font-bold text-[#0F172A]">Vision Model Processing...</p>
+                <p className="text-xs font-bold text-[#0F172A]">{t("citizen.report.analyzingImage", "Vision Model Processing...")}</p>
                 <p className="text-[11px] text-[#64748B]">Identifying civic defect signature, category, and severity priority rating...</p>
               </div>
             </div>
@@ -638,7 +641,7 @@ export const ReportComplaint = () => {
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2 text-[#0D9488] font-bold text-xs uppercase tracking-wider">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Defect Confirmed by AI Vision</span>
+                  <span>{t("citizen.report.aiDiagnosis", "Defect Confirmed by AI Vision")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white text-slate-700 border border-teal-200 shadow-2xs">
@@ -652,23 +655,23 @@ export const ReportComplaint = () => {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
                 <div className="bg-white p-3 rounded-xl border border-teal-100 shadow-2xs">
-                  <span className="text-[10px] text-[#64748B] font-bold uppercase tracking-wider">Category</span>
-                  <p className="font-extrabold text-[#0F172A] mt-1 text-xs truncate">{aiResult.category}</p>
+                  <span className="text-[10px] text-[#64748B] font-bold uppercase tracking-wider">{t("citizen.report.categoryLabel", "Category")}</span>
+                  <p className="font-extrabold text-[#0F172A] mt-1 text-xs truncate">{getLocalizedCategory(aiResult.category, t)}</p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-teal-100 shadow-2xs">
-                  <span className="text-[10px] text-[#64748B] font-bold uppercase tracking-wider">Subcategory</span>
-                  <p className="font-extrabold text-[#0F172A] mt-1 text-xs truncate">{aiResult.subcategory || "General Issue"}</p>
+                  <span className="text-[10px] text-[#64748B] font-bold uppercase tracking-wider">{t("citizen.report.subcategoryLabel", "Subcategory")}</span>
+                  <p className="font-extrabold text-[#0F172A] mt-1 text-xs truncate">{getLocalizedSubcategory(aiResult.subcategory || "General Issue", t)}</p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-teal-100 shadow-2xs">
-                  <span className="text-[10px] text-[#64748B] font-bold uppercase tracking-wider">Priority</span>
+                  <span className="text-[10px] text-[#64748B] font-bold uppercase tracking-wider">{t("citizen.report.priorityLabel", "Priority")}</span>
                   <p className={`font-extrabold mt-1 text-xs truncate ${
                     aiResult.priority === "HIGH" ? "text-rose-600" : aiResult.priority === "MEDIUM" ? "text-amber-600" : "text-[#0D9488]"
                   }`}>
-                    {aiResult.priority || "MEDIUM"}
+                    {getLocalizedPriority(aiResult.priority || "MEDIUM", t)}
                   </p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-teal-100 shadow-2xs">
-                  <span className="text-[10px] text-[#64748B] font-bold uppercase tracking-wider">Triage</span>
+                  <span className="text-[10px] text-[#64748B] font-bold uppercase tracking-wider">{t("common.status", "Triage")}</span>
                   <p className="font-extrabold text-emerald-700 mt-1 text-xs truncate">Auto-Assigned</p>
                 </div>
               </div>
@@ -679,14 +682,14 @@ export const ReportComplaint = () => {
                   onClick={handleClearImage}
                   className="px-4 py-2 rounded-xl border border-[#CBD5E1] bg-white text-[#64748B] text-xs font-semibold hover:bg-[#F8FAFC]"
                 >
-                  Change Photo
+                  {t("citizen.report.reuploadPhoto", "Change Photo")}
                 </button>
                 <button
                   type="button"
                   onClick={handleNextFromStep1}
                   className="px-6 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition-colors"
                 >
-                  Continue to Details <ArrowRight className="w-4 h-4" />
+                  {t("citizen.report.nextStep", "Continue to Details")} <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -737,10 +740,10 @@ export const ReportComplaint = () => {
         <div className="bg-white rounded-2xl p-6 sm:p-7 border border-[#E2E8F0] shadow-xs space-y-6">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-[#0F172A]">
-              Tell us about the issue
+              {t("citizen.report.step2Title", "Tell us about the issue")}
             </h3>
             <p className="text-xs text-[#64748B] mt-0.5">
-              Confirm or select the category and provide clear details to guide municipal field crews.
+              {t("citizen.report.step2Desc", "Confirm or select the category and provide clear details to guide municipal field crews.")}
             </p>
           </div>
 
@@ -749,20 +752,20 @@ export const ReportComplaint = () => {
             <div className="flex items-center gap-2">
               <Cpu className="w-4 h-4 text-[#0D9488] flex-shrink-0" />
               <span className="text-[#64748B] font-semibold">
-                {aiResult ? "AI Suggested:" : "Classification:"}
+                {aiResult ? t("citizen.report.aiDiagnosis", "AI Suggested:") : t("citizen.report.categoryLabel", "Classification:")}
               </span>
               <span className="font-bold text-[#0F172A]">
-                {category} → {subcategory}
+                {getLocalizedCategory(category, t)} → {getLocalizedSubcategory(subcategory, t)}
               </span>
             </div>
             <div className="flex items-center gap-2">
               {aiResult && category !== (aiResult.category || aiResult.predictedCategory) ? (
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold border border-amber-200">
-                  Manual Citizen Override
+                  {t("citizen.report.changeCategory", "Manual Citizen Override")}
                 </span>
               ) : aiResult ? (
                 <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] text-[10px] font-bold border border-teal-200">
-                  AI Classified
+                  {t("citizen.report.aiDiagnosis", "AI Classified")}
                 </span>
               ) : (
                 <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200">
@@ -770,7 +773,7 @@ export const ReportComplaint = () => {
                 </span>
               )}
               <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] text-[10px] font-bold border border-teal-200">
-                {priority} Priority
+                {getLocalizedPriority(priority, t)} {t("citizen.report.priorityLabel", "Priority")}
               </span>
             </div>
           </div>
@@ -779,7 +782,7 @@ export const ReportComplaint = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1">
-                Category *
+                {t("citizen.report.categoryLabel", "Category")} *
               </label>
               <select
                 value={category}
@@ -793,7 +796,7 @@ export const ReportComplaint = () => {
               >
                 {Object.keys(CATEGORY_SUBCATEGORIES).map((cat) => (
                   <option key={cat} value={cat}>
-                    {cat}
+                    {getLocalizedCategory(cat, t)}
                   </option>
                 ))}
               </select>
@@ -801,7 +804,7 @@ export const ReportComplaint = () => {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1">
-                Subcategory *
+                {t("citizen.report.subcategoryLabel", "Subcategory")} *
               </label>
               <select
                 value={subcategory}
@@ -810,7 +813,7 @@ export const ReportComplaint = () => {
               >
                 {(CATEGORY_SUBCATEGORIES[category] || ["General Issue"]).map((sub) => (
                   <option key={sub} value={sub}>
-                    {sub}
+                    {getLocalizedSubcategory(sub, t)}
                   </option>
                 ))}
               </select>
@@ -818,31 +821,31 @@ export const ReportComplaint = () => {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1">
-                Priority Rating
+                {t("citizen.report.priorityLabel", "Priority Rating")}
               </label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
                 className="w-full px-3 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm text-[#0F172A] focus:outline-none focus:border-[#0D9488] focus:bg-white"
               >
-                <option value="LOW">LOW</option>
-                <option value="MEDIUM">MEDIUM</option>
-                <option value="HIGH">HIGH</option>
-                <option value="CRITICAL">CRITICAL</option>
+                <option value="LOW">{getLocalizedPriority("LOW", t)}</option>
+                <option value="MEDIUM">{getLocalizedPriority("MEDIUM", t)}</option>
+                <option value="HIGH">{getLocalizedPriority("HIGH", t)}</option>
+                <option value="CRITICAL">{getLocalizedPriority("CRITICAL", t)}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1">
-              Complaint Title *
+              {t("citizen.report.titleLabel", "Complaint Title")} *
             </label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Pothole near school gate"
+              placeholder={t("citizen.report.titlePlaceholder", "e.g. Pothole near school gate")}
               className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0D9488] focus:bg-white"
             />
           </div>
@@ -850,7 +853,7 @@ export const ReportComplaint = () => {
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
-                Description *
+                {t("citizen.report.descLabel", "Description")} *
               </label>
               <span className="text-[11px] text-[#94A3B8]">
                 {description.length}/500
@@ -862,7 +865,7 @@ export const ReportComplaint = () => {
               maxLength={500}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Large pothole near the school entrance. It is dangerous for vehicles and pedestrians."
+              placeholder={t("citizen.report.descPlaceholder", "Describe the issue, severity, and any hazards. You can write in English or Marathi.")}
               className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0D9488] focus:bg-white resize-y"
             />
           </div>
@@ -873,14 +876,14 @@ export const ReportComplaint = () => {
               onClick={() => setCurrentStep(1)}
               className="px-5 py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-[#64748B] text-xs font-semibold hover:bg-[#F8FAFC]"
             >
-              Back
+              {t("common.back", "Back")}
             </button>
             <button
               type="button"
               onClick={handleNextFromStep2}
               className="px-7 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition-colors"
             >
-              Continue <ArrowRight className="w-4 h-4" />
+              {t("citizen.report.nextStep", "Continue")} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -893,24 +896,24 @@ export const ReportComplaint = () => {
         <div className="bg-white rounded-2xl p-6 sm:p-7 border border-[#E2E8F0] shadow-xs space-y-6">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-[#0F172A]">
-              Location & Area Landmark *
+              {t("citizen.report.step3Title", "Location & Area Landmark")} *
             </h3>
             <p className="text-xs text-[#64748B] mt-0.5">
-              Provide exact streets, area name, or nearby landmark for field inspectors.
+              {t("citizen.report.step3Desc", "Provide exact streets, area name, or nearby landmark for field inspectors.")}
             </p>
           </div>
 
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1 flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-[#0D9488]" />
-              Address / Nearby Landmark *
+              {t("citizen.report.locationLabel", "Address / Nearby Landmark")} *
             </label>
             <input
               type="text"
               required
               value={locationAddress}
               onChange={(e) => setLocationAddress(e.target.value)}
-              placeholder="e.g. North Avenue, Sector 4 (Near Metro Station)"
+              placeholder={t("citizen.report.landmarkPlaceholder", "e.g. Opposite State Bank, Near City Garden")}
               className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0D9488] focus:bg-white"
             />
           </div>
@@ -924,7 +927,7 @@ export const ReportComplaint = () => {
               className="px-4 py-2 rounded-xl border border-teal-200 bg-teal-50 text-[#0D9488] hover:bg-teal-100/60 text-xs font-bold flex items-center gap-2 transition-colors"
             >
               {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Compass className="w-4 h-4 text-[#0D9488]" />}
-              {locating ? "Acquiring GPS Location..." : "Use Device GPS Location"}
+              {locating ? t("citizen.report.locating", "Acquiring GPS Location...") : t("citizen.report.useLiveGps", "Use Device GPS Location")}
             </button>
             <span className="text-[11px] text-[#64748B]">
               Auto-detects GPS coordinates for priority routing
@@ -944,14 +947,14 @@ export const ReportComplaint = () => {
               onClick={() => setCurrentStep(2)}
               className="px-5 py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-[#64748B] text-xs font-semibold hover:bg-[#F8FAFC]"
             >
-              Back
+              {t("common.back", "Back")}
             </button>
             <button
               type="button"
               onClick={handleNextFromStep3}
               className="px-7 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition-colors"
             >
-              Continue to Review <ArrowRight className="w-4 h-4" />
+              {t("citizen.report.nextStep", "Continue to Review")} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -964,10 +967,10 @@ export const ReportComplaint = () => {
         <div className="bg-white rounded-2xl p-6 sm:p-7 border border-[#E2E8F0] shadow-xs space-y-6">
           <div>
             <h3 className="text-base sm:text-lg font-bold text-[#0F172A]">
-              Review Complaint
+              {t("citizen.report.step4Title", "Review Complaint")}
             </h3>
             <p className="text-xs text-[#64748B] mt-0.5">
-              Confirm the details below before submitting to municipal operations.
+              {t("citizen.report.reviewSubtitle", "Confirm the details below before submitting to municipal operations.")}
             </p>
           </div>
 
@@ -976,7 +979,7 @@ export const ReportComplaint = () => {
             {imagePreviewUrl && (
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
-                  Uploaded Photo
+                  {t("citizen.report.uploadPhoto", "Uploaded Photo")}
                 </span>
                 <div className="mt-1.5 w-36 h-28 rounded-xl overflow-hidden border border-[#E2E8F0] shadow-2xs">
                   <img
@@ -992,30 +995,30 @@ export const ReportComplaint = () => {
             <div className="p-4 rounded-xl bg-white border border-[#E2E8F0] space-y-2 shadow-2xs">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#0D9488] flex items-center gap-1.5">
-                  <Cpu className="w-3.5 h-3.5" /> Classification & Triage Details
+                  <Cpu className="w-3.5 h-3.5" /> {t("citizen.report.aiDiagnosis", "Classification & Triage Details")}
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                  Classification: {!aiResult || category !== (aiResult.category || aiResult.predictedCategory) ? "Manual Citizen Selection" : (aiResult.needsReview ? "Pending Verification" : "Automated Analysis")}
+                  {!aiResult || category !== (aiResult.category || aiResult.predictedCategory) ? "Manual Citizen Selection" : (aiResult.needsReview ? "Pending Verification" : "Automated Analysis")}
                 </span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
                 <div>
-                  <p className="text-[10px] text-[#64748B] font-semibold uppercase">Category</p>
-                  <p className="font-bold text-[#0F172A]">{category}</p>
+                  <p className="text-[10px] text-[#64748B] font-semibold uppercase">{t("citizen.report.categoryLabel", "Category")}</p>
+                  <p className="font-bold text-[#0F172A]">{getLocalizedCategory(category, t)}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-[#64748B] font-semibold uppercase">Subcategory</p>
-                  <p className="font-bold text-[#0F172A]">{subcategory || "General"}</p>
+                  <p className="text-[10px] text-[#64748B] font-semibold uppercase">{t("citizen.report.subcategoryLabel", "Subcategory")}</p>
+                  <p className="font-bold text-[#0F172A]">{getLocalizedSubcategory(subcategory || "General", t)}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-[#64748B] font-semibold uppercase">Confidence</p>
+                  <p className="text-[10px] text-[#64748B] font-semibold uppercase">{t("citizen.report.aiConfidence", "Confidence")}</p>
                   <p className="font-bold text-[#0D9488]">
                     {aiResult ? `${Math.round((aiResult?.confidence || 0.85) * 100)}%` : "Manual Entry"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-[#64748B] font-semibold uppercase">Priority</p>
-                  <p className="font-bold text-amber-700">{priority}</p>
+                  <p className="text-[10px] text-[#64748B] font-semibold uppercase">{t("citizen.report.priorityLabel", "Priority")}</p>
+                  <p className="font-bold text-amber-700">{getLocalizedPriority(priority, t)}</p>
                 </div>
               </div>
               {aiResult?.requestId && (
@@ -1028,21 +1031,21 @@ export const ReportComplaint = () => {
 
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
-                Title
+                {t("citizen.report.titleLabel", "Title")}
               </span>
               <p className="text-sm font-bold text-[#0F172A] mt-0.5">{title}</p>
             </div>
 
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
-                Description
+                {t("citizen.report.descLabel", "Description")}
               </span>
               <p className="text-xs text-[#475569] mt-0.5 leading-relaxed">{description}</p>
             </div>
 
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">
-                Location
+                {t("citizen.report.locationLabel", "Location")}
               </span>
               <p className="text-xs font-semibold text-[#0D9488] flex items-center gap-1 mt-0.5">
                 <MapPin className="w-3.5 h-3.5 text-[#0D9488]" />
@@ -1057,7 +1060,7 @@ export const ReportComplaint = () => {
               onClick={() => setCurrentStep(3)}
               className="px-5 py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-[#64748B] text-xs font-semibold hover:bg-[#F8FAFC]"
             >
-              Back
+              {t("common.back", "Back")}
             </button>
 
             <button
@@ -1068,11 +1071,11 @@ export const ReportComplaint = () => {
             >
               {submitting ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" /> Submitting...
+                  <Loader2 className="w-4 h-4 animate-spin" /> {t("citizen.report.submitting", "Submitting...")}
                 </>
               ) : (
                 <>
-                  <Send className="w-4 h-4" /> Submit Complaint
+                  <Send className="w-4 h-4" /> {t("citizen.report.submitBtn", "Submit Complaint")}
                 </>
               )}
             </button>

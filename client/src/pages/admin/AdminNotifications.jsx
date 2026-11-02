@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AdminLayout from "../../components/admin/AdminLayout";
 import PushNotificationBanner from "../../components/PushNotificationBanner";
 import { useNotification } from "../../context/notificationContext";
@@ -20,6 +21,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 export const AdminNotifications = () => {
+  const { t } = useTranslation();
   const {
     notifications,
     loading,
@@ -45,8 +47,8 @@ export const AdminNotifications = () => {
 
   return (
     <AdminLayout
-      title="Administrative System Alerts"
-      subtitle="Real-time notifications, escalations, and newly submitted civic grievances"
+      title={t("admin.notifications.title")}
+      subtitle={t("admin.notifications.subtitle")}
       actions={
         notifications.some((n) => !n.isRead) && (
           <button
@@ -54,7 +56,7 @@ export const AdminNotifications = () => {
             onClick={markAllAsRead}
             className="px-3.5 py-1.5 rounded-xl bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC] text-xs font-semibold text-[#0F172A] flex items-center gap-1.5 shadow-2xs transition-colors"
           >
-            <Check className="w-3.5 h-3.5 text-[#0D9488]" /> Mark All Read
+            <Check className="w-3.5 h-3.5 text-[#0D9488]" /> {t("citizen.notifications.markAllRead", "Mark All Read")}
           </button>
         )
       }
@@ -67,8 +69,8 @@ export const AdminNotifications = () => {
         ) : notifications.length === 0 ? (
           <div className="py-16 text-center text-[#64748B]">
             <Bell className="w-10 h-10 mx-auto text-[#CBD5E1] mb-2" />
-            <p className="text-sm font-semibold text-[#0F172A]">No alerts recorded</p>
-            <p className="text-xs text-[#94A3B8] mt-1">Incoming incidents and dispatch triggers will appear here.</p>
+            <p className="text-sm font-semibold text-[#0F172A]">{t("citizen.notifications.noNotifications")}</p>
+            <p className="text-xs text-[#94A3B8] mt-1">{t("citizen.notifications.noNotificationsSub")}</p>
           </div>
         ) : (
           <div className="divide-y divide-[#F1F5F9]">
@@ -105,7 +107,7 @@ export const AdminNotifications = () => {
                     to={`/admin/complaints/${n.complaint._id || n.complaint}`}
                     className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-bold text-[#0D9488] flex items-center gap-1 transition-colors flex-shrink-0 shadow-2xs"
                   >
-                    Inspect <ArrowRight className="w-3 h-3" />
+                    {t("common.viewDetails", "Inspect")} <ArrowRight className="w-3 h-3" />
                   </Link>
                 )}
               </div>

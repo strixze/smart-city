@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/authContex";
 import { useNotification } from "../context/notificationContext";
 import {
@@ -12,19 +13,8 @@ import {
   ClipboardList
 } from "lucide-react";
 
-/**
- * MobileNavBottom
- *
- * Polished, responsive mobile bottom navigation bar:
- * - Visible strictly on mobile / small-screen devices (< lg: 1024px).
- * - Hidden on desktop (lg:hidden) preserving desktop sidebar navigation.
- * - Stays fixed at the bottom while scrolling.
- * - Respects mobile safe-area insets (env(safe-area-inset-bottom)).
- * - Accurately highlights active route (including nested complaint/task detail pages).
- * - Real-time notification badge dynamically synchronized with unreadCount.
- * - Clean light-theme matching SmartCity design tokens.
- */
 export const MobileNavBottom = () => {
+  const { t } = useTranslation();
   const { user, role } = useAuth();
   const { unreadCount } = useNotification();
   const location = useLocation();
@@ -54,31 +44,31 @@ export const MobileNavBottom = () => {
   if (role === "CITIZEN") {
     navItems = [
       {
-        name: "Home",
+        name: t("nav.home"),
         path: "/citizen/dashboard",
         icon: Home,
         exact: true
       },
       {
-        name: "Complaints",
+        name: t("nav.complaints"),
         path: "/citizen/complaints",
         icon: FileText,
         matchNested: true
       },
       {
-        name: "Report",
+        name: t("nav.newComplaint"),
         path: "/citizen/report",
         icon: Plus,
         isCenterAction: true
       },
       {
-        name: "Alerts",
+        name: t("nav.alerts"),
         path: "/citizen/notifications",
         icon: Bell,
         hasBadge: true
       },
       {
-        name: "Profile",
+        name: t("nav.profile"),
         path: "/citizen/profile",
         icon: User
       }
@@ -86,26 +76,26 @@ export const MobileNavBottom = () => {
   } else if (role === "STAFF") {
     navItems = [
       {
-        name: "Dashboard",
+        name: t("nav.dashboard"),
         path: "/staff/dashboard",
         icon: LayoutDashboard,
         exact: true
       },
       {
-        name: "Assigned",
+        name: t("nav.tasks"),
         path: "/staff/tasks",
         icon: ClipboardList,
         matchNested: true,
         additionalMatches: ["/staff/complaints"]
       },
       {
-        name: "Alerts",
+        name: t("nav.alerts"),
         path: "/staff/notifications",
         icon: Bell,
         hasBadge: true
       },
       {
-        name: "Profile",
+        name: t("nav.profile"),
         path: "/staff/profile",
         icon: User
       }
@@ -113,25 +103,25 @@ export const MobileNavBottom = () => {
   } else if (role === "ADMIN") {
     navItems = [
       {
-        name: "Dashboard",
+        name: t("nav.dashboard"),
         path: "/admin/dashboard",
         icon: LayoutDashboard,
         exact: true
       },
       {
-        name: "Complaints",
+        name: t("nav.complaints"),
         path: "/admin/complaints",
         icon: FileText,
         matchNested: true
       },
       {
-        name: "Alerts",
+        name: t("nav.alerts"),
         path: "/admin/notifications",
         icon: Bell,
         hasBadge: true
       },
       {
-        name: "Profile",
+        name: t("nav.profile"),
         path: "/admin/profile",
         icon: User
       }

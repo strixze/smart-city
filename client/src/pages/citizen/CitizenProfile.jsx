@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import CitizenLayout from "../../components/citizen/CitizenLayout";
 import { useAuth } from "../../context/authContex";
 import {
@@ -15,10 +16,11 @@ import dayjs from "dayjs";
 
 export const CitizenProfile = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <CitizenLayout
-      title="Citizen Profile"
+      title={t("nav.profile", "Citizen Profile")}
       subtitle="Your verified municipal account details and portal credentials"
     >
       <div className="max-w-3xl space-y-6">

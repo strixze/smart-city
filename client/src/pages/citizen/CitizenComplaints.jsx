@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import CitizenLayout from "../../components/citizen/CitizenLayout";
 import StatusBadge from "../../components/StatusBadge";
 import PriorityBadge from "../../components/PriorityBadge";
 import { complaintApi, getImageUrl } from "../../api/client";
+import { getLocalizedCategory, getLocalizedSubcategory, getLocalizedStatus, formatDate } from "../../utils/formatters";
 import {
   Search,
   Filter,
@@ -20,6 +22,7 @@ import {
 import dayjs from "dayjs";
 
 export const CitizenComplaints = () => {
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [complaints, setComplaints] = useState([]);
@@ -69,19 +72,19 @@ export const CitizenComplaints = () => {
       case "ASSIGNED":
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#DBEAFE] text-[#1D4ED8] whitespace-nowrap">
-            In Progress
+            {getLocalizedStatus(status, t)}
           </span>
         );
       case "RESOLVED":
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#DCFCE7] text-[#166534] whitespace-nowrap">
-            Resolved
+            {getLocalizedStatus("RESOLVED", t)}
           </span>
         );
       case "REOPENED":
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#FEE2E2] text-[#B91C1C] whitespace-nowrap">
-            Reopened
+            {getLocalizedStatus("REOPENED", t)}
           </span>
         );
       case "SUBMITTED":
@@ -89,7 +92,7 @@ export const CitizenComplaints = () => {
       default:
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#FEF3C7] text-[#92400E] whitespace-nowrap">
-            Pending
+            {getLocalizedStatus(status || "Pending", t)}
           </span>
         );
     }
@@ -97,8 +100,8 @@ export const CitizenComplaints = () => {
 
   return (
     <CitizenLayout
-      title="My Grievance History"
-      subtitle="View resolution progress, photographic proofs, and feedback actions"
+      title={t("citizen.complaints.title", "My Grievance History")}
+      subtitle={t("citizen.complaints.subtitle", "View resolution progress, photographic proofs, and feedback actions")}
       actions={
         <div className="flex items-center gap-2">
           <button
@@ -106,7 +109,7 @@ export const CitizenComplaints = () => {
             onClick={() => fetchComplaints(true)}
             disabled={refreshing}
             className="p-2 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] hover:text-[#0D9488] shadow-2xs transition-colors"
-            title="Refresh Grievances"
+            title={t("common.refresh", "Refresh Grievances")}
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin text-[#0D9488]" : ""}`} />
           </button>
@@ -114,7 +117,7 @@ export const CitizenComplaints = () => {
             to="/citizen/report"
             className="px-3.5 py-1.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition-colors whitespace-nowrap"
           >
-            <Plus className="w-3.5 h-3.5" /> Report Issue
+            <Plus className="w-3.5 h-3.5" /> {t("citizen.dashboard.reportNew", "Report Issue")}
           </Link>
         </div>
       }
@@ -127,7 +130,7 @@ export const CitizenComplaints = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by complaint ID, title, or location..."
+            placeholder={t("citizen.complaints.searchPlaceholder", "Search by complaint ID, title, or location...")}
             className="w-full pl-10 pr-4 py-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-xs sm:text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0D9488] focus:bg-white transition-colors"
           />
         </form>
@@ -138,13 +141,13 @@ export const CitizenComplaints = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="w-full md:w-auto px-3 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs sm:text-sm text-[#0F172A] focus:outline-none focus:border-[#0D9488]"
           >
-            <option value="ALL">All Statuses</option>
-            <option value="SUBMITTED">Submitted</option>
-            <option value="ASSIGNED">Assigned</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="RESOLVED">Resolved</option>
-            <option value="REOPENED">Reopened</option>
-            <option value="REJECTED">Rejected</option>
+            <option value="ALL">{t("citizen.complaints.allStatuses", "All Statuses")}</option>
+            <option value="SUBMITTED">{t("status.SUBMITTED", "Submitted")}</option>
+            <option value="ASSIGNED">{t("status.ASSIGNED", "Assigned")}</option>
+            <option value="IN_PROGRESS">{t("status.IN_PROGRESS", "In Progress")}</option>
+            <option value="RESOLVED">{t("status.RESOLVED", "Resolved")}</option>
+            <option value="REOPENED">{t("status.REOPENED", "Reopened")}</option>
+            <option value="REJECTED">{t("status.REJECTED", "Rejected")}</option>
           </select>
 
           <select
@@ -152,15 +155,15 @@ export const CitizenComplaints = () => {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="w-full md:w-auto px-3 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs sm:text-sm text-[#0F172A] focus:outline-none focus:border-[#0D9488]"
           >
-            <option value="ALL">All Categories</option>
-            <option value="Street Light">Street Light</option>
-            <option value="Waste Management">Waste Management</option>
-            <option value="Roads">Roads</option>
-            <option value="Drainage">Drainage</option>
-            <option value="Water Supply">Water Supply</option>
-            <option value="Street Infrastructure">Street Infrastructure</option>
-            <option value="Public Property">Public Property</option>
-            <option value="Other">Other</option>
+            <option value="ALL">{t("citizen.complaints.allCategories", "All Categories")}</option>
+            <option value="Street Light">{getLocalizedCategory("Street Light", t)}</option>
+            <option value="Waste Management">{getLocalizedCategory("Waste Management", t)}</option>
+            <option value="Roads">{getLocalizedCategory("Roads", t)}</option>
+            <option value="Drainage">{getLocalizedCategory("Drainage", t)}</option>
+            <option value="Water Supply">{getLocalizedCategory("Water Supply", t)}</option>
+            <option value="Street Infrastructure">{getLocalizedCategory("Street Infrastructure", t)}</option>
+            <option value="Public Property">{getLocalizedCategory("Public Property", t)}</option>
+            <option value="Other">{getLocalizedCategory("Other", t)}</option>
           </select>
         </div>
       </div>
@@ -173,8 +176,8 @@ export const CitizenComplaints = () => {
       ) : complaints.length === 0 ? (
         <div className="bg-white rounded-2xl p-12 text-center border border-[#E2E8F0] shadow-xs">
           <FileText className="w-10 h-10 mx-auto text-[#CBD5E1] mb-2" />
-          <p className="text-base font-bold text-[#0F172A]">No complaints found</p>
-          <p className="text-xs text-[#64748B] mt-1">Try adjusting your filters or search term above.</p>
+          <p className="text-base font-bold text-[#0F172A]">{t("citizen.complaints.noMatching", "No complaints found")}</p>
+          <p className="text-xs text-[#64748B] mt-1">{t("citizen.dashboard.noComplaintsSub", "Try adjusting your filters or search term above.")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
@@ -225,7 +228,7 @@ export const CitizenComplaints = () => {
                         <span className="truncate">{comp.locationAddress}</span>
                       </span>
                       <span className="text-[11px] text-[#94A3B8]">
-                        Dept: <span className="text-[#475569]">{comp.category}</span> • {comp.subcategory || "General"}
+                        {t("citizen.report.categoryLabel", "Dept")}: <span className="text-[#475569]">{getLocalizedCategory(comp.category, t)}</span> • {getLocalizedSubcategory(comp.subcategory || "General", t)}
                       </span>
                     </div>
                   </div>
@@ -235,14 +238,14 @@ export const CitizenComplaints = () => {
                 <div className="pt-3 border-t border-[#F1F5F9] flex items-center justify-between text-xs text-[#64748B]">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5 text-[#94A3B8]" />
-                    {dayjs(comp.createdAt).format("DD MMM YYYY")}
+                    {formatDate(comp.createdAt, i18n.language)}
                   </span>
 
                   <Link
                     to={`/citizen/complaints/${comp._id}`}
                     className="px-3 py-1.5 rounded-lg bg-white hover:bg-[#F8FAFC] text-xs font-bold text-[#0D9488] border border-[#E2E8F0] shadow-2xs transition-colors flex items-center gap-1"
                   >
-                    Details & Proof <ArrowRight className="w-3.5 h-3.5 text-[#0D9488]" />
+                    {t("citizen.complaints.viewDetails", "Details & Proof")} <ArrowRight className="w-3.5 h-3.5 text-[#0D9488]" />
                   </Link>
                 </div>
               </div>

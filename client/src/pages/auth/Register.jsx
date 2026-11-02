@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContex";
 import Navbar from "../../components/Navbar";
 import SmartCityLogo from "../../components/SmartCityLogo";
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 
 export const Register = () => {
+  const { t } = useTranslation();
   const { register, isLoggedIn, role } = useAuth();
   const navigate = useNavigate();
 
@@ -57,27 +59,27 @@ export const Register = () => {
     const errors = {};
 
     if (!formData.name.trim()) {
-      errors.name = "Full name is required";
+      errors.name = t("validation.descRequired", "Full name is required");
     } else if (formData.name.trim().length < 2) {
-      errors.name = "Name must be at least 2 characters";
+      errors.name = t("validation.descRequired", "Name must be at least 2 characters");
     }
 
     if (!formData.email.trim()) {
-      errors.email = "Email address is required";
+      errors.email = t("validation.emailInvalid", "Email address is required");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      errors.email = "Please enter a valid email address";
+      errors.email = t("validation.emailInvalid", "Please enter a valid email address");
     }
 
     if (!formData.password) {
-      errors.password = "Password is required";
+      errors.password = t("validation.passwordMinLength", "Password is required");
     } else if (formData.password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+      errors.password = t("validation.passwordMinLength", "Password must be at least 6 characters");
     }
 
     if (!formData.confirmPassword) {
-      errors.confirmPassword = "Please confirm your password";
+      errors.confirmPassword = t("validation.passwordMismatch", "Please confirm your password");
     } else if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = "Passwords do not match";
+      errors.confirmPassword = t("validation.passwordMismatch", "Passwords do not match");
     }
 
     setValidationErrors(errors);
@@ -125,10 +127,10 @@ export const Register = () => {
               <SmartCityLogo variant="dark-text" size="lg" to="/" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-              Citizen Registration
+              {t("auth.register.title")}
             </h1>
             <p className="text-xs sm:text-sm text-[#64748B] mt-1 max-w-sm mx-auto">
-              Create an account to report civic issues and track resolutions in real time
+              {t("auth.register.subtitle")}
             </p>
           </div>
 
@@ -152,7 +154,7 @@ export const Register = () => {
                   htmlFor="name"
                   className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1.5"
                 >
-                  Full Name *
+                  {t("auth.register.fullName")} *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
@@ -166,7 +168,7 @@ export const Register = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Rahul Sharma"
+                    placeholder={t("auth.register.fullNamePlaceholder")}
                     disabled={loading}
                     className={`w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] border rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] transition-all focus:outline-none focus:bg-white disabled:opacity-50 ${
                       validationErrors.name
@@ -188,7 +190,7 @@ export const Register = () => {
                   htmlFor="email"
                   className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1.5"
                 >
-                  Email Address *
+                  {t("auth.register.email")} *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
@@ -202,7 +204,7 @@ export const Register = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="name@example.com"
+                    placeholder={t("auth.register.emailPlaceholder")}
                     disabled={loading}
                     className={`w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] border rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] transition-all focus:outline-none focus:bg-white disabled:opacity-50 ${
                       validationErrors.email
@@ -225,7 +227,7 @@ export const Register = () => {
                     htmlFor="phone"
                     className="text-xs font-bold uppercase tracking-wider text-[#0F172A]"
                   >
-                    Phone Number
+                    {t("auth.register.phone")}
                   </label>
                   <span className="text-[11px] text-[#94A3B8]">Optional</span>
                 </div>
@@ -240,7 +242,7 @@ export const Register = () => {
                     autoComplete="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="+91 98765 43210"
+                    placeholder={t("auth.register.phonePlaceholder")}
                     disabled={loading}
                     className="w-full pl-10 pr-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] transition-all focus:outline-none focus:border-[#0D9488] focus:bg-white focus:ring-2 focus:ring-[#0D9488]/15 disabled:opacity-50"
                   />
@@ -253,7 +255,7 @@ export const Register = () => {
                   htmlFor="password"
                   className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1.5"
                 >
-                  Password *
+                  {t("auth.register.password")} *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
@@ -267,7 +269,7 @@ export const Register = () => {
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="At least 6 characters"
+                    placeholder={t("auth.register.passwordPlaceholder")}
                     disabled={loading}
                     className={`w-full pl-10 pr-11 py-2.5 bg-[#F8FAFC] border rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] transition-all focus:outline-none focus:bg-white disabled:opacity-50 ${
                       validationErrors.password
@@ -297,7 +299,7 @@ export const Register = () => {
                         isPasswordValidLength ? "text-emerald-500" : "text-[#CBD5E1]"
                       }`}
                     />
-                    Must be at least 6 characters
+                    {t("validation.passwordMinLength")}
                   </span>
                 </div>
                 {validationErrors.password && (
@@ -313,7 +315,7 @@ export const Register = () => {
                   htmlFor="confirmPassword"
                   className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1.5"
                 >
-                  Confirm Password *
+                  {t("auth.register.confirmPassword")} *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
@@ -327,7 +329,7 @@ export const Register = () => {
                     required
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    placeholder="Repeat password"
+                    placeholder={t("auth.register.confirmPasswordPlaceholder")}
                     disabled={loading}
                     className={`w-full pl-10 pr-11 py-2.5 bg-[#F8FAFC] border rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] transition-all focus:outline-none focus:bg-white disabled:opacity-50 ${
                       validationErrors.confirmPassword
@@ -360,7 +362,7 @@ export const Register = () => {
                           isPasswordsMatching ? "text-emerald-500" : "text-rose-400"
                         }`}
                       />
-                      {isPasswordsMatching ? "Passwords match" : "Passwords do not match"}
+                      {isPasswordsMatching ? "Passwords match" : t("validation.passwordMismatch")}
                     </span>
                   </div>
                 )}
@@ -380,11 +382,11 @@ export const Register = () => {
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Creating Account...
+                    {t("auth.register.signingUp")}
                   </>
                 ) : (
                   <>
-                    Create Citizen Account <ArrowRight className="w-4 h-4" />
+                    {t("auth.register.signUpBtn")} <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
@@ -393,12 +395,12 @@ export const Register = () => {
             {/* Footer Navigation Link */}
             <div className="mt-6 pt-5 border-t border-[#F1F5F9] text-center">
               <p className="text-xs text-[#64748B]">
-                Already have an account?{" "}
+                {t("auth.register.haveAccount")}{" "}
                 <Link
                   to="/login"
                   className="font-semibold text-[#0D9488] hover:text-[#0F766E] hover:underline"
                 >
-                  Sign in here
+                  {t("auth.register.signInLink")}
                 </Link>
               </p>
             </div>

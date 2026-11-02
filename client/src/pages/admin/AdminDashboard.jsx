@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AdminLayout from "../../components/admin/AdminLayout";
 import AdminMap from "../../components/admin/AdminMap";
 import { adminApi } from "../../api/client";
+import {
+  getLocalizedCategory,
+  getLocalizedStatus,
+  getLocalizedPriority,
+  formatDate,
+  formatNumber
+} from "../../utils/formatters";
 import {
   AlertTriangle,
   Clock,
@@ -31,6 +39,7 @@ import toast from "react-hot-toast";
 dayjs.extend(relativeTime);
 
 export const AdminDashboard = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -242,13 +251,13 @@ export const AdminDashboard = () => {
       case "IN_PROGRESS":
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#FEF3C7] text-[#92400E] uppercase tracking-wide border border-amber-200/50">
-            IN PROGRESS
+            {getLocalizedStatus("IN_PROGRESS", t)}
           </span>
         );
       case "RESOLVED":
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#DCFCE7] text-[#166534] uppercase tracking-wide border border-emerald-200/50">
-            RESOLVED
+            {getLocalizedStatus("RESOLVED", t)}
           </span>
         );
       case "SUBMITTED":
@@ -257,7 +266,7 @@ export const AdminDashboard = () => {
       default:
         return (
           <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#FEE2E2] text-[#991B1B] uppercase tracking-wide border border-rose-200/50">
-            OPEN
+            {getLocalizedStatus(status || "SUBMITTED", t)}
           </span>
         );
     }
@@ -271,21 +280,21 @@ export const AdminDashboard = () => {
         return (
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/60">
             <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-            High
+            {getLocalizedPriority("HIGH", t)}
           </span>
         );
       case "MEDIUM":
         return (
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/60">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-            Medium
+            {getLocalizedPriority("MEDIUM", t)}
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-50 text-slate-600 border border-slate-200/60">
             <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-            Low
+            {getLocalizedPriority("LOW", t)}
           </span>
         );
     }
@@ -293,8 +302,8 @@ export const AdminDashboard = () => {
 
   return (
     <AdminLayout
-      title="Operations Center"
-      subtitle="Here's what's happening in your city today."
+      title={t("admin.dashboard.title", "Operations Center")}
+      subtitle={t("admin.dashboard.subtitle", "Here's what's happening in your city today.")}
       onRefresh={() => fetchDashboard(true)}
       refreshing={refreshing}
       actions={
@@ -302,7 +311,7 @@ export const AdminDashboard = () => {
           to="/admin/complaints"
           className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-colors"
         >
-          Manage Complaints
+          {t("admin.complaints.title", "Manage Complaints")}
         </Link>
       }
     >
@@ -318,26 +327,26 @@ export const AdminDashboard = () => {
             onClick={() => fetchDashboard(true)}
             className="px-3 py-1 bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700"
           >
-            Retry
+            {t("common.retry", "Retry")}
           </button>
         </div>
       )}
 
-      {/* SECTION 1: Needs Attention (Amber Alert Section matching Fixly Operations Center) */}
+      {/* SECTION 1: Needs Attention (Amber Alert Section) */}
       <section className="bg-[#FFFBEB] rounded-2xl border border-[#FDE68A] p-4 sm:p-5 shadow-xs">
         {/* Top Header of Needs Attention */}
         <div className="flex flex-wrap items-center gap-2.5 mb-4">
           <div className="w-7 h-7 rounded-lg bg-[#F59E0B] text-white flex items-center justify-center flex-shrink-0 shadow-xs">
             <AlertTriangle className="w-4 h-4" />
           </div>
-          <h2 className="text-sm font-bold text-[#0F172A]">Needs Attention</h2>
+          <h2 className="text-sm font-bold text-[#0F172A]">{t("admin.dashboard.needsAttention", "Needs Attention")}</h2>
           <span className="px-2.5 py-0.5 rounded-full bg-[#EA580C] text-white text-[10px] font-extrabold uppercase tracking-wide">
-            ACTION REQUIRED
+            {t("admin.dashboard.actionRequired", "ACTION REQUIRED")}
           </span>
           <span className="text-xs text-[#78350F] ml-auto">
             {overdueIssues + unassignedIssues > 0
-              ? `${overdueIssues + unassignedIssues} items need action right now`
-              : "All priority dispatches are currently on schedule"}
+              ? `${overdueIssues + unassignedIssues} ${t("admin.dashboard.itemsNeedAction", "items need action right now")}`
+              : t("admin.dashboard.allOnSchedule", "All priority dispatches are currently on schedule")}
           </span>
         </div>
 
@@ -351,12 +360,12 @@ export const AdminDashboard = () => {
                   <AlertTriangle className="w-3.5 h-3.5" />
                 </div>
                 <h4 className="text-xs font-bold text-[#0F172A]">
-                  <span className="text-rose-600 font-extrabold mr-1">▲ {Math.max(2, overdueIssues)} overdue</span>
-                  — all within SLA
+                  <span className="text-rose-600 font-extrabold mr-1">▲ {Math.max(2, overdueIssues)} {t("staff.dashboard.urgentAttention", "overdue")}</span>
+                  — SLA
                 </h4>
               </div>
               <p className="text-[11px] text-[#64748B] pl-9">
-                Every active report still has time on the clock.
+                {t("admin.dashboard.activeReportTime", "Every active report still has time on the clock.")}
               </p>
             </div>
             <div className="mt-3 pl-9">
@@ -364,7 +373,7 @@ export const AdminDashboard = () => {
                 to="/admin/complaints?status=IN_PROGRESS"
                 className="inline-block px-3 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold border border-rose-200 transition-colors"
               >
-                Resolve now
+                {t("admin.dashboard.resolveNow", "Resolve now")}
               </Link>
             </div>
           </div>
@@ -378,16 +387,16 @@ export const AdminDashboard = () => {
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h4 className="text-xs font-bold text-[#0F172A]">
-                    <span className="text-amber-600 font-extrabold mr-1">▲ {Math.max(3, unassignedIssues)} unassigned</span>
-                    high-priority
+                    <span className="text-amber-600 font-extrabold mr-1">▲ {Math.max(3, unassignedIssues)} {t("admin.dashboard.unassigned", "unassigned")}</span>
+                    {t("priority.HIGH", "high-priority")}
                   </h4>
                   <span className="px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider">
-                    NEEDS AN OWNER
+                    {t("admin.dashboard.needsOwner", "NEEDS AN OWNER")}
                   </span>
                 </div>
               </div>
               <p className="text-[11px] text-[#64748B] pl-9">
-                Assign a team to start the clock.
+                {t("admin.dashboard.assignTeam", "Assign a team to start the clock.")}
               </p>
             </div>
             <div className="mt-3 pl-9">
@@ -395,7 +404,7 @@ export const AdminDashboard = () => {
                 to="/admin/complaints?status=SUBMITTED"
                 className="inline-block px-3 py-1 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-semibold shadow-xs transition-colors"
               >
-                Assign now
+                {t("admin.dashboard.assignNow", "Assign now")}
               </Link>
             </div>
           </div>
@@ -409,15 +418,15 @@ export const AdminDashboard = () => {
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h4 className="text-xs font-bold text-[#0F172A]">
-                    1 nearing SLA breach
+                    {t("admin.dashboard.nearingSla", "Nearing SLA breach")}
                   </h4>
                   <span className="px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 text-[9px] font-bold uppercase tracking-wider">
-                    TIGHTEST: 2H REMAINING
+                    SLA ALERT
                   </span>
                 </div>
               </div>
               <p className="text-[11px] text-[#64748B] pl-9">
-                Less than 25% of SLA window remaining.
+                {t("admin.dashboard.slaRemaining", "Less than 25% of SLA window remaining.")}
               </p>
             </div>
             <div className="mt-3 pl-9">
@@ -425,7 +434,7 @@ export const AdminDashboard = () => {
                 to="/admin/complaints?priority=HIGH"
                 className="inline-block px-3 py-1 rounded-lg bg-[#F59E0B] hover:bg-[#D97706] text-white text-xs font-semibold shadow-xs transition-colors"
               >
-                Review now
+                {t("admin.dashboard.reviewNow", "Review now")}
               </Link>
             </div>
           </div>
@@ -441,16 +450,16 @@ export const AdminDashboard = () => {
               <ClipboardList className="w-3.5 h-3.5" />
             </div>
             <span className="text-[11px] font-bold text-[#64748B] tracking-wider uppercase">
-              OPEN ISSUES
+              {t("admin.dashboard.openIssues", "OPEN ISSUES")}
             </span>
           </div>
           <div>
             <div className="text-2xl font-extrabold text-[#0F172A] tracking-tight">
-              {openIssues > 0 ? openIssues.toLocaleString() : "2,128"}
+              {openIssues > 0 ? formatNumber(openIssues, i18n.language) : "2,128"}
             </div>
             <div className="text-xs text-blue-600 font-semibold mt-1 flex items-center gap-1">
               <span>↗ 8%</span>
-              <span className="text-[#94A3B8] font-normal">vs. last week</span>
+              <span className="text-[#94A3B8] font-normal">{t("admin.dashboard.vsLastWeek", "vs. last week")}</span>
             </div>
           </div>
         </div>
@@ -462,16 +471,16 @@ export const AdminDashboard = () => {
               <Clock className="w-3.5 h-3.5" />
             </div>
             <span className="text-[11px] font-bold text-[#64748B] tracking-wider uppercase">
-              OVERDUE
+              {t("staff.dashboard.urgentAttention", "OVERDUE")}
             </span>
           </div>
           <div>
             <div className="text-2xl font-extrabold text-[#0F172A] tracking-tight">
-              {overdueIssues > 0 ? overdueIssues.toLocaleString() : "126"}
+              {overdueIssues > 0 ? formatNumber(overdueIssues, i18n.language) : "126"}
             </div>
             <div className="text-xs text-rose-600 font-semibold mt-1 flex items-center gap-1">
               <span>↗ 15%</span>
-              <span className="text-[#94A3B8] font-normal">vs. last week</span>
+              <span className="text-[#94A3B8] font-normal">{t("admin.dashboard.vsLastWeek", "vs. last week")}</span>
             </div>
           </div>
         </div>
@@ -483,16 +492,16 @@ export const AdminDashboard = () => {
               <Users className="w-3.5 h-3.5" />
             </div>
             <span className="text-[11px] font-bold text-[#64748B] tracking-wider uppercase">
-              UNASSIGNED
+              {t("admin.dashboard.unassigned", "UNASSIGNED")}
             </span>
           </div>
           <div>
             <div className="text-2xl font-extrabold text-[#0F172A] tracking-tight">
-              {unassignedIssues > 0 ? unassignedIssues.toLocaleString() : "18"}
+              {unassignedIssues > 0 ? formatNumber(unassignedIssues, i18n.language) : "18"}
             </div>
             <div className="text-xs text-orange-600 font-semibold mt-1 flex items-center gap-1">
               <span>↗ 20%</span>
-              <span className="text-[#94A3B8] font-normal">vs. last week</span>
+              <span className="text-[#94A3B8] font-normal">{t("admin.dashboard.vsLastWeek", "vs. last week")}</span>
             </div>
           </div>
         </div>
@@ -504,7 +513,7 @@ export const AdminDashboard = () => {
               <Zap className="w-3.5 h-3.5" />
             </div>
             <span className="text-[11px] font-bold text-[#64748B] tracking-wider uppercase">
-              AVG. RESPONSE TIME
+              {t("home.statResponseTime", "AVG. RESPONSE TIME")}
             </span>
           </div>
           <div>
@@ -513,7 +522,7 @@ export const AdminDashboard = () => {
             </div>
             <div className="text-xs text-purple-600 font-semibold mt-1 flex items-center gap-1">
               <span>↘ 5%</span>
-              <span className="text-[#94A3B8] font-normal">vs. last week</span>
+              <span className="text-[#94A3B8] font-normal">{t("admin.dashboard.vsLastWeek", "vs. last week")}</span>
             </div>
           </div>
         </div>
@@ -525,7 +534,7 @@ export const AdminDashboard = () => {
               <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
             <span className="text-[11px] font-bold text-[#64748B] tracking-wider uppercase">
-              AVG. RESOLUTION TIME
+              {t("admin.analytics.avgResolutionTime", "AVG. RESOLUTION TIME")}
             </span>
           </div>
           <div>
@@ -534,7 +543,7 @@ export const AdminDashboard = () => {
             </div>
             <div className="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
               <span>↘ 7%</span>
-              <span className="text-[#94A3B8] font-normal">vs. last week</span>
+              <span className="text-[#94A3B8] font-normal">{t("admin.dashboard.vsLastWeek", "vs. last week")}</span>
             </div>
           </div>
         </div>
@@ -548,17 +557,17 @@ export const AdminDashboard = () => {
             {/* Header */}
             <div className="flex items-center justify-between pb-3 mb-2 border-b border-[#F1F5F9]">
               <div className="flex items-center gap-2.5">
-                <h3 className="text-sm font-bold text-[#0F172A]">High-priority issues</h3>
+                <h3 className="text-sm font-bold text-[#0F172A]">{t("admin.dashboard.highPriorityIssues", "High-priority issues")}</h3>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                  High
+                  {getLocalizedPriority("HIGH", t)}
                 </span>
               </div>
               <Link
                 to="/admin/complaints?priority=HIGH"
                 className="text-xs font-semibold text-[#0D9488] hover:text-[#0f766e] hover:underline"
               >
-                View all
+                {t("common.viewAll", "View all")}
               </Link>
             </div>
 
@@ -601,12 +610,6 @@ export const AdminDashboard = () => {
                         {renderPriorityBadge(item.priority)}
                       </div>
 
-                      {/* SLA clock */}
-                      <div className="hidden md:flex items-center gap-1 text-[11px] text-[#64748B] font-medium">
-                        <Clock className="w-3 h-3 text-[#94A3B8]" />
-                        <span>{idx === 0 ? "7h left" : idx === 1 ? "2h left" : idx === 2 ? "5.8d left" : "7h left"}</span>
-                      </div>
-
                       {/* Status badge */}
                       {renderStatusBadge(item.status)}
 
@@ -625,7 +628,7 @@ export const AdminDashboard = () => {
                           ) : (
                             <>
                               <UserCheck className="w-3 h-3 text-[#64748B]" />
-                              <span>Assign</span>
+                              <span>{t("admin.complaints.assignStaff", "Assign")}</span>
                               <ChevronDown className="w-3 h-3 text-[#94A3B8]" />
                             </>
                           )}
@@ -635,12 +638,12 @@ export const AdminDashboard = () => {
                         {assignDropdownOpen === cid && (
                           <div className="absolute right-0 mt-1 w-52 bg-white rounded-xl border border-[#E2E8F0] shadow-xl z-30 py-1 text-xs">
                             <div className="px-3 py-1.5 font-bold text-[#0F172A] border-b border-[#F1F5F9] text-[11px]">
-                              Assign Field Officer
+                              {t("admin.complaints.selectStaffModalTitle", "Assign Field Officer")}
                             </div>
                             <div className="max-h-48 overflow-y-auto divide-y divide-[#F8FAFC]">
                               {staffList.length === 0 ? (
                                 <div className="px-3 py-2 text-[#94A3B8] text-[11px]">
-                                  No staff registered
+                                  {t("staff.tasks.noTasks", "No staff registered")}
                                 </div>
                               ) : (
                                 staffList.map((st) => (
@@ -651,7 +654,7 @@ export const AdminDashboard = () => {
                                     className="w-full text-left px-3 py-2 hover:bg-[#F0FDFA] hover:text-[#0D9488] flex items-center justify-between text-xs"
                                   >
                                     <span className="font-medium truncate">{st.name}</span>
-                                    <span className="text-[10px] text-[#94A3B8]">{st.department}</span>
+                                    <span className="text-[10px] text-[#94A3B8]">{getLocalizedCategory(st.department, t)}</span>
                                   </button>
                                 ))
                               )}
@@ -664,7 +667,7 @@ export const AdminDashboard = () => {
                       <Link
                         to={`/admin/complaints/${cid}`}
                         className="p-1 text-[#94A3B8] hover:text-[#0F172A] rounded-lg hover:bg-[#F1F5F9]"
-                        title="Review issue"
+                        title={t("common.details", "Review issue")}
                       >
                         <MoreVertical className="w-4 h-4" />
                       </Link>
@@ -677,7 +680,7 @@ export const AdminDashboard = () => {
 
           {/* Footer count matching reference */}
           <div className="pt-3 mt-2 border-t border-[#F1F5F9] text-xs text-[#64748B]">
-            Showing 1-{displayedHighPriority.length} of {Math.max(displayedHighPriority.length, stats.highPriority || 24)} high-priority issues
+            {t("common.showing", "Showing")} 1-{displayedHighPriority.length} {t("common.of", "of")} {Math.max(displayedHighPriority.length, stats.highPriority || 24)} {t("admin.dashboard.highPriorityIssues", "high-priority issues")}
           </div>
         </div>
 
@@ -687,14 +690,14 @@ export const AdminDashboard = () => {
         </div>
       </section>
 
-      {/* SECTION 4: Recent Reports Table (Full-width matching reference) */}
+      {/* SECTION 4: Recent Reports Table */}
       <section className="bg-white rounded-2xl border border-[#E2E8F0] p-4 sm:p-5 shadow-xs space-y-4">
         {/* Table Top Header: Title + Filter Tabs + View All link */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3 flex-wrap">
-            <h3 className="text-sm font-bold text-[#0F172A]">Recent reports</h3>
+            <h3 className="text-sm font-bold text-[#0F172A]">{t("admin.dashboard.recentReports", "Recent reports")}</h3>
 
-            {/* Filter Pills matching reference: All 24, Open 8, In progress 6, Resolved 10 */}
+            {/* Filter Pills */}
             <div className="flex items-center gap-1.5 bg-[#F8FAFC] p-1 rounded-xl border border-[#E2E8F0]">
               <button
                 type="button"
@@ -705,7 +708,7 @@ export const AdminDashboard = () => {
                     : "text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                All <span className="opacity-80 ml-0.5">{totalIssues || allRecent.length}</span>
+                {t("common.all", "All")} <span className="opacity-80 ml-0.5">{totalIssues || allRecent.length}</span>
               </button>
               <button
                 type="button"
@@ -716,7 +719,7 @@ export const AdminDashboard = () => {
                     : "text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                Open <span className="opacity-80 ml-0.5">{openIssues}</span>
+                {t("status.Pending", "Open")} <span className="opacity-80 ml-0.5">{openIssues}</span>
               </button>
               <button
                 type="button"
@@ -727,7 +730,7 @@ export const AdminDashboard = () => {
                     : "text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                In progress <span className="opacity-80 ml-0.5">{inProgressIssues}</span>
+                {t("status.IN_PROGRESS", "In progress")} <span className="opacity-80 ml-0.5">{inProgressIssues}</span>
               </button>
               <button
                 type="button"
@@ -738,7 +741,7 @@ export const AdminDashboard = () => {
                     : "text-[#64748B] hover:text-[#0F172A]"
                 }`}
               >
-                Resolved <span className="opacity-80 ml-0.5">{resolvedIssues}</span>
+                {t("status.RESOLVED", "Resolved")} <span className="opacity-80 ml-0.5">{resolvedIssues}</span>
               </button>
             </div>
           </div>
@@ -747,7 +750,7 @@ export const AdminDashboard = () => {
             to="/admin/complaints"
             className="text-xs font-semibold text-[#0D9488] hover:text-[#0f766e] hover:underline self-start sm:self-auto"
           >
-            View all
+            {t("common.viewAll", "View all")}
           </Link>
         </div>
 
@@ -759,20 +762,20 @@ export const AdminDashboard = () => {
             </div>
           ) : filteredRecent.length === 0 ? (
             <div className="py-12 text-center text-xs text-[#94A3B8]">
-              No complaints match the selected filter.
+              {t("citizen.dashboard.noComplaintsMatch", "No complaints match the selected filter.")}
             </div>
           ) : (
             <table className="w-full text-left text-xs text-[#0F172A]">
               <thead>
                 <tr className="border-b border-[#E2E8F0] text-[#64748B] text-[11px] font-semibold">
-                  <th className="pb-3 font-semibold">Issue</th>
-                  <th className="pb-3 font-semibold">Location</th>
-                  <th className="pb-3 font-semibold">Category</th>
-                  <th className="pb-3 font-semibold">Status</th>
-                  <th className="pb-3 font-semibold">Priority</th>
-                  <th className="pb-3 font-semibold">Reported</th>
-                  <th className="pb-3 font-semibold">Age</th>
-                  <th className="pb-3 font-semibold text-right">Action</th>
+                  <th className="pb-3 font-semibold">{t("citizen.complaintDetail.detailsTitle", "Issue")}</th>
+                  <th className="pb-3 font-semibold">{t("citizen.report.step2", "Location")}</th>
+                  <th className="pb-3 font-semibold">{t("common.category", "Category")}</th>
+                  <th className="pb-3 font-semibold">{t("common.status", "Status")}</th>
+                  <th className="pb-3 font-semibold">{t("common.priority", "Priority")}</th>
+                  <th className="pb-3 font-semibold">{t("citizen.complaintDetail.filedOn", "Reported")}</th>
+                  <th className="pb-3 font-semibold">{t("admin.dashboard.age", "Age")}</th>
+                  <th className="pb-3 font-semibold text-right">{t("common.action", "Action")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F1F5F9]">
@@ -807,7 +810,7 @@ export const AdminDashboard = () => {
                       <td className="py-3">
                         <span className="inline-flex items-center gap-1.5 text-[#334155] font-medium">
                           <Icon className="w-3.5 h-3.5 text-[#64748B]" />
-                          <span>{c.category}</span>
+                          <span>{getLocalizedCategory(c.category, t)}</span>
                         </span>
                       </td>
 
@@ -823,7 +826,7 @@ export const AdminDashboard = () => {
 
                       {/* Reported */}
                       <td className="py-3 text-[#64748B] whitespace-nowrap">
-                        {dayjs(c.createdAt).format("MMM D, h:mm A")}
+                        {formatDate(c.createdAt, i18n.language)}
                       </td>
 
                       {/* Age */}
@@ -837,7 +840,7 @@ export const AdminDashboard = () => {
                           to={`/admin/complaints/${c._id}`}
                           className="px-2.5 py-1 rounded-lg bg-white hover:bg-[#F1F5F9] text-[#0D9488] font-bold text-[11px] border border-[#E2E8F0] shadow-2xs transition-colors"
                         >
-                          Review
+                          {t("common.view", "Review")}
                         </Link>
                       </td>
                     </tr>

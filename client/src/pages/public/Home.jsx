@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
 import SmartCityLogo from "../../components/SmartCityLogo";
 
@@ -26,6 +27,7 @@ import {
 import { api } from "../../api/client";
 
 export const Home = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [trackId, setTrackId] = useState("");
   const [realStats, setRealStats] = useState(null);
@@ -173,18 +175,17 @@ export const Home = () => {
               {/* Civic Tag Badge */}
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F0FDFA] border border-teal-200 text-xs font-semibold text-[#0D9488]">
                 <Cpu className="w-3.5 h-3.5 text-[#0D9488] flex-shrink-0" />
-                <span className="tracking-wide">AI-ASSISTED CIVIC GOVERNANCE</span>
+                <span className="tracking-wide">{t("home.badge")}</span>
               </div>
 
               {/* Responsive Headline with clamp scaling */}
               <h1 className="font-extrabold text-[#0F172A] tracking-tight leading-[1.14] text-[2.1rem] sm:text-4xl md:text-5xl lg:text-[3.85rem]">
-                A better city <br className="hidden sm:inline" />
-                starts with <span className="text-[#0D9488]">one report.</span>
+                {t("home.heroTitle")}
               </h1>
 
               {/* Supporting Description */}
               <p className="text-sm sm:text-base lg:text-lg text-[#64748B] max-w-xl leading-relaxed font-normal">
-                Report potholes, waste, drainage and other neighborhood issues. Follow progress from submission to verified resolution.
+                {t("home.heroSubtitle")}
               </p>
 
               {/* Action Buttons */}
@@ -194,7 +195,7 @@ export const Home = () => {
                   className="w-full sm:w-auto px-6 sm:px-7 py-3 sm:py-3.5 rounded-xl bg-[#0D9488] hover:bg-[#0f766e] text-white font-semibold text-sm sm:text-base shadow-xs hover:shadow transition-all duration-200 flex items-center justify-center gap-2 group min-h-[44px]"
                 >
                   <Plus className="w-4 h-4 stroke-[2.5]" />
-                  <span>Report a Civic Issue</span>
+                  <span>{t("home.reportGrievanceBtn")}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
 
@@ -203,7 +204,7 @@ export const Home = () => {
                   className="w-full sm:w-auto px-6 sm:px-7 py-3 sm:py-3.5 rounded-xl bg-white hover:bg-slate-50 text-[#0F172A] font-semibold text-sm sm:text-base border border-[#E2E8F0] shadow-xs hover:border-slate-300 transition-all duration-200 flex items-center justify-center gap-2 group min-h-[44px]"
                 >
                   <Search className="w-4 h-4 text-[#64748B]" />
-                  <span>Track My Complaint</span>
+                  <span>{t("home.trackStatusBtn")}</span>
                   <ArrowRight className="w-4 h-4 text-[#64748B] group-hover:translate-x-1 transition-transform" />
                 </a>
               </div>
@@ -997,13 +998,13 @@ export const Home = () => {
       <section id="track-section" className="py-12 sm:py-20 bg-white border-t border-[#E2E8F0] w-full">
         <div className="max-w-3xl mx-auto px-3.5 sm:px-6 lg:px-8 text-center">
           <span className="text-xs font-bold uppercase tracking-widest text-[#0D9488] bg-[#F0FDFA] px-3.5 py-1 rounded-full border border-teal-200">
-            Citizen Transparency Portal
+            {t("home.badge")}
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] mt-3">
-            Track Any Complaint in Real Time
+            {t("home.trackStatusBtn")}
           </h2>
           <p className="text-xs sm:text-sm text-[#64748B] mt-2 max-w-lg mx-auto">
-            Enter your complaint reference number or token ID to inspect real-time progress, assigned field officers, and resolution photos.
+            {t("home.howItWorksSubtitle")}
           </p>
 
           <form onSubmit={handleTrackSubmit} className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center gap-3 max-w-lg mx-auto w-full">
@@ -1021,13 +1022,13 @@ export const Home = () => {
               type="submit"
               className="w-full sm:w-auto px-7 py-3 sm:py-3.5 min-h-[44px] rounded-2xl bg-[#0D9488] hover:bg-[#0f766e] text-white font-bold text-sm shadow-xs hover:shadow transition-all whitespace-nowrap flex items-center justify-center"
             >
-              Track Status
+              {t("home.trackStatusBtn")}
             </button>
           </form>
 
           {/* Quick Sample IDs with wrapping */}
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-[#64748B]">
-            <span className="w-full sm:w-auto text-center sm:text-left">Quick test examples:</span>
+            <span className="w-full sm:w-auto text-center sm:text-left">{t("citizen.complaints.complaintId")}:</span>
             {sampleTrackIds.map((id) => (
               <button
                 key={id}
@@ -1051,19 +1052,17 @@ export const Home = () => {
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-[#64748B]">
-              <Link to="/citizen/report" className="hover:text-[#0D9488] transition-colors py-1">Report Issue</Link>
-              <Link to="/citizen/complaints" className="hover:text-[#0D9488] transition-colors py-1">Track Status</Link>
-              <Link to="/login" className="hover:text-[#0D9488] transition-colors py-1">Staff Portal</Link>
-              <a href="#features" className="hover:text-[#0D9488] transition-colors py-1">Features</a>
-              <a href="#how-it-works" className="hover:text-[#0D9488] transition-colors py-1">How It Works</a>
+              <Link to="/citizen/report" className="hover:text-[#0D9488] transition-colors py-1">{t("citizen.dashboard.reportNew")}</Link>
+              <Link to="/citizen/complaints" className="hover:text-[#0D9488] transition-colors py-1">{t("citizen.complaints.title")}</Link>
+              <Link to="/login" className="hover:text-[#0D9488] transition-colors py-1">{t("nav.login")}</Link>
             </div>
           </div>
 
           <div className="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3 text-center sm:text-left">
-            <p>© {new Date().getFullYear()} Smart City Civic Grievance Management System. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} {t("home.footerTagline")}. {t("home.footerRights")}</p>
             <p className="flex items-center justify-center sm:justify-start gap-1.5 text-slate-600">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              Verified Municipal Governance Platform
+              Smart Maharashtra Civic Platform
             </p>
           </div>
         </div>

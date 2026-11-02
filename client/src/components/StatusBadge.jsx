@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Clock,
   Eye,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react";
 
 export const StatusBadge = ({ status, size = "md" }) => {
+  const { t } = useTranslation();
   const configs = {
     SUBMITTED: {
       label: "Submitted",
@@ -71,7 +73,7 @@ export const StatusBadge = ({ status, size = "md" }) => {
     >
       <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`}></span>
       <Icon className={size === "sm" ? "w-3 h-3" : "w-3.5 h-3.5"} />
-      <span>{config.label}</span>
+      <span>{t(`status.${status}`, config.label)}</span>
     </span>
   );
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/authContex";
 import { useNotification } from "../../context/notificationContext";
 import {
@@ -18,6 +19,7 @@ import {
 } from "lucide-react";
 
 export const AdminSidebar = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const { unreadCount } = useNotification();
   const navigate = useNavigate();
@@ -30,10 +32,10 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
 
   const navGroups = [
     {
-      group: "WORKSPACE",
+      group: t("nav.adminPortal").toUpperCase(),
       items: [
         {
-          name: "Overview",
+          name: t("nav.dashboard"),
           path: "/admin/dashboard",
           icon: LayoutDashboard,
           exact: true
@@ -41,31 +43,20 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
       ]
     },
     {
-      group: "OPERATIONS",
+      group: t("common.actions").toUpperCase(),
       items: [
         {
-          name: "Map",
-          path: "/admin/dashboard#live-map",
-          icon: Map,
-          onClick: (e) => {
-            if (location.pathname === "/admin/dashboard") {
-              const el = document.getElementById("live-map");
-              if (el) el.scrollIntoView({ behavior: "smooth" });
-            }
-          }
-        },
-        {
-          name: "Reports",
+          name: t("nav.complaints"),
           path: "/admin/complaints",
           icon: FileText
         },
         {
-          name: "Work Orders",
+          name: t("nav.staffManagement"),
           path: "/admin/staff",
-          icon: Wrench
+          icon: Users
         },
         {
-          name: "Alerts",
+          name: t("nav.notifications"),
           path: "/admin/notifications",
           icon: Megaphone,
           badge: unreadCount > 0 ? unreadCount : null
@@ -73,27 +64,17 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
       ]
     },
     {
-      group: "MANAGEMENT",
+      group: t("nav.analytics").toUpperCase(),
       items: [
         {
-          name: "Analytics",
+          name: t("nav.analytics"),
           path: "/admin/analytics",
           icon: BarChart3
         },
         {
-          name: "Team",
-          path: "/admin/staff",
-          icon: Users
-        },
-        {
-          name: "Members",
+          name: t("nav.profile"),
           path: "/admin/profile",
           icon: UserCheck
-        },
-        {
-          name: "Settings",
-          path: "/admin/profile",
-          icon: Settings
         }
       ]
     }

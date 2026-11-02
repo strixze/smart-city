@@ -309,15 +309,15 @@ def normalize_category_name(raw_cat: str) -> str:
         return clean
 
     low = clean.lower()
-    if any(k in low for k in ["drain", "sewer", "sewage", "gutter", "waterlogging", "stormwater"]):
+    if any(k in low for k in ["drain", "sewer", "sewage", "gutter", "waterlogging", "stormwater", "गटार", "नाले", "सांडपाणी", "ड्रेनेज"]):
         return "Drainage"
-    if any(k in low for k in ["road", "pothole", "asphalt", "footpath", "sidewalk", "pavement", "crater"]):
+    if any(k in low for k in ["road", "pothole", "asphalt", "footpath", "sidewalk", "pavement", "crater", "खड्डा", "खड्डे", "रस्ता", "रस्त्यावर", "फुटपाथ"]):
         return "Roads"
-    if any(k in low for k in ["street light", "streetlight", "lamp post", "street lamp", "luminaire", "lighting"]):
+    if any(k in low for k in ["street light", "streetlight", "lamp post", "street lamp", "luminaire", "lighting", "पथदिवा", "पथदिवे", "लाईट", "लाइट", "खांब"]):
         return "Street Light"
-    if any(k in low for k in ["waste", "garbage", "trash", "dustbin", "litter", "rubbish", "dump", "debris", "sanitation"]):
+    if any(k in low for k in ["waste", "garbage", "trash", "dustbin", "litter", "rubbish", "dump", "debris", "sanitation", "कचरा", "कचऱ्याचा", "कचराकुंडी"]):
         return "Waste Management"
-    if any(k in low for k in ["water supply", "drinking water", "pipeline", "pipe leak", "water pipe", "burst pipe"]):
+    if any(k in low for k in ["water supply", "drinking water", "pipeline", "pipe leak", "water pipe", "burst pipe", "पाणीपुरवठा", "पाणी", "पाईप", "गळती"]):
         return "Water Supply"
     if "infrastructure" in low:
         return "Street Light"

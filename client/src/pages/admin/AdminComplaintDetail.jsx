@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AdminLayout from "../../components/admin/AdminLayout";
 import StatusBadge from "../../components/StatusBadge";
 import PriorityBadge from "../../components/PriorityBadge";
@@ -7,6 +8,13 @@ import TimelineView from "../../components/TimelineView";
 import BeforeAfterComparison from "../../components/BeforeAfterComparison";
 import ImageAuthenticityTest from "../../components/ImageAuthenticityTest";
 import { complaintApi, adminApi } from "../../api/client";
+import {
+  getLocalizedCategory,
+  getLocalizedSubcategory,
+  getLocalizedStatus,
+  getLocalizedPriority,
+  formatDate
+} from "../../utils/formatters";
 import {
   ArrowLeft,
   MapPin,
@@ -37,6 +45,7 @@ const MUNICIPAL_CATEGORIES = [
 ];
 
 export const AdminComplaintDetail = () => {
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [complaintData, setComplaintData] = useState(null);
@@ -149,7 +158,7 @@ export const AdminComplaintDetail = () => {
 
   if (loading) {
     return (
-      <AdminLayout title="Complaint Details" subtitle="Loading incident file...">
+      <AdminLayout title={t("admin.detail.title")} subtitle={t("common.loading")}>
         <div className="py-24 flex items-center justify-center text-[#0D9488]">
           <Loader2 className="w-8 h-8 animate-spin" />
         </div>
@@ -159,14 +168,14 @@ export const AdminComplaintDetail = () => {
 
   if (!complaintData) {
     return (
-      <AdminLayout title="Complaint Details" subtitle="Incident not found">
+      <AdminLayout title={t("admin.detail.title")} subtitle={t("common.noData")}>
         <div className="bg-white rounded-2xl border border-[#E2E8F0] p-12 text-center shadow-xs">
-          <p className="text-[#0F172A] font-bold">Complaint record not found.</p>
+          <p className="text-[#0F172A] font-bold">{t("admin.detail.title")} - {t("common.noData")}</p>
           <Link
             to="/admin/complaints"
             className="mt-3 inline-block px-4 py-2 rounded-xl bg-[#0F172A] text-white text-xs font-semibold hover:bg-slate-800"
           >
-            Back to master table
+            {t("admin.detail.backToDirectory")}
           </Link>
         </div>
       </AdminLayout>
@@ -187,14 +196,14 @@ export const AdminComplaintDetail = () => {
 
   return (
     <AdminLayout
-      title={`Complaint #${complaint.complaintNumber}`}
-      subtitle={`Reported on ${dayjs(complaint.createdAt).format("DD MMM YYYY, hh:mm A")}`}
+      title={`${t("citizen.complaints.complaintId") || "Complaint"} #${complaint.complaintNumber}`}
+      subtitle={`${t("admin.detail.reportedOn")}: ${formatDate(complaint.createdAt, i18n.language)}`}
       actions={
         <Link
           to="/admin/complaints"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-xs font-semibold text-[#0F172A] shadow-xs"
         >
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to Directory
+          <ArrowLeft className="w-3.5 h-3.5" /> {t("admin.detail.backToDirectory")}
         </Link>
       }
     >
@@ -215,7 +224,7 @@ export const AdminComplaintDetail = () => {
                 onClick={() => setShowRejectModal(true)}
                 className="px-3 py-1 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-semibold transition-colors"
               >
-                Reject Issue
+                {t("admin.detail.rejectIssue")}
               </button>
             )}
           </div>
@@ -232,7 +241,7 @@ export const AdminComplaintDetail = () => {
           <div className="flex items-center gap-2.5">
             <MapPin className="w-4 h-4 text-sky-500 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-[#0F172A]">Location Address</p>
+              <p className="font-semibold text-[#0F172A]">{t("admin.detail.locationAddress")}</p>
               <p className="text-[#64748B]">{complaint.locationAddress}</p>
             </div>
           </div>
@@ -240,7 +249,7 @@ export const AdminComplaintDetail = () => {
           <div className="flex items-center gap-2.5">
             <User className="w-4 h-4 text-[#0D9488] flex-shrink-0" />
             <div>
-              <p className="font-semibold text-[#0F172A]">Reporting Citizen</p>
+              <p className="font-semibold text-[#0F172A]">{t("admin.detail.reportingCitizen")}</p>
               <p className="text-[#64748B]">
                 {complaint.citizen?.name} ({complaint.citizen?.email})
               </p>
@@ -250,8 +259,8 @@ export const AdminComplaintDetail = () => {
           <div className="flex items-center gap-2.5">
             <Phone className="w-4 h-4 text-purple-500 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-[#0F172A]">Citizen Contact</p>
-              <p className="text-[#64748B]">{complaint.citizen?.phone || "No phone on file"}</p>
+              <p className="font-semibold text-[#0F172A]">{t("admin.detail.citizenContact")}</p>
+              <p className="text-[#64748B]">{complaint.citizen?.phone || t("admin.detail.noPhone")}</p>
             </div>
           </div>
         </div>
@@ -262,10 +271,10 @@ export const AdminComplaintDetail = () => {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0F172A]">
             <Cpu className="w-4 h-4 text-[#0D9488]" />
-            AI Vision Prediction & Intelligent Recommendation
+            {t("admin.detail.aiPredictionTitle")}
           </div>
           <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-teal-50 text-[#0D9488] border border-teal-200">
-            Confidence: {confidencePct !== null ? `${confidencePct}%` : "Pending AI Analysis"}
+            {t("admin.detail.confidence")}: {confidencePct !== null ? `${confidencePct}%` : t("admin.detail.pendingAiAnalysis")}
           </span>
         </div>
 
@@ -279,41 +288,49 @@ export const AdminComplaintDetail = () => {
               />
             </div>
             <p className="text-[11px] text-[#64748B]">
-              Computer vision model evaluated visual attributes, contours, and citizen text description
+              {t("admin.detail.aiEvaluationNote")}
             </p>
           </div>
         ) : (
           <p className="text-xs text-[#94A3B8] italic">
-            AI analysis has not completed or is awaiting review.
+            {t("admin.detail.aiNotCompleted")}
           </p>
         )}
 
         {/* AI SUGGESTION TILES */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs">
           <div>
-            <p className="text-[#64748B] font-semibold uppercase text-[10px]">AI Category</p>
-            <p className="font-bold text-[#0F172A] mt-0.5">{complaint.aiCategory || complaint.predictedCategory || "Pending AI Analysis"}</p>
-          </div>
-          <div>
-            <p className="text-[#64748B] font-semibold uppercase text-[10px]">AI Subcategory</p>
+            <p className="text-[#64748B] font-semibold uppercase text-[10px]">{t("admin.detail.aiCategory")}</p>
             <p className="font-bold text-[#0F172A] mt-0.5">
-              {complaint.aiSubcategory || complaint.predictedSubcategory || (complaint.aiCategory ? "General Issue" : "Pending AI Analysis")}
+              {complaint.aiCategory || complaint.predictedCategory
+                ? getLocalizedCategory(complaint.aiCategory || complaint.predictedCategory, t)
+                : t("admin.detail.pendingAiAnalysis")}
             </p>
           </div>
           <div>
-            <p className="text-[#64748B] font-semibold uppercase text-[10px]">Suggested Urgency</p>
-            <p className="font-bold text-amber-700 mt-0.5">{complaint.aiPriority || "Pending AI Analysis"}</p>
+            <p className="text-[#64748B] font-semibold uppercase text-[10px]">{t("admin.detail.aiSubcategory")}</p>
+            <p className="font-bold text-[#0F172A] mt-0.5">
+              {complaint.aiSubcategory || complaint.predictedSubcategory
+                ? getLocalizedSubcategory(complaint.aiSubcategory || complaint.predictedSubcategory, t)
+                : (complaint.aiCategory ? t("categories.General Issue", "General Issue") : t("admin.detail.pendingAiAnalysis"))}
+            </p>
           </div>
           <div>
-            <p className="text-[#64748B] font-semibold uppercase text-[10px]">Prediction Source</p>
+            <p className="text-[#64748B] font-semibold uppercase text-[10px]">{t("admin.detail.suggestedUrgency")}</p>
+            <p className="font-bold text-amber-700 mt-0.5">
+              {complaint.aiPriority ? getLocalizedPriority(complaint.aiPriority, t) : t("admin.detail.pendingAiAnalysis")}
+            </p>
+          </div>
+          <div>
+            <p className="text-[#64748B] font-semibold uppercase text-[10px]">{t("admin.detail.predictionSource")}</p>
             <p className="font-bold text-[#0D9488] mt-0.5">
               {complaint.predictionSource === "gemini_vision" || complaint.predictionSource === "mobilenet"
-                ? "Visual AI Analysis"
+                ? t("admin.detail.visualAiAnalysis")
                 : complaint.predictionSource === "rules"
-                ? "Rule-Based System"
+                ? t("admin.detail.ruleBasedSystem")
                 : complaint.predictionSource === "manual"
-                ? "Manual Citizen Override"
-                : "Auto-Assigned"}
+                ? t("admin.detail.manualOverride")
+                : t("admin.detail.autoAssigned")}
             </p>
           </div>
         </div>
@@ -332,13 +349,13 @@ export const AdminComplaintDetail = () => {
         {/* ADMIN OVERRIDE CONTROLS */}
         <div className="p-4 sm:p-5 rounded-xl border border-[#E2E8F0] bg-white space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-wider text-[#0F172A]">
-            Administrative Classification Override
+            {t("admin.detail.adminOverride")}
           </h4>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-[#64748B] mb-1">
-                Final Category
+                {t("admin.detail.finalCategory")}
               </label>
               <select
                 value={selectedCategory}
@@ -347,7 +364,7 @@ export const AdminComplaintDetail = () => {
               >
                 {MUNICIPAL_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
-                    {cat}
+                    {getLocalizedCategory(cat, t)}
                   </option>
                 ))}
               </select>
@@ -355,17 +372,17 @@ export const AdminComplaintDetail = () => {
 
             <div>
               <label className="block text-xs font-semibold text-[#64748B] mb-1">
-                Final Priority
+                {t("admin.detail.finalPriority")}
               </label>
               <select
                 value={selectedPriority}
                 onChange={(e) => setSelectedPriority(e.target.value)}
                 className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#0D9488]"
               >
-                <option value="LOW">LOW</option>
-                <option value="MEDIUM">MEDIUM</option>
-                <option value="HIGH">HIGH</option>
-                <option value="CRITICAL">CRITICAL</option>
+                <option value="LOW">{getLocalizedPriority("LOW", t)}</option>
+                <option value="MEDIUM">{getLocalizedPriority("MEDIUM", t)}</option>
+                <option value="HIGH">{getLocalizedPriority("HIGH", t)}</option>
+                <option value="CRITICAL">{getLocalizedPriority("CRITICAL", t)}</option>
               </select>
             </div>
           </div>
@@ -377,7 +394,7 @@ export const AdminComplaintDetail = () => {
               disabled={actionLoading}
               className="px-4 py-2 rounded-xl bg-[#0D9488] hover:bg-[#0f766e] text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5"
             >
-              <Save className="w-3.5 h-3.5" /> Save Final Classification
+              <Save className="w-3.5 h-3.5" /> {t("admin.detail.saveClassification")}
             </button>
           </div>
         </div>
@@ -388,11 +405,11 @@ export const AdminComplaintDetail = () => {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2 text-sm font-bold text-[#0F172A]">
             <UserCheck className="w-4 h-4 text-amber-600" />
-            Assign or Reassign Municipal Field Officer
+            {t("admin.detail.assignTitle")}
           </div>
           {complaint.assignedStaff && (
             <span className="text-xs text-[#64748B]">
-              Currently Assigned: <span className="font-bold text-[#0F172A]">{complaint.assignedStaff.name}</span>
+              {t("admin.detail.currentlyAssigned")}: <span className="font-bold text-[#0F172A]">{complaint.assignedStaff.name}</span>
             </span>
           )}
         </div>
@@ -400,7 +417,7 @@ export const AdminComplaintDetail = () => {
         <form onSubmit={handleAssignStaff} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-[#64748B] mb-1">
-              Select Field Staff Member *
+              {t("admin.detail.selectFieldStaff")}
             </label>
             <select
               required
@@ -408,21 +425,21 @@ export const AdminComplaintDetail = () => {
               onChange={(e) => setSelectedStaffId(e.target.value)}
               className="w-full px-3 py-2 bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#0D9488]"
             >
-              <option value="">-- Choose Field Officer --</option>
+              <option value="">{t("admin.detail.chooseOfficer")}</option>
               {matchingDeptStaff.length > 0 && (
-                <optgroup label={`Recommended: Matching Department (${complaint.category})`}>
+                <optgroup label={`${t("admin.detail.matchingDept")} (${getLocalizedCategory(complaint.category, t)})`}>
                   {matchingDeptStaff.map((staff) => (
                     <option key={staff._id} value={staff._id}>
-                      ⭐ {staff.name} — {staff.designation || "Officer"} ({staff.department}) [{staff.assignedCount || 0} active]
+                      ⭐ {staff.name} — {staff.designation || "Officer"} ({getLocalizedCategory(staff.department, t)}) [{staff.assignedCount || 0} active]
                     </option>
                   ))}
                 </optgroup>
               )}
               {otherStaff.length > 0 && (
-                <optgroup label="Other Municipal Staff">
+                <optgroup label={t("admin.detail.otherStaff")}>
                   {otherStaff.map((staff) => (
                     <option key={staff._id} value={staff._id}>
-                      {staff.name} — {staff.department} ({staff.designation || "Officer"}) [{staff.assignedCount || 0} active]
+                      {staff.name} — {getLocalizedCategory(staff.department, t)} ({staff.designation || "Officer"}) [{staff.assignedCount || 0} active]
                     </option>
                   ))}
                 </optgroup>
@@ -432,13 +449,13 @@ export const AdminComplaintDetail = () => {
 
           <div>
             <label className="block text-xs font-semibold text-[#64748B] mb-1">
-              Dispatch Instructions / Remarks (Optional)
+              {t("admin.detail.dispatchInstructions")}
             </label>
             <input
               type="text"
               value={assignmentNote}
               onChange={(e) => setAssignmentNote(e.target.value)}
-              placeholder="e.g. Priority repair needed before Monday morning peak traffic..."
+              placeholder={t("admin.detail.dispatchPlaceholder")}
               className="w-full px-3.5 py-2 bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] placeholder-[#94A3B8] rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#0D9488]"
             />
           </div>
@@ -450,7 +467,7 @@ export const AdminComplaintDetail = () => {
               className="px-5 py-2 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white text-xs font-bold shadow-xs disabled:opacity-50 flex items-center gap-1.5 transition-all"
             >
               <Check className="w-4 h-4" />
-              {complaint.assignedStaff ? "Reassign Officer" : "Dispatch & Assign Staff"}
+              {complaint.assignedStaff ? t("admin.detail.reassignOfficer") : t("admin.detail.dispatchStaff")}
             </button>
           </div>
         </form>
@@ -460,10 +477,10 @@ export const AdminComplaintDetail = () => {
       <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-xs space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h3 className="text-sm font-bold text-[#0F172A]">
-            Photographic Proofs & Evidence Verification
+            {t("admin.detail.photographicProofs")}
           </h3>
           <span className="text-xs text-[#64748B]">
-            Original Citizen Evidence & Staff Resolution Proofs
+            {t("admin.detail.photoProofsSub")}
           </span>
         </div>
         <BeforeAfterComparison
@@ -490,7 +507,7 @@ export const AdminComplaintDetail = () => {
       {/* TIMELINE */}
       <div className="bg-white rounded-2xl p-6 border border-[#E2E8F0] shadow-xs space-y-4">
         <h3 className="text-sm font-bold text-[#0F172A]">
-          Activity History & Dispatch Audit Log
+          {t("admin.detail.activityHistory")}
         </h3>
         <TimelineView updates={timeline} />
       </div>
@@ -503,9 +520,9 @@ export const AdminComplaintDetail = () => {
               <XCircle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#0F172A]">Reject Complaint</h3>
+              <h3 className="text-base font-bold text-[#0F172A]">{t("admin.detail.rejectModalTitle")}</h3>
               <p className="text-xs text-[#64748B] mt-1">
-                Please enter the official reason for rejecting complaint #{complaint.complaintNumber} (e.g. duplicate submission, outside municipal jurisdiction).
+                {t("admin.detail.rejectModalDesc")}
               </p>
             </div>
 
@@ -515,7 +532,7 @@ export const AdminComplaintDetail = () => {
                 rows={3}
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                placeholder="Reason for rejection..."
+                placeholder={t("admin.detail.rejectPlaceholder")}
                 className="w-full p-3 bg-[#F8FAFC] border border-[#E2E8F0] text-[#0F172A] rounded-xl text-xs sm:text-sm focus:outline-none focus:border-rose-500 resize-y"
               />
 
@@ -525,14 +542,14 @@ export const AdminComplaintDetail = () => {
                   onClick={() => setShowRejectModal(false)}
                   className="px-4 py-2 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
                   className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition-colors"
                 >
-                  Confirm Rejection
+                  {t("admin.detail.confirmRejection")}
                 </button>
               </div>
             </form>
