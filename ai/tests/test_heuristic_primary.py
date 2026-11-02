@@ -273,13 +273,13 @@ class TestHeuristicVisionPrimary(unittest.TestCase):
         self.assertGreaterEqual(res_json["confidence"], 0.70)
 
     def test_12_analyze_endpoint_heuristic_fallback_for_untrained_category(self):
-        """Test 12: Heuristic vision runs when category has no real training data in checkpoint."""
-        sample_path = os.path.join(self.data_dir, "Drainage", "drainage_001.jpg")
+        """Test 12: Heuristic vision runs when category has no real training data in checkpoint (e.g. Water Supply)."""
+        sample_path = os.path.join(self.data_dir, "Water Supply", "water_supply_001.jpg")
 
         with open(sample_path, "rb") as f:
             data = {
-                "image": (f, "drainage_001.jpg"),
-                "description": "Clogged drain overflowing dirty sewage on street",
+                "image": (f, "water_supply_001.jpg"),
+                "description": "Broken underground water pipeline leaking",
                 "diagnostic": "true"
             }
             res = self.app_client.post("/analyze", data=data, content_type="multipart/form-data")
@@ -290,7 +290,7 @@ class TestHeuristicVisionPrimary(unittest.TestCase):
         # Heuristic vision must execute as the fallback for categories without real training data
         self.assertEqual(res_json["predictionSource"], "heuristic_vision")
         self.assertEqual(res_json["source"], "heuristic_vision")
-        self.assertEqual(res_json["predictedCategory"], "Drainage")
+        self.assertEqual(res_json["predictedCategory"], "Water Supply")
         self.assertTrue(res_json["fallbackUsed"])
         self.assertTrue(res_json["isFallback"])
         self.assertIn("MobileNetV3", res_json["fallbackReason"])

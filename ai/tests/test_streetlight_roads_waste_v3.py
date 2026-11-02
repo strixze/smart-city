@@ -167,23 +167,37 @@ class TestStreetlightRoadsWasteV3(unittest.TestCase):
         self.assertGreaterEqual(correct / 10, 0.8)
 
     def test_08_active_resolution_in_global_loader(self):
-        """Verify global MOBILENET_LOADER resolves to models_streetlight_roads_waste_v3."""
+        """Verify global MOBILENET_LOADER resolves to models_streetlight_roads_waste_v3 or newer."""
         self.assertTrue(MOBILENET_LOADER.is_loaded)
-        self.assertEqual(os.path.normcase(MOBILENET_LOADER.models_dir), os.path.normcase(self.v3_dir))
-        self.assertEqual(MOBILENET_LOADER.version, "1.3.0-streetlight-roads-waste-v3")
+        self.assertIn(os.path.normcase(MOBILENET_LOADER.models_dir), [
+            os.path.normcase(self.v3_dir),
+            os.path.normcase(os.path.join(AI_DIR, "models_drainage_v3")),
+            os.path.normcase(os.path.join(AI_DIR, "models_water_supply_v4"))
+        ])
+        self.assertIn(MOBILENET_LOADER.version, ["1.3.0-streetlight-roads-waste-v3", "1.4.0-drainage-v3", "1.5.0-water-supply-v4"])
         self.assertIn("Roads", MOBILENET_LOADER.real_data_classes)
         self.assertIn("Street Light", MOBILENET_LOADER.real_data_classes)
         self.assertIn("Waste Management", MOBILENET_LOADER.real_data_classes)
 
+        # Dedicated v3 loader
+        v3_loader = MobileNetV3ModelLoader(models_dir=self.v3_dir)
+        self.assertTrue(v3_loader.is_loaded)
+        self.assertEqual(v3_loader.version, "1.3.0-streetlight-roads-waste-v3")
+
     def test_09_untrained_classes_route_to_fallback(self):
-        """Verify categories without real data (Drainage, Water Supply) route to heuristic vision fallback."""
-        sample_path = os.path.join(AI_DIR, "data", "Drainage", "drainage_001.jpg")
+        """Verify categories without real data (Other) route to heuristic vision fallback."""
+        sample_path = os.path.join(AI_DIR, "data", "Other", "other_sample.jpg")
+        if not os.path.exists(sample_path):
+            os.makedirs(os.path.dirname(sample_path), exist_ok=True)
+            from PIL import Image
+            Image.new("RGB", (224, 224), (128, 128, 128)).save(sample_path)
+
         res = classify_complaint(
             image_path=sample_path,
-            description="Choked sewage drain overflowing",
-            request_id="test-fallback-drainage"
+            description="General civic inquiry regarding property tax assessment office hours",
+            request_id="test-fallback-other"
         )
-        self.assertEqual(res["predictedCategory"], "Drainage")
+        self.assertEqual(res["predictedCategory"], "Other")
         self.assertEqual(res["predictionSource"], "heuristic_vision")
         self.assertTrue(res["isFallback"])
         self.assertTrue(res["fallbackUsed"])
@@ -197,7 +211,7 @@ class TestStreetlightRoadsWasteV3(unittest.TestCase):
         res_health = client.get("/health")
         self.assertEqual(res_health.status_code, 200)
         hdata = res_health.get_json()
-        self.assertEqual(hdata["modelVersion"], "1.3.0-streetlight-roads-waste-v3")
+        self.assertIn(hdata["modelVersion"], ["1.3.0-streetlight-roads-waste-v3", "1.4.0-drainage-v3", "1.5.0-water-supply-v4"])
         self.assertIn("Street Light", hdata["realDataClasses"])
         self.assertIn("Roads", hdata["realDataClasses"])
         self.assertIn("Waste Management", hdata["realDataClasses"])

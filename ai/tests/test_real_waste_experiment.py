@@ -171,8 +171,7 @@ class TestRealWasteExperiment(unittest.TestCase):
         """Verify heuristic vision fallback executes when an image has no real training data in checkpoint."""
         from classifier import classify_complaint
         categories_to_test = [
-            ("Drainage", "drainage_001.jpg", "Choked sewer drain overflowing"),
-            ("Water Supply", "water_supply_001.jpg", "Burst pipeline drinking water leakage")
+            ("Other", "other_001.jpg", "Unspecified civic infrastructure issue")
         ]
 
         for cat, img_name, desc in categories_to_test:
@@ -256,7 +255,7 @@ class TestRealWasteExperiment(unittest.TestCase):
         data = res.get_json()
         self.assertEqual(data["primaryClassifier"], "mobilenet_v3")
         self.assertEqual(data["fallbackClassifier"], "heuristic_vision")
-        self.assertIn(data["modelVersion"], ["1.1.0-experiment", "1.2.0-roads-waste-v2", "1.3.0-streetlight-roads-waste-v3"])
+        self.assertIn(data["modelVersion"], ["1.1.0-experiment", "1.2.0-roads-waste-v2", "1.3.0-streetlight-roads-waste-v3", "1.4.0-drainage-v3", "1.5.0-water-supply-v4"])
         self.assertIn("Waste Management", data["realDataClasses"])
 
 

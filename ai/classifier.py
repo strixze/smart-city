@@ -73,14 +73,25 @@ def resolve_active_models_dir() -> str:
     Resolves the directory containing the active MobileNetV3 model checkpoint and configuration.
     Priority:
     1. MOBILENET_MODEL_DIR environment variable if specified and directory exists.
-    2. ai/models_streetlight_roads_waste_v3/ if best_model.pth and model_config.json exist.
-    3. ai/models_roads_waste_v2/ as fallback.
-    4. ai/models_real_data_experiment/ as fallback.
-    5. ai/models/ as production fallback.
+    2. ai/models_drainage_v3/ if best_model.pth and model_config.json exist.
+    3. ai/models_streetlight_roads_waste_v3/ if best_model.pth and model_config.json exist.
+    4. ai/models_roads_waste_v2/ as fallback.
+    5. ai/models_real_data_experiment/ as fallback.
+    6. ai/models/ as production fallback.
     """
     env_dir = os.environ.get("MOBILENET_MODEL_DIR")
     if env_dir and os.path.isdir(env_dir):
         return env_dir
+
+    ws_v4_dir = os.path.join(os.path.dirname(__file__), "models_water_supply_v4")
+    if (os.path.exists(os.path.join(ws_v4_dir, "best_model.pth")) and
+            os.path.exists(os.path.join(ws_v4_dir, "model_config.json"))):
+        return ws_v4_dir
+
+    drainage_v3_dir = os.path.join(os.path.dirname(__file__), "models_drainage_v3")
+    if (os.path.exists(os.path.join(drainage_v3_dir, "best_model.pth")) and
+            os.path.exists(os.path.join(drainage_v3_dir, "model_config.json"))):
+        return drainage_v3_dir
 
     v3_dir = os.path.join(os.path.dirname(__file__), "models_streetlight_roads_waste_v3")
     if (os.path.exists(os.path.join(v3_dir, "best_model.pth")) and
@@ -98,6 +109,7 @@ def resolve_active_models_dir() -> str:
         return exp_dir
 
     return os.path.join(os.path.dirname(__file__), "models")
+
 
 
 class MobileNetV3ModelLoader:
@@ -199,8 +211,12 @@ class MobileNetV3ModelLoader:
             self.load_error = f"Error during model loading or verification: {str(e)}"
             print(f"[MobileNetV3 Loader Error] {self.load_error}")
 
-    def reload(self) -> Dict[str, Any]:
+    def reload(self, new_models_dir: Optional[str] = None) -> Dict[str, Any]:
         """Reloads configuration and checkpoint weights from disk."""
+        if new_models_dir:
+            self.models_dir = new_models_dir
+            self.weights_path = os.path.join(self.models_dir, "best_model.pth")
+            self.config_path = os.path.join(self.models_dir, "model_config.json")
         self._load()
         return self.get_status()
 
@@ -269,9 +285,9 @@ def get_model_status() -> Dict[str, Any]:
     return MOBILENET_LOADER.get_status()
 
 
-def reload_model() -> Dict[str, Any]:
+def reload_model(new_models_dir: Optional[str] = None) -> Dict[str, Any]:
     """Reloads the model weights and config from disk."""
-    return MOBILENET_LOADER.reload()
+    return MOBILENET_LOADER.reload(new_models_dir)
 
 
 def normalize_category_name(raw_cat: str) -> str:
@@ -1045,7 +1061,8 @@ def check_prediction_reliability(
             conflicts.append("Roads")
         if has_streetlight_kw:
             conflicts.append("Street Light")
-        if has_drain_kw:
+        # Pure drainage issue without garbage is a contradiction
+        if has_drain_kw and not has_waste_kw:
             conflicts.append("Drainage")
         if has_water_kw:
             conflicts.append("Water Supply")
@@ -1058,6 +1075,30 @@ def check_prediction_reliability(
             conflicts.append("Drainage")
         if has_water_kw:
             conflicts.append("Water Supply")
+    elif mb_cat == "Drainage":
+        if has_streetlight_kw:
+            conflicts.append("Street Light")
+        # Road keywords only conflict if no water/flooding/drain context is present
+        if has_road_kw and not any(w in text_clean for w in ["waterlogged", "waterlogging", "flood", "flooding", "drain", "water", "sewer", "gutter"]):
+            conflicts.append("Roads")
+        # Confusing case: garbage blocking a drain versus ordinary garbage accumulation.
+        # If garbage is reported with drainage/water/gutter/overflow context, it is genuine drainage blockage.
+        if has_waste_kw and not any(w in text_clean for w in ["drain", "drainage", "sewer", "gutter", "clog", "choke", "overflow", "water", "stagnant"]):
+            conflicts.append("Waste Management")
+        if has_water_kw and not any(w in text_clean for w in ["drain", "drainage", "sewer", "gutter", "clog", "overflow", "dirty water", "foul water"]):
+            conflicts.append("Water Supply")
+    elif mb_cat == "Water Supply":
+        if has_streetlight_kw:
+            conflicts.append("Street Light")
+        # Road/pothole keywords conflict unless pipe leakage/water leak context is present
+        if has_road_kw and not any(w in text_clean for w in ["pipe", "pipeline", "leak", "leakage", "water", "burst"]):
+            conflicts.append("Roads")
+        # Pure garbage accumulation without plumbing/water
+        if has_waste_kw and not any(w in text_clean for w in ["pipe", "pipeline", "tap", "leak", "water", "supply"]):
+            conflicts.append("Waste Management")
+        # Sewage/foul drainage without clean/drinking water pipe context
+        if has_drain_kw and not any(w in text_clean for w in ["clean water", "drinking water", "pipe", "pipeline", "supply", "tap"]):
+            conflicts.append("Drainage")
 
     # Visual conflict check: night street lighting with luminaire fixture when predicting non-streetlight
     if mb_cat != "Street Light" and (has_streetlight_kw and feats.has_localized_light_source) and "Street Light" not in conflicts:
@@ -1087,7 +1128,7 @@ def classify_complaint(
     Priority 1 (PRIMARY): Fine-tuned MobileNetV3 Small computer vision model.
     - Evaluated first for every image-based civic complaint.
     - Employs a strict reliability policy: predictions are accepted ONLY when:
-      1) The predicted category is backed by verified real training data (Waste Management, Roads, Street Light).
+      1) The predicted category is backed by verified real training data (Drainage, Waste Management, Roads, Street Light).
       2) The prediction confidence meets or exceeds the empirical threshold (0.70).
       3) 'Do not treat softmax confidence alone as proof of correctness':
          Image and description are sanity checked for conflicting non-category evidence.
@@ -1117,7 +1158,7 @@ def classify_complaint(
         top_preds = []
         mb_lat = 0.0
         fallback_reason = None
-        real_classes = getattr(MOBILENET_LOADER, "real_data_classes", ["Waste Management", "Roads", "Street Light"]) or ["Waste Management", "Roads", "Street Light"]
+        real_classes = getattr(MOBILENET_LOADER, "real_data_classes", ["Drainage", "Waste Management", "Roads", "Street Light", "Water Supply"]) or ["Drainage", "Waste Management", "Roads", "Street Light", "Water Supply"]
 
         # Step 1: Attempt Primary MobileNetV3 Model
         if not force_heuristic and MOBILENET_LOADER.is_loaded and MOBILENET_LOADER.model is not None:
@@ -1138,7 +1179,18 @@ def classify_complaint(
                     clean_desc = clean_text(description)
                     cat_data = CIVIC_TAXONOMY.get(mb_cat, CIVIC_TAXONOMY.get("Waste Management", {}))
                     is_hazard, hazard_priority, matched_hazards = detect_hazard_keywords(clean_desc)
-                    default_sub = "Street Light Damaged" if mb_cat == "Street Light" else ("Pothole" if mb_cat == "Roads" else ("Garbage Dump" if mb_cat == "Waste Management" else "Other"))
+                    default_sub = (
+                        "Water Leakage" if mb_cat == "Water Supply" else (
+                            "Blocked Drain" if mb_cat == "Drainage" else (
+                                "Street Light Damaged" if mb_cat == "Street Light" else (
+                                    "Pothole" if mb_cat == "Roads" else (
+                                        "Garbage Dump" if mb_cat == "Waste Management" else "Other"
+                                    )
+                                )
+                            )
+                        )
+                    )
+
                     subcategories = cat_data.get("subcategories", [default_sub])
                     selected_sub = default_sub
                     if clean_desc:

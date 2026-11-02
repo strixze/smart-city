@@ -99,18 +99,18 @@ class TestAiModelPipeline(unittest.TestCase):
         self.assertEqual(result["predictedCategory"], "Street Light", "Sample must predict Street Light")
         self.assertIn(result["predictionSource"], ["mobilenet", "heuristic_vision"])
 
-        # Untrained category (Drainage) falls back to heuristic vision
-        drain_img_path = os.path.join(AI_DIR, "data", "Drainage", "drainage_001.jpg")
-        drain_res = classify_complaint(
-            image_path=drain_img_path,
-            description="Choked sewage drain overflowing",
-            request_id="test-req-drainage"
+        # Untrained category (Water Supply) falls back to heuristic vision
+        ws_img_path = os.path.join(AI_DIR, "data", "Water Supply", "water_supply_001.jpg")
+        ws_res = classify_complaint(
+            image_path=ws_img_path,
+            description="Broken underground water pipe leaking",
+            request_id="test-req-water-supply"
         )
-        self.assertEqual(drain_res["predictedCategory"], "Drainage")
-        self.assertEqual(drain_res["predictionSource"], "heuristic_vision")
-        self.assertTrue(drain_res["fallbackUsed"])
-        self.assertTrue(drain_res["isFallback"])
-        self.assertEqual(drain_res["primaryModelAttempted"], "mobilenet_v3")
+        self.assertEqual(ws_res["predictedCategory"], "Water Supply")
+        self.assertEqual(ws_res["predictionSource"], "heuristic_vision")
+        self.assertTrue(ws_res["fallbackUsed"])
+        self.assertTrue(ws_res["isFallback"])
+        self.assertEqual(ws_res["primaryModelAttempted"], "mobilenet_v3")
 
         # Explicit Gemini request (only when explicitly requested)
         mock_gemini = {

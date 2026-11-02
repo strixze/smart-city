@@ -204,11 +204,17 @@ def health():
 @app.route("/reload-model", methods=["POST"])
 def reload_model_weights():
     """Reloads model weights and configuration from disk without restarting service."""
-    status = reload_model()
+    import importlib
+    import classifier
+    importlib.reload(classifier)
+    req_data = request.get_json(silent=True) or {}
+    models_dir = req_data.get("models_dir")
+    status = classifier.reload_model(models_dir)
     logger.info(
-        "MODEL RELOAD | Loaded: %s | Classes: %s | Error: %s",
+        "MODEL RELOAD | Loaded: %s | Classes: %s | Version: %s | Error: %s",
         status.get("loaded"),
         status.get("classes"),
+        status.get("version"),
         status.get("error"),
     )
     return jsonify({
