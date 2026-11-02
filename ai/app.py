@@ -516,6 +516,16 @@ def analyze():
             result.get("reason", "")[:150],
         )
 
+        model_ver = result.get("modelVersion") or (get_model_status().get("version") if result.get("modelLoaded") else "N/A")
+        logger.info(
+            "[INFERENCE] Model version: %s | Prediction category: %s | Confidence: %.4f | Inference duration: %.2f ms | Fallback triggered: %s",
+            model_ver,
+            result.get("predictedCategory", result.get("category", "Unknown")),
+            result.get("confidence", 0.0),
+            inference_ms,
+            result.get("isFallback", False),
+        )
+
         if "diagnostics" in result and "mobilenet" in result["diagnostics"]:
             mb = result["diagnostics"]["mobilenet"]
             logger.info(

@@ -168,6 +168,10 @@ class MobileNetV3ModelLoader:
             mean = self.config.get("input_mean", [0.485, 0.456, 0.406])
             std = self.config.get("input_std", [0.229, 0.224, 0.225])
 
+            print("[MODEL] Loading MobileNetV3-Small")
+            print(f"[MODEL] Model version: {self.version}")
+            print(f"[MODEL] Checkpoint path: {self.weights_path}")
+
             # Build MobileNetV3 Small architecture
             from torchvision.models import mobilenet_v3_small
             model = mobilenet_v3_small(weights=None)
@@ -201,6 +205,9 @@ class MobileNetV3ModelLoader:
             self.is_loaded = True
             self.load_error = None
             self.load_time_ms = round((time.perf_counter() - t0) * 1000, 2)
+            print("[MODEL] Checkpoint loaded successfully")
+            print(f"[MODEL] Device: {str(self.device).upper() if self.device else 'CPU'}")
+            print(f"[MODEL] Classes: {', '.join(self.classes)}")
             print(f"[MobileNetV3 Loader] Successfully loaded active checkpoint: '{self.weights_path}' "
                   f"(version: '{self.version}', name: '{self.model_name}') with {self.num_classes} classes in {self.load_time_ms} ms on {self.device}. "
                   f"Real-data verified classes: {self.real_data_classes}.")
@@ -234,15 +241,18 @@ class MobileNetV3ModelLoader:
             raise ValueError(f"Invalid or empty image file: {image_path}")
 
         t0 = time.perf_counter()
+        from PIL import ImageOps
         with Image.open(image_path) as img:
-            img_rgb = img.convert("RGB")
+            trans = ImageOps.exif_transpose(img)
+            img_rgb = (trans if trans is not None else img).convert("RGB")
             tensor = self.transform(img_rgb).unsqueeze(0).to(self.device)
 
-        logits = self.model(tensor)
-        probs = self.softmax(logits)[0]
+        with torch.inference_mode():
+            logits = self.model(tensor)
+            probs = self.softmax(logits)[0]
 
-        k = min(top_k, self.num_classes)
-        top_probs, top_indices = torch.topk(probs, k=k)
+            k = min(top_k, self.num_classes)
+            top_probs, top_indices = torch.topk(probs, k=k)
 
         top_preds = []
         for p, idx in zip(top_probs.cpu().numpy(), top_indices.cpu().numpy()):
