@@ -1,0 +1,238 @@
+{
+  "evaluation_timestamp": "2026-11-04T10:53:39.669897Z",
+  "selected_strategy": "Approach A (Fine-tuned from v4 checkpoint)",
+  "best_model_checkpoint": "D:\\safe\\smart city main\\smart-city trained on subclasses categories\\ai\\models_water_supply_v5\\best_model.pth",
+  "baseline_checkpoint": "D:\\safe\\smart city main\\smart-city trained on subclasses categories\\ai\\models_water_supply_v4\\best_model.pth",
+  "comparison_on_baseline_138_test_set": {
+    "baseline_accuracy": 0.9058,
+    "baseline_accuracy_pct": "90.58%",
+    "baseline_macro_f1": 0.905,
+    "new_model_accuracy": 0.8986,
+    "new_model_accuracy_pct": "89.86%",
+    "new_model_macro_f1": 0.899,
+    "accuracy_delta": -0.0072,
+    "macro_f1_delta": -0.006,
+    "per_class_comparison": {
+      "Drainage": {
+        "baseline_accuracy": 0.8387,
+        "new_accuracy": 0.8065,
+        "delta": -0.0322,
+        "performance_preserved_or_improved": false
+      },
+      "Other": {
+        "baseline_accuracy": 0.0,
+        "new_accuracy": 0.0,
+        "delta": 0.0,
+        "performance_preserved_or_improved": true
+      },
+      "Roads": {
+        "baseline_accuracy": 0.9062,
+        "new_accuracy": 0.9062,
+        "delta": 0.0,
+        "performance_preserved_or_improved": true
+      },
+      "Street Light": {
+        "baseline_accuracy": 0.913,
+        "new_accuracy": 0.913,
+        "delta": 0.0,
+        "performance_preserved_or_improved": true
+      },
+      "Waste Management": {
+        "baseline_accuracy": 0.9655,
+        "new_accuracy": 0.931,
+        "delta": -0.0345,
+        "performance_preserved_or_improved": false
+      },
+      "Water Supply": {
+        "baseline_accuracy": 0.913,
+        "new_accuracy": 0.9565,
+        "delta": 0.0435,
+        "performance_preserved_or_improved": true
+      }
+    },
+    "confusion_matrix_138": [
+      [
+        25,
+        0,
+        2,
+        1,
+        0,
+        3
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        29,
+        1,
+        2,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        21,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        0,
+        27,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        1,
+        0,
+        22
+      ]
+    ]
+  },
+  "full_updated_test_set_metrics": {
+    "overall_accuracy": 0.8927,
+    "overall_accuracy_pct": "89.27%",
+    "macro_precision": 0.8806,
+    "macro_recall": 0.9158,
+    "macro_f1": 0.8942,
+    "mean_confidence": 0.8724,
+    "per_class": {
+      "Drainage": {
+        "class_index": 0,
+        "test_support": 74,
+        "accuracy": 0.8243,
+        "precision": 0.9683,
+        "recall": 0.8243,
+        "f1_score": 0.8905
+      },
+      "Other": {
+        "class_index": 1,
+        "test_support": 3,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0
+      },
+      "Roads": {
+        "class_index": 2,
+        "test_support": 32,
+        "accuracy": 0.9062,
+        "precision": 0.8056,
+        "recall": 0.9062,
+        "f1_score": 0.8529
+      },
+      "Street Light": {
+        "class_index": 3,
+        "test_support": 23,
+        "accuracy": 0.913,
+        "precision": 0.7,
+        "recall": 0.913,
+        "f1_score": 0.7925
+      },
+      "Waste Management": {
+        "class_index": 4,
+        "test_support": 29,
+        "accuracy": 0.931,
+        "precision": 0.871,
+        "recall": 0.931,
+        "f1_score": 0.9
+      },
+      "Water Supply": {
+        "class_index": 5,
+        "test_support": 100,
+        "accuracy": 0.92,
+        "precision": 0.9388,
+        "recall": 0.92,
+        "f1_score": 0.9293
+      }
+    },
+    "confusion_matrix_full": [
+      [
+        61,
+        0,
+        4,
+        3,
+        0,
+        6
+      ],
+      [
+        0,
+        3,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        29,
+        1,
+        2,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        21,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        0,
+        27,
+        0
+      ],
+      [
+        1,
+        0,
+        1,
+        5,
+        1,
+        92
+      ]
+    ],
+    "classes": [
+      "Drainage",
+      "Other",
+      "Roads",
+      "Street Light",
+      "Waste Management",
+      "Water Supply"
+    ]
+  },
+  "strategy_comparison": {
+    "approach_a_fine_tuned_v4": {
+      "val_loss": 0.2106,
+      "val_acc": 0.9023,
+      "test_138_accuracy": 0.8986,
+      "test_138_macro_f1": 0.899,
+      "test_full_accuracy": 0.8927,
+      "test_full_macro_f1": 0.8942
+    },
+    "approach_b_retrained_imagenet": {
+      "val_loss": 0.3081,
+      "val_acc": 0.8633,
+      "test_138_accuracy": 0.8551,
+      "test_138_macro_f1": 0.8536,
+      "test_full_accuracy": 0.8582,
+      "test_full_macro_f1": 0.8614
+    }
+  }
+}

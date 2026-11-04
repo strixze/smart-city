@@ -56,26 +56,41 @@ def get_inference_transforms(image_size: int = IMAGE_SIZE) -> transforms.Compose
     ])
 
 
+def get_accessible_path(path: str) -> str:
+    """Returns path with \\\\?\\ prefix on Windows to support paths longer than 260 chars."""
+    if not path:
+        return path
+    abs_path = os.path.abspath(path)
+    if os.name == "nt" and not abs_path.startswith("\\\\?\\"):
+        return "\\\\?\\" + abs_path
+    return abs_path
+
+
 def load_and_validate_image(image_path: str) -> Optional[Image.Image]:
     """
     Safely opens and validates an image file.
     - Validates file existence and non-zero size
+    - Handles Windows long paths gracefully
     - Converts RGBA, CMYK, Palette, and Grayscale to 3-channel RGB
     - Catches corrupt, truncated, or unidentifiable image files
     """
-    if not image_path or not os.path.exists(image_path):
+    if not image_path:
+        return None
+
+    acc_path = get_accessible_path(image_path)
+    if not os.path.exists(acc_path):
         return None
 
     try:
-        if os.path.getsize(image_path) == 0:
+        if os.path.getsize(acc_path) == 0:
             return None
 
-        with Image.open(image_path) as img:
+        with Image.open(acc_path) as img:
             # Force decode pixels to verify integrity
             img.verify()
 
         # Reopen after verify() closes/invalidates the handle
-        with Image.open(image_path) as img:
+        with Image.open(acc_path) as img:
             return img.convert("RGB")
     except (UnidentifiedImageError, OSError, ValueError, SyntaxError) as err:
         print(f"[Dataset Warning] Skipping corrupt image: {image_path} ({err})")

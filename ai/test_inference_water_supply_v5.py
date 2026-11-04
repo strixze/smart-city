@@ -22,6 +22,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_DIR not in sys.path:
     sys.path.insert(0, CURRENT_DIR)
 
+from utils import get_accessible_path
 from classifier import (
     MobileNetV3ModelLoader,
     MOBILENET_LOADER,
@@ -34,7 +35,7 @@ class TestInferenceWaterSupplyV5(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.models_dir = os.path.join(CURRENT_DIR, "models_water_supply_v4")
+        cls.models_dir = os.path.join(CURRENT_DIR, "models_water_supply_v5")
         cls.manifest_path = os.path.join(cls.models_dir, "test_manifest.json")
         with open(cls.manifest_path, "r", encoding="utf-8") as f:
             cls.manifest = json.load(f)
@@ -190,7 +191,7 @@ class TestInferenceWaterSupplyV5(unittest.TestCase):
 
         ws_samples = self.manifest.get("water_supply_test_samples") or self.manifest.get("watersupply_test_samples")
         ws_sample = [s for s in ws_samples if MOBILENET_LOADER.predict(s)[1] >= 0.75][0]
-        with open(ws_sample, "rb") as f:
+        with open(get_accessible_path(ws_sample), "rb") as f:
             data = {
                 "image": (f, "leak.webp"),
                 "description": "Leaking drinking water pipeline on main street"

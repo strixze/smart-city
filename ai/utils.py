@@ -96,6 +96,16 @@ def normalize_image_orientation(img: "Image.Image") -> "Image.Image":
         return img
 
 
+def get_accessible_path(path: Optional[str]) -> Optional[str]:
+    """Ensures paths that might exceed Windows MAX_PATH (260 chars) are accessible."""
+    if not path:
+        return path
+    abs_path = os.path.abspath(path)
+    if os.name == "nt" and not abs_path.startswith("\\\\?\\") and len(abs_path) > 200:
+        return "\\\\?\\" + abs_path
+    return abs_path
+
+
 def safe_load_image(image_path: Optional[str]) -> Tuple[Optional["Image.Image"], Optional[str], Tuple[int, int], Optional[str]]:
     """
     Safely opens and validates an image from disk.
@@ -103,6 +113,7 @@ def safe_load_image(image_path: Optional[str]) -> Tuple[Optional["Image.Image"],
     Returns:
         (image_rgb, error_message, (width, height), format)
     """
+    image_path = get_accessible_path(image_path)
     if not image_path or not os.path.exists(image_path):
         return None, "Image file not found on disk", (0, 0), None
 
@@ -146,6 +157,7 @@ def extract_image_features(image_path: Optional[str], preloaded_img: Optional["I
     img = preloaded_img
     img_format = None
     if img is None:
+        image_path = get_accessible_path(image_path)
         if not image_path or not os.path.exists(image_path):
             return features
         loaded_img, err, (w, h), fmt = safe_load_image(image_path)
@@ -266,6 +278,7 @@ def extract_image_features(image_path: Optional[str], preloaded_img: Optional["I
 
 def encode_image_to_base64(image_path: str) -> Optional[str]:
     """Reads an image file and converts it into a base64 encoded string."""
+    image_path = get_accessible_path(image_path)
     if not image_path or not os.path.exists(image_path):
         return None
     try:

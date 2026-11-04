@@ -1,0 +1,1335 @@
+{
+  "target_classes": [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+  ],
+  "classes": [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+  ],
+  "class_to_idx": {
+    "Drainage": 0,
+    "Other": 1,
+    "Roads": 2,
+    "Street Light": 3,
+    "Waste Management": 4,
+    "Water Supply": 5
+  },
+  "drainage_test_samples": [
+    "ai/data\\Drainage\\plastic-pipework-for-underground-waste-water-photo.webp",
+    "ai/data\\Drainage\\city-stormwater-drainage-covered-snow-173854540.webp",
+    "ai/data\\Drainage\\overflow-sewer-water_87720-268361.webp",
+    "ai/data\\Drainage\\31_jpg.rf.h82fSZFEFDkOQUawGS70.jpg",
+    "ai/data\\Drainage\\images-4_jpg.rf.8zUDyKRT0fc34n3yh7QK.jpg",
+    "ai/data\\Drainage\\storm-sewer-heavy-rain.webp",
+    "ai/data\\Drainage\\manhole-cover-2723518__340_jpg.rf.g4xFDa9t8u99C8AX2eDv.jpg",
+    "ai/data\\Drainage\\overflow (42)_jpg.rf.vvi7d7Oafzds6WCbUWsD.jpg",
+    "ai/data\\Drainage\\overflow (54)_jpg.rf.kzUH43z4uDIT3xxfmgzy.jpg",
+    "ai/data\\Drainage\\dangerous-city-sidewalk-bari-italy-260nw-2065413929.webp",
+    "ai/data\\Drainage\\drain-is-clogged-with-leaves-and-debris-photo.webp",
+    "ai/data\\Drainage\\a-man-is-uncloging-a-clogged-sink.webp",
+    "ai/data\\Drainage\\wastewater-treatment-pond-aerated-wastewater-treatment-ponds-photo.webp",
+    "ai/data\\Drainage\\clogged-drain-stagnant-water-tiled-floor-shows-potential-hygiene-issues-health-hazards-plumbing-problem-requires-434020467.webp",
+    "ai/data\\Drainage\\clogged-street-drain-rain-storm-tree-debris-clogging-71772932.webp",
+    "ai/data\\Drainage\\a-drain-that-is-open-photo.webp",
+    "ai/data\\Drainage\\360_F_1613567286_waJqWkynJHChdzFh89c1c9CqBGk94W6I.webp",
+    "ai/data\\Drainage\\clogged-drain-hair-lost-jewelry-wet-tiles-high-contrast-gritty-aesthetic-highlighting-home-emergency-ideal-454440377.webp",
+    "ai/data\\Drainage\\360_F_1841410869_ZAFFEWEo2ZluN6dRhpdtOD2elesRTJ39.webp",
+    "ai/data\\Drainage\\ai-generated-industrial-waste-being-dumped-into-a-river-poisoning-the-water-source-photo.webp",
+    "ai/data\\Drainage\\rusty-metal-drain-cover-on-concrete-surface-photo.webp",
+    "ai/data\\Drainage\\images-20_jpg.rf.OocIM71cnnro1xnW0HD3.jpg",
+    "ai/data\\Drainage\\accident-sewerage-system.webp",
+    "ai/data\\Drainage\\360_F_162259004_G7kTnYBIpsFlvBSob37pPo1SHLsBSsVY.webp",
+    "ai/data\\Drainage\\cleaning-blocked-drain-clog-kitchen-sink_1016675-737.webp",
+    "ai/data\\Drainage\\clogged-drain-cover-is-sitting-ground_820340-30635.webp",
+    "ai/data\\Drainage\\360_F_2089769932_vliHOd36jWYjLi5sTeSbcpULciOMTk9F.webp",
+    "ai/data\\Drainage\\images-20_jpg.rf.Obw6S84mVueL4Kpu3xac.jpg",
+    "ai/data\\Drainage\\water-flowing-over-grated-drain-DXP9ET.webp",
+    "ai/data\\Drainage\\98_jpg.rf.Q0DYRg83Y0gWoEvpOaIJ.jpg",
+    "ai/data\\Drainage\\discharge-drainage-water-photo.webp",
+    "ai/data\\Drainage\\floor-drain-to-filter-waste-in-the-bathroom-photo.webp",
+    "ai/data\\Drainage\\rebuilding-of-street-broken-manhole-with-steel-cover-manhole-with-rusty-metal-cover-in-cracked-asphalt-surface-R4XBAB.webp",
+    "ai/data\\Drainage\\ai-generated-water-flowing-from-pipe-close-up-free-photo.webp",
+    "ai/data\\Drainage\\clearing-an-outside-drain-blocked-with-fat.webp",
+    "ai/data\\Drainage\\10_jpg.rf.Cf1gQVALTbDpijw0UNlG.jpg",
+    "ai/data\\Drainage\\city-street-after-rain.webp",
+    "ai/data\\Drainage\\accident-sewerage-system-water-supply-failure-breakthrough-of-the-water-supply-system.webp",
+    "ai/data\\Drainage\\water-pipes-in-ground-pit-trench-ditch-during-plumbing-under-construction-repairing-repair-of-a-water-supply-or-gas-pipeline-photo.webp",
+    "ai/data\\Drainage\\a-fire-caused-this-manhole-cover-to-blow-off-on-maiden-lane-thursday-sept-24-2020-in-albany-n.webp",
+    "ai/data\\Drainage\\dirty-sewage-exits-from-sewer-tunnel-photo.webp",
+    "ai/data\\Drainage\\360_F_1311559661_M3lf8SxuQTTnX7e3DA7K3hS4pKgtdkEL.webp",
+    "ai/data\\Drainage\\16_jpg.rf.9SlxXByI3BHiQKty0SdA.jpg",
+    "ai/data\\Drainage\\road-repair-sewer-manholes-covered-with-cement-mortar-photo.webp",
+    "ai/data\\Drainage\\rainwater-flows-through-an-orange-drainage-pipe-among-fallen-leaves-in-a-wet-street-during-autumn-free-photo.webp",
+    "ai/data\\Drainage\\images-4_jpg.rf.xry9weLoAppjCRmtdFV7.jpg",
+    "ai/data\\Drainage\\overflow (25)_jpg.rf.z0PVHq4dI76Qa7ChWrvr.jpg",
+    "ai/data\\Drainage\\rainwater-flows-into-the-storm-drain.webp",
+    "ai/data\\Drainage\\sewage-overflow-river-water-pipe-pull-out-polluted-water-32058305.webp",
+    "ai/data\\Drainage\\worker-cleaning-up-a-septic-tank.webp",
+    "ai/data\\Drainage\\3_jpg.rf.X0wj8vPYePGifAHBdq7p.jpg",
+    "ai/data\\Drainage\\water-flowing-through-drainage-pipes-trench_1368099-4139.jpg_ga=GA1.1.1020276660.webp",
+    "ai/data\\Drainage\\images-63_jpg.rf.ZCbFWQsXeuJk6umhngwu.jpg",
+    "ai/data\\Drainage\\water-pipes-in-an-excavation-pit-at-a-construction-site.webp",
+    "ai/data\\Drainage\\broken-metal-sewer-hatch-in-the-middle-of-an-asphalt-road-photo.webp",
+    "ai/data\\Drainage\\360_F_117374643_kPjNdiy0PoyLyV0LpPxsZQJEqZBBc5MD.webp",
+    "ai/data\\Drainage\\images-49_jpg.rf.YhoQf1wBsDSXCaYwquAE.jpg",
+    "ai/data\\Drainage\\ai-generated-stark-imagery-of-industrial-wastewater-spewing-from-factory-pipes-into-canals-and-seas-illustrating-environmental-harm-and-water-pollution-photo.webp",
+    "ai/data\\Drainage\\storm-sewer-flood-dirty-water-cleanup.webp",
+    "ai/data\\Drainage\\manhole-overflowing-with-water.webp",
+    "ai/data\\Drainage\\overflow (62)_jpg.rf.nPozvwrzIUNmQl5RNOZ9.jpg",
+    "ai/data\\Drainage\\96_jpg.rf.rKzTPlbBbS82zWzq5Jtl.jpg",
+    "ai/data\\Drainage\\cement-tile-covering-manhole-cover-damaged-has-hole-cement-tile-covering-manhole-cover-damaged-has-hole-317880231.webp",
+    "ai/data\\Drainage\\clogged-drain-cover-is-sitting-ground_820340-30595.webp",
+    "ai/data\\Drainage\\360_F_1375636650_BNv0xZ0aQAl4C5DV3sWwmPigTZcYR66m.webp",
+    "ai/data\\Drainage\\104_jpg.rf.igI0J87gT2NGvFAVq2HG.jpg",
+    "ai/data\\Drainage\\360_F_331833658_VMtFmP4yxZy8VcfcADZVZRWOh2mRfaA1.webp",
+    "ai/data\\Drainage\\rusted-damaged-manhole-cover-old-600nw-2654950413.webp",
+    "ai/data\\Drainage\\images-62_jpg.rf.e1OENA5E0ylWsyob6Y5g.jpg",
+    "ai/data\\Drainage\\open-concrete-manhole-damaged-cover-600nw-2822481263.webp",
+    "ai/data\\Drainage\\download-3_jpg.rf.uz6fJeP6noCuKw7tFdmx.jpg",
+    "ai/data\\Drainage\\unblock-drain-outside-garden-debris.webp",
+    "ai/data\\Drainage\\medium-3jWH3KDQru3XasO1IVVE06E5u96EOnevCAfjvRhC.webp",
+    "ai/data\\Drainage\\overflow (3)_jpg.rf.NLjfmCwpFGTZrTeEUR0T.jpg"
+  ],
+  "other_test_samples": [
+    "ai/data\\Other\\other_009.jpg",
+    "ai/data\\Other\\other_016.jpg",
+    "ai/data\\Other\\other_002.jpg"
+  ],
+  "roads_test_samples": [
+    "ai/data\\Roads\\3acc6e47642696f9d142abef59314101.webp",
+    "ai/data\\Roads\\mumbai-india-potholes-seen-on-ghodbunder-road-and-the-poor-condition-of-the-road-led-to-a.webp",
+    "ai/data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-171111.webp",
+    "ai/data\\Roads\\pothole-road-water-red-house-bricks-inside-to-repair-pothole-road-water-red-house-bricks-451982271.webp",
+    "ai/data\\Roads\\truck-parked-next-to-several-potholes-on-a-city-street.webp",
+    "ai/data\\Roads\\depositphotos_72691739-stock-photo-damaged-roadway.webp",
+    "ai/data\\Roads\\mumbai-india-due-to-the-heavy-rainfall-that-has-been-lashing-mumbai-since-last-night-potholes.webp",
+    "ai/data\\Roads\\pothole-with-water-on-urban-street-surface-photo.webp",
+    "ai/data\\Roads\\a-crack-in-the-road-that-is-showing-a-crack-in-the-road-photo.webp",
+    "ai/data\\Roads\\several-potholes-on-the-road.webp",
+    "ai/data\\Roads\\360_F_77575060_xyNr5g3OCWlE63NJXPJniUSrGHuyEVG2.webp",
+    "ai/data\\Roads\\philadelphia-damaged-road-1.webp",
+    "ai/data\\Roads\\75509053194f05b262f9268fd1c01de8.webp",
+    "ai/data\\Roads\\360_F_1061105493_xYm7difE5jL0S8EZ0lxMGDfcVvRXVJjG.webp",
+    "ai/data\\Roads\\pothole-large-deep-montreal-street-canada-69837660.webp",
+    "ai/data\\Roads\\pothole-in-the-asphalt-paved-road.webp",
+    "ai/data\\Roads\\tar-road-filled-big-potholes-south-africa-massive-craters-very-poorly-maintained-due-to-poor-service-delivery-455476386.webp",
+    "ai/data\\Roads\\several-holes-street-potholes-visible-gray-asphalt-road-shows-significant-wear-tear-large-cracks-468309444.webp",
+    "ai/data\\Roads\\mumbai-india-private-contract-worker-carries-the-prepared-material-to-fill-potholes-between.webp",
+    "ai/data\\Roads\\360_F_249175320_yNuiZ8dv8uZPShrZ6vIzuwc6F7fZZVCN.webp",
+    "ai/data\\Roads\\mumbai-india-potholes-at-santacruz-flyover-due-to-heavy-rain-on-august-30-2017-in-mumbai-india.webp",
+    "ai/data\\Roads\\severe-road-damage-caused-by-earthquake-photo.webp",
+    "ai/data\\Roads\\asphalt-collapsed-on-the-road.webp",
+    "ai/data\\Roads\\asphalt-cracked-road-collapsed-by-landslide.webp",
+    "ai/data\\Roads\\mumbai-india-potholes-at-dadar-bridge-on-tulsi-pipe-road.webp",
+    "ai/data\\Roads\\view-of-a-dirt-road-in-a-village-with-a-natural-concept-free-photo.webp",
+    "ai/data\\Roads\\a-hole-in-the-road.webp",
+    "ai/data\\Roads\\mumbai-india-the-recent-heavy-spell-of-showers-has-increased-the-problem-of-commuters-as-huge.webp",
+    "ai/data\\Roads\\pothole-large-deep-montreal-street-canada-75735131.webp",
+    "ai/data\\Roads\\360_F_608384568_afwDm6HOSLWhWmpDUIPvqhwkkMS5RiMJ.webp",
+    "ai/data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-153132.webp",
+    "ai/data\\Roads\\a-large-deep-pothole-with-exposed-gravel-and-broken-asphalt-on-a-damaged-road-with-faded-lane-markings-photo.webp"
+  ],
+  "streetlight_test_samples": [
+    "ai/data\\Street Light\\storm-damaged-traffic-light.webp",
+    "ai/data\\Street Light\\Decorative-Light-Post.webp",
+    "ai/data\\Street Light\\124901085-detail-of-damaged-surveillance-camera-on-street-lamp-pole-on-the-ground-vandalism-act-on-french.webp",
+    "ai/data\\Street Light\\lamppost-16937416.webp",
+    "ai/data\\Street Light\\storm-damage-3.webp",
+    "ai/data\\Street Light\\vintage-street-light.webp",
+    "ai/data\\Street Light\\vertical-shot-of-traffic-lights-wrapped-with-an-adhesive-tape.webp",
+    "ai/data\\Street Light\\360_F_2189326312_fOsJbwS3E7f1kZNVROWTdfql5zCfrjnC.webp",
+    "ai/data\\Street Light\\157324827-one-old-broken-spotlight-with-a-white-lamp-on-a-concrete-pillar-overgrown-with-dry-vegetation.webp",
+    "ai/data\\Street Light\\traffic-lights-down-during-roadworks.webp",
+    "ai/data\\Street Light\\40299262-electrical-street-lamp-on-white-isolated-background.webp",
+    "ai/data\\Street Light\\178367342-a-road-sign-lying-on-the-lawn-blown-down-by-the-wind.webp",
+    "ai/data\\Street Light\\lamppost-against-sky-10968613.webp",
+    "ai/data\\Street Light\\214129888-modern-street-lamp-with-broken-glass-and-visible-dirty-white-glass-bulb-on-blue-sky-background.webp",
+    "ai/data\\Street Light\\120354189-broken-street-lamp-on-green-pole-and-sky-like-background-texture.webp",
+    "ai/data\\Street Light\\traffic-light-thats-down-earth-260nw-686026135.webp",
+    "ai/data\\Street Light\\traffic-lights-are-melted-by-the-heat-of-a-burning-car-after-a-night-of-rioting.webp",
+    "ai/data\\Street Light\\traffic-lights-utility-fallen-pole-vehicle-crash-street.webp",
+    "ai/data\\Street Light\\lamppost-with-broken-banner.webp",
+    "ai/data\\Street Light\\177934569-road-traffic-lights-close-up-destroyed-broken-on-the-floor-vehicle-collision-at-inter-section.webp",
+    "ai/data\\Street Light\\vintage-broken-street-lamp-bird-s-nest-inside-243263825.webp",
+    "ai/data\\Street Light\\traffic-light.webp",
+    "ai/data\\Street Light\\vintage-old-street-classic-iron-lantern-house-wall-close-up-streetlight-broken-vintage-old-street-classic-iron-lantern-115759188.webp"
+  ],
+  "waste_management_test_samples": [
+    "ai/data\\Waste Management\\an-overflowing-container-filled-with-a-variety-of-drink-cans.webp",
+    "ai/data\\Waste Management\\transparent-garbage-bags-dumped-in-the-city-street-photo.webp",
+    "ai/data\\Waste Management\\taco_1169_000005.JPG",
+    "ai/data\\Waste Management\\overflowing-garbage-bin-street-with-scattered-trash-plastic-bottles-debris_908344-251015.webp",
+    "ai/data\\Waste Management\\ai-generated-8294134_640.webp",
+    "ai/data\\Waste Management\\free-photo-of-pile-of-trash-in-an-alley.webp",
+    "ai/data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-photo.webp",
+    "ai/data\\Waste Management\\overflowing-trash-bag-with-food-waste-and-garbage-on-the-dirty-concrete-photo.webp",
+    "ai/data\\Waste Management\\overflowing-dark-gray-garbage-bin-filled-with-various-types-trash-debris-outdoors_908344-250836.webp",
+    "ai/data\\Waste Management\\taco_569_000068.jpg",
+    "ai/data\\Waste Management\\free-photo-of-trash-around-a-garbage-bin.webp",
+    "ai/data\\Waste Management\\free-photo-of-urban-alleyway-with-overflowing-garbage-heaps.webp",
+    "ai/data\\Waste Management\\old-garbage-landfill-near-large-260nw-2127642269.webp",
+    "ai/data\\Waste Management\\taco_1016_000117.JPG",
+    "ai/data\\Waste Management\\taco_1375_000075.jpg",
+    "ai/data\\Waste Management\\old-garbage-can-full-garbage-png-isolated-transparent-background_723616-13226.webp",
+    "ai/data\\Waste Management\\environment-garbage-pile-plastic-bags-white-background_1339860-3085.webp",
+    "ai/data\\Waste Management\\overflowing-green-construction-dumpster-filled-with-cardboard-boxes-and-building-waste-at.webp",
+    "ai/data\\Waste Management\\fashion-garbage.webp",
+    "ai/data\\Waste Management\\overflowing-recycling-container-surrounded-by-black-trash-bags-full-garbage-bin-urban-setting_937679-86346.webp",
+    "ai/data\\Waste Management\\people-dropping-their-garbage-bag-to-van-during-the-lockdown-due-to-the-covid-19-virus-corona.webp",
+    "ai/data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-and-cardboard-urban-waste-pollution-environmental-problem-photo.webp",
+    "ai/data\\Waste Management\\free-photo-of-pile-of-trash-with-discarded-mattress-outdoors.webp",
+    "ai/data\\Waste Management\\taco_1285_000127.JPG",
+    "ai/data\\Waste Management\\dropped-dumpsters-with-fallen-out-trash-ground_1268-15846.webp",
+    "ai/data\\Waste Management\\overflowing-dark-blue-garbage-bin-filled-with-plastic-bottles-paper-assorted-waste-debris_908344-251538.webp",
+    "ai/data\\Waste Management\\overflowing-trash-dumpsters-one.webp",
+    "ai/data\\Waste Management\\overflowing-outdoor-garbage-bin.webp",
+    "ai/data\\Waste Management\\photo-1718104717552-7addaf35fe4b_fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.webp"
+  ],
+  "watersupply_test_samples": [
+    "ai/data\\Water Supply\\outdoor-faucet-in-winter-cold-weather-plumbing-system-free-photo.webp",
+    "ai/data\\Water Supply\\water-leaking-pipe-household-concept-water-dripping-from-worn-pipe-connection_1317057-50880.webp",
+    "ai/data\\Water Supply\\water-leaking-from-damaged-pipe-creating-water-damage-photo.webp",
+    "ai/data\\Water Supply\\360_F_1998612585_XeXZjZAsv640eKAYYUEBchCEVoBa7ZcO.webp",
+    "ai/data\\Water Supply\\water-leaking-through-damaged-ceiling-260nw-2784363319.webp",
+    "ai/data\\Water Supply\\water-tap-and-pvc-pipe-free-photo.webp",
+    "ai/data\\Water Supply\\water-leaking-from-a-irrigation-pipe-faucet.webp",
+    "ai/data\\Water Supply\\rusty-pipe-with-water-spraying-out-creating-a-splash-on-the-concrete-floor-showcasing-industrial-plumbing-issues-and-the-need-for-maintenance-in-a-workshop-environment-free-photo.webp",
+    "ai/data\\Water Supply\\360_F_1961838623_y3DNDEXfnF57oKVmWK1jbb60D16WGYmv.webp",
+    "ai/data\\Water Supply\\a-leaking-irrigation-hose-is-lying-on-the-concrete-sidewalk-and-water-is-streaming-through-the-hole-photo.webp",
+    "ai/data\\Water Supply\\water-leaking-from-a-rusted-broken-pipe-in-a-basement-urgent-repairs-photo.webp",
+    "ai/data\\Water Supply\\heavy-storm-rain-create-water-flow-from-edge-of-ceiling-and-dirty-stain-on-wall-water-leaking.webp",
+    "ai/data\\Water Supply\\there-leak-water-pipe-under-260nw-2653069377.webp",
+    "ai/data\\Water Supply\\360_F_384812476_v7uTbLF0CaKt9qaSI2rINjW0OWkx7Cut.webp",
+    "ai/data\\Water Supply\\heavy-storm-rain-create-water-260nw-2533157805.webp",
+    "ai/data\\Water Supply\\360_F_1744400263_1RtyfFfoXISBsPTb55n6kZ1hXH5wG2r4.webp",
+    "ai/data\\Water Supply\\plumbing-pipe-installation-in-an-aged-wall-setting-showcasing-repair-work-and-maintenance-tasks-free-photo.webp",
+    "ai/data\\Water Supply\\360_F_2075626177_LfYCYhJ7WZsCJiFX5Q2CrjXSDBIZfqux.webp",
+    "ai/data\\Water Supply\\rusty-pipe-leak-with-water-dripping-dimly-lit-room-interior_908344-205337.webp",
+    "ai/data\\Water Supply\\water-leaking-connection-joint-pipes-system-plastic-82881058.webp",
+    "ai/data\\Water Supply\\ai-generated-water-flows-from-the-old-faucet-photo.webp",
+    "ai/data\\Water Supply\\burst-pipe-leaking-water-spraying-against-red-wall-plumbing-emergency-photo.webp",
+    "ai/data\\Water Supply\\ai-generated-water-flows-from-the-old-metal-tap-photo.webp"
+  ],
+  "baseline_138_test_samples": [
+    "ai/data\\Drainage\\360_F_1613567286_waJqWkynJHChdzFh89c1c9CqBGk94W6I.webp",
+    "ai/data\\Drainage\\360_F_162259004_G7kTnYBIpsFlvBSob37pPo1SHLsBSsVY.webp",
+    "ai/data\\Drainage\\360_F_1841410869_ZAFFEWEo2ZluN6dRhpdtOD2elesRTJ39.webp",
+    "ai/data\\Drainage\\360_F_2089769932_vliHOd36jWYjLi5sTeSbcpULciOMTk9F.webp",
+    "ai/data\\Drainage\\360_F_331833658_VMtFmP4yxZy8VcfcADZVZRWOh2mRfaA1.webp",
+    "ai/data\\Drainage\\a-drain-that-is-open-photo.webp",
+    "ai/data\\Drainage\\a-fire-caused-this-manhole-cover-to-blow-off-on-maiden-lane-thursday-sept-24-2020-in-albany-n.webp",
+    "ai/data\\Drainage\\a-man-is-uncloging-a-clogged-sink.webp",
+    "ai/data\\Drainage\\ai-generated-industrial-waste-being-dumped-into-a-river-poisoning-the-water-source-photo.webp",
+    "ai/data\\Drainage\\ai-generated-stark-imagery-of-industrial-wastewater-spewing-from-factory-pipes-into-canals-and-seas-illustrating-environmental-harm-and-water-pollution-photo.webp",
+    "ai/data\\Drainage\\ai-generated-water-flowing-from-pipe-close-up-free-photo.webp",
+    "ai/data\\Drainage\\broken-metal-sewer-hatch-in-the-middle-of-an-asphalt-road-photo.webp",
+    "ai/data\\Drainage\\city-stormwater-drainage-covered-snow-173854540.webp",
+    "ai/data\\Drainage\\city-street-after-rain.webp",
+    "ai/data\\Drainage\\cleaning-blocked-drain-clog-kitchen-sink_1016675-737.webp",
+    "ai/data\\Drainage\\clearing-an-outside-drain-blocked-with-fat.webp",
+    "ai/data\\Drainage\\clogged-street-drain-rain-storm-tree-debris-clogging-71772932.webp",
+    "ai/data\\Drainage\\dirty-sewage-exits-from-sewer-tunnel-photo.webp",
+    "ai/data\\Drainage\\discharge-drainage-water-photo.webp",
+    "ai/data\\Drainage\\manhole-overflowing-with-water.webp",
+    "ai/data\\Drainage\\medium-3jWH3KDQru3XasO1IVVE06E5u96EOnevCAfjvRhC.webp",
+    "ai/data\\Drainage\\open-concrete-manhole-damaged-cover-600nw-2822481263.webp",
+    "ai/data\\Drainage\\plastic-pipework-for-underground-waste-water-photo.webp",
+    "ai/data\\Drainage\\rusted-damaged-manhole-cover-old-600nw-2654950413.webp",
+    "ai/data\\Drainage\\sewage-overflow-river-water-pipe-pull-out-polluted-water-32058305.webp",
+    "ai/data\\Drainage\\storm-sewer-flood-dirty-water-cleanup.webp",
+    "ai/data\\Drainage\\storm-sewer-heavy-rain.webp",
+    "ai/data\\Drainage\\wastewater-treatment-pond-aerated-wastewater-treatment-ponds-photo.webp",
+    "ai/data\\Drainage\\water-flowing-over-grated-drain-DXP9ET.webp",
+    "ai/data\\Drainage\\water-flowing-through-drainage-pipes-trench_1368099-4139.jpg_ga=GA1.1.1020276660.webp",
+    "ai/data\\Drainage\\worker-cleaning-up-a-septic-tank.webp",
+    "ai/data\\Roads\\360_F_1061105493_xYm7difE5jL0S8EZ0lxMGDfcVvRXVJjG.webp",
+    "ai/data\\Roads\\360_F_249175320_yNuiZ8dv8uZPShrZ6vIzuwc6F7fZZVCN.webp",
+    "ai/data\\Roads\\360_F_608384568_afwDm6HOSLWhWmpDUIPvqhwkkMS5RiMJ.webp",
+    "ai/data\\Roads\\360_F_77575060_xyNr5g3OCWlE63NJXPJniUSrGHuyEVG2.webp",
+    "ai/data\\Roads\\3acc6e47642696f9d142abef59314101.webp",
+    "ai/data\\Roads\\75509053194f05b262f9268fd1c01de8.webp",
+    "ai/data\\Roads\\a-crack-in-the-road-that-is-showing-a-crack-in-the-road-photo.webp",
+    "ai/data\\Roads\\a-hole-in-the-road.webp",
+    "ai/data\\Roads\\a-large-deep-pothole-with-exposed-gravel-and-broken-asphalt-on-a-damaged-road-with-faded-lane-markings-photo.webp",
+    "ai/data\\Roads\\asphalt-collapsed-on-the-road.webp",
+    "ai/data\\Roads\\asphalt-cracked-road-collapsed-by-landslide.webp",
+    "ai/data\\Roads\\depositphotos_72691739-stock-photo-damaged-roadway.webp",
+    "ai/data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-153132.webp",
+    "ai/data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-171111.webp",
+    "ai/data\\Roads\\mumbai-india-due-to-the-heavy-rainfall-that-has-been-lashing-mumbai-since-last-night-potholes.webp",
+    "ai/data\\Roads\\mumbai-india-potholes-at-dadar-bridge-on-tulsi-pipe-road.webp",
+    "ai/data\\Roads\\mumbai-india-potholes-at-santacruz-flyover-due-to-heavy-rain-on-august-30-2017-in-mumbai-india.webp",
+    "ai/data\\Roads\\mumbai-india-potholes-seen-on-ghodbunder-road-and-the-poor-condition-of-the-road-led-to-a.webp",
+    "ai/data\\Roads\\mumbai-india-private-contract-worker-carries-the-prepared-material-to-fill-potholes-between.webp",
+    "ai/data\\Roads\\mumbai-india-the-recent-heavy-spell-of-showers-has-increased-the-problem-of-commuters-as-huge.webp",
+    "ai/data\\Roads\\philadelphia-damaged-road-1.webp",
+    "ai/data\\Roads\\pothole-in-the-asphalt-paved-road.webp",
+    "ai/data\\Roads\\pothole-large-deep-montreal-street-canada-69837660.webp",
+    "ai/data\\Roads\\pothole-large-deep-montreal-street-canada-75735131.webp",
+    "ai/data\\Roads\\pothole-road-water-red-house-bricks-inside-to-repair-pothole-road-water-red-house-bricks-451982271.webp",
+    "ai/data\\Roads\\pothole-with-water-on-urban-street-surface-photo.webp",
+    "ai/data\\Roads\\several-holes-street-potholes-visible-gray-asphalt-road-shows-significant-wear-tear-large-cracks-468309444.webp",
+    "ai/data\\Roads\\several-potholes-on-the-road.webp",
+    "ai/data\\Roads\\severe-road-damage-caused-by-earthquake-photo.webp",
+    "ai/data\\Roads\\tar-road-filled-big-potholes-south-africa-massive-craters-very-poorly-maintained-due-to-poor-service-delivery-455476386.webp",
+    "ai/data\\Roads\\truck-parked-next-to-several-potholes-on-a-city-street.webp",
+    "ai/data\\Roads\\view-of-a-dirt-road-in-a-village-with-a-natural-concept-free-photo.webp",
+    "ai/data\\Street Light\\120354189-broken-street-lamp-on-green-pole-and-sky-like-background-texture.webp",
+    "ai/data\\Street Light\\124901085-detail-of-damaged-surveillance-camera-on-street-lamp-pole-on-the-ground-vandalism-act-on-french.webp",
+    "ai/data\\Street Light\\157324827-one-old-broken-spotlight-with-a-white-lamp-on-a-concrete-pillar-overgrown-with-dry-vegetation.webp",
+    "ai/data\\Street Light\\177934569-road-traffic-lights-close-up-destroyed-broken-on-the-floor-vehicle-collision-at-inter-section.webp",
+    "ai/data\\Street Light\\178367342-a-road-sign-lying-on-the-lawn-blown-down-by-the-wind.webp",
+    "ai/data\\Street Light\\214129888-modern-street-lamp-with-broken-glass-and-visible-dirty-white-glass-bulb-on-blue-sky-background.webp",
+    "ai/data\\Street Light\\360_F_2189326312_fOsJbwS3E7f1kZNVROWTdfql5zCfrjnC.webp",
+    "ai/data\\Street Light\\40299262-electrical-street-lamp-on-white-isolated-background.webp",
+    "ai/data\\Street Light\\Decorative-Light-Post.webp",
+    "ai/data\\Street Light\\lamppost-16937416.webp",
+    "ai/data\\Street Light\\lamppost-against-sky-10968613.webp",
+    "ai/data\\Street Light\\lamppost-with-broken-banner.webp",
+    "ai/data\\Street Light\\storm-damage-3.webp",
+    "ai/data\\Street Light\\storm-damaged-traffic-light.webp",
+    "ai/data\\Street Light\\traffic-light-thats-down-earth-260nw-686026135.webp",
+    "ai/data\\Street Light\\traffic-light.webp",
+    "ai/data\\Street Light\\traffic-lights-are-melted-by-the-heat-of-a-burning-car-after-a-night-of-rioting.webp",
+    "ai/data\\Street Light\\traffic-lights-down-during-roadworks.webp",
+    "ai/data\\Street Light\\traffic-lights-utility-fallen-pole-vehicle-crash-street.webp",
+    "ai/data\\Street Light\\vertical-shot-of-traffic-lights-wrapped-with-an-adhesive-tape.webp",
+    "ai/data\\Street Light\\vintage-broken-street-lamp-bird-s-nest-inside-243263825.webp",
+    "ai/data\\Street Light\\vintage-old-street-classic-iron-lantern-house-wall-close-up-streetlight-broken-vintage-old-street-classic-iron-lantern-115759188.webp",
+    "ai/data\\Street Light\\vintage-street-light.webp",
+    "ai/data\\Waste Management\\ai-generated-8294134_640.webp",
+    "ai/data\\Waste Management\\an-overflowing-container-filled-with-a-variety-of-drink-cans.webp",
+    "ai/data\\Waste Management\\dropped-dumpsters-with-fallen-out-trash-ground_1268-15846.webp",
+    "ai/data\\Waste Management\\environment-garbage-pile-plastic-bags-white-background_1339860-3085.webp",
+    "ai/data\\Waste Management\\fashion-garbage.webp",
+    "ai/data\\Waste Management\\free-photo-of-pile-of-trash-in-an-alley.webp",
+    "ai/data\\Waste Management\\free-photo-of-pile-of-trash-with-discarded-mattress-outdoors.webp",
+    "ai/data\\Waste Management\\free-photo-of-trash-around-a-garbage-bin.webp",
+    "ai/data\\Waste Management\\free-photo-of-urban-alleyway-with-overflowing-garbage-heaps.webp",
+    "ai/data\\Waste Management\\old-garbage-can-full-garbage-png-isolated-transparent-background_723616-13226.webp",
+    "ai/data\\Waste Management\\old-garbage-landfill-near-large-260nw-2127642269.webp",
+    "ai/data\\Waste Management\\overflowing-dark-blue-garbage-bin-filled-with-plastic-bottles-paper-assorted-waste-debris_908344-251538.webp",
+    "ai/data\\Waste Management\\overflowing-dark-gray-garbage-bin-filled-with-various-types-trash-debris-outdoors_908344-250836.webp",
+    "ai/data\\Waste Management\\overflowing-garbage-bin-street-with-scattered-trash-plastic-bottles-debris_908344-251015.webp",
+    "ai/data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-and-cardboard-urban-waste-pollution-environmental-problem-photo.webp",
+    "ai/data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-photo.webp",
+    "ai/data\\Waste Management\\overflowing-green-construction-dumpster-filled-with-cardboard-boxes-and-building-waste-at.webp",
+    "ai/data\\Waste Management\\overflowing-outdoor-garbage-bin.webp",
+    "ai/data\\Waste Management\\overflowing-recycling-container-surrounded-by-black-trash-bags-full-garbage-bin-urban-setting_937679-86346.webp",
+    "ai/data\\Waste Management\\overflowing-trash-bag-with-food-waste-and-garbage-on-the-dirty-concrete-photo.webp",
+    "ai/data\\Waste Management\\overflowing-trash-dumpsters-one.webp",
+    "ai/data\\Waste Management\\people-dropping-their-garbage-bag-to-van-during-the-lockdown-due-to-the-covid-19-virus-corona.webp",
+    "ai/data\\Waste Management\\photo-1718104717552-7addaf35fe4b_fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.webp",
+    "ai/data\\Waste Management\\taco_1016_000117.JPG",
+    "ai/data\\Waste Management\\taco_1169_000005.JPG",
+    "ai/data\\Waste Management\\taco_1285_000127.JPG",
+    "ai/data\\Waste Management\\taco_1375_000075.jpg",
+    "ai/data\\Waste Management\\taco_569_000068.jpg",
+    "ai/data\\Waste Management\\transparent-garbage-bags-dumped-in-the-city-street-photo.webp",
+    "ai/data\\Water Supply\\360_F_1744400263_1RtyfFfoXISBsPTb55n6kZ1hXH5wG2r4.webp",
+    "ai/data\\Water Supply\\360_F_1961838623_y3DNDEXfnF57oKVmWK1jbb60D16WGYmv.webp",
+    "ai/data\\Water Supply\\360_F_1998612585_XeXZjZAsv640eKAYYUEBchCEVoBa7ZcO.webp",
+    "ai/data\\Water Supply\\360_F_2075626177_LfYCYhJ7WZsCJiFX5Q2CrjXSDBIZfqux.webp",
+    "ai/data\\Water Supply\\360_F_384812476_v7uTbLF0CaKt9qaSI2rINjW0OWkx7Cut.webp",
+    "ai/data\\Water Supply\\a-leaking-irrigation-hose-is-lying-on-the-concrete-sidewalk-and-water-is-streaming-through-the-hole-photo.webp",
+    "ai/data\\Water Supply\\ai-generated-water-flows-from-the-old-faucet-photo.webp",
+    "ai/data\\Water Supply\\ai-generated-water-flows-from-the-old-metal-tap-photo.webp",
+    "ai/data\\Water Supply\\burst-pipe-leaking-water-spraying-against-red-wall-plumbing-emergency-photo.webp",
+    "ai/data\\Water Supply\\heavy-storm-rain-create-water-260nw-2533157805.webp",
+    "ai/data\\Water Supply\\heavy-storm-rain-create-water-flow-from-edge-of-ceiling-and-dirty-stain-on-wall-water-leaking.webp",
+    "ai/data\\Water Supply\\outdoor-faucet-in-winter-cold-weather-plumbing-system-free-photo.webp",
+    "ai/data\\Water Supply\\plumbing-pipe-installation-in-an-aged-wall-setting-showcasing-repair-work-and-maintenance-tasks-free-photo.webp",
+    "ai/data\\Water Supply\\rusty-pipe-leak-with-water-dripping-dimly-lit-room-interior_908344-205337.webp",
+    "ai/data\\Water Supply\\rusty-pipe-with-water-spraying-out-creating-a-splash-on-the-concrete-floor-showcasing-industrial-plumbing-issues-and-the-need-for-maintenance-in-a-workshop-environment-free-photo.webp",
+    "ai/data\\Water Supply\\there-leak-water-pipe-under-260nw-2653069377.webp",
+    "ai/data\\Water Supply\\water-leaking-connection-joint-pipes-system-plastic-82881058.webp",
+    "ai/data\\Water Supply\\water-leaking-from-a-irrigation-pipe-faucet.webp",
+    "ai/data\\Water Supply\\water-leaking-from-a-rusted-broken-pipe-in-a-basement-urgent-repairs-photo.webp",
+    "ai/data\\Water Supply\\water-leaking-from-damaged-pipe-creating-water-damage-photo.webp",
+    "ai/data\\Water Supply\\water-leaking-pipe-household-concept-water-dripping-from-worn-pipe-connection_1317057-50880.webp",
+    "ai/data\\Water Supply\\water-leaking-through-damaged-ceiling-260nw-2784363319.webp",
+    "ai/data\\Water Supply\\water-tap-and-pvc-pipe-free-photo.webp"
+  ],
+  "all_test_samples": [
+    {
+      "path": "ai/data\\Waste Management\\an-overflowing-container-filled-with-a-variety-of-drink-cans.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\plastic-pipework-for-underground-waste-water-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\storm-damaged-traffic-light.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Street Light\\Decorative-Light-Post.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Roads\\3acc6e47642696f9d142abef59314101.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Waste Management\\transparent-garbage-bags-dumped-in-the-city-street-photo.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\city-stormwater-drainage-covered-snow-173854540.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\124901085-detail-of-damaged-surveillance-camera-on-street-lamp-pole-on-the-ground-vandalism-act-on-french.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\overflow-sewer-water_87720-268361.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\lamppost-16937416.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\31_jpg.rf.h82fSZFEFDkOQUawGS70.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\images-4_jpg.rf.8zUDyKRT0fc34n3yh7QK.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\taco_1169_000005.JPG",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Water Supply\\outdoor-faucet-in-winter-cold-weather-plumbing-system-free-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Other\\other_009.jpg",
+      "class": "Other",
+      "class_idx": 1
+    },
+    {
+      "path": "ai/data\\Drainage\\storm-sewer-heavy-rain.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Water Supply\\water-leaking-pipe-household-concept-water-dripping-from-worn-pipe-connection_1317057-50880.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Street Light\\storm-damage-3.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Roads\\mumbai-india-potholes-seen-on-ghodbunder-road-and-the-poor-condition-of-the-road-led-to-a.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Water Supply\\water-leaking-from-damaged-pipe-creating-water-damage-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Drainage\\manhole-cover-2723518__340_jpg.rf.g4xFDa9t8u99C8AX2eDv.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Other\\other_016.jpg",
+      "class": "Other",
+      "class_idx": 1
+    },
+    {
+      "path": "ai/data\\Drainage\\overflow (42)_jpg.rf.vvi7d7Oafzds6WCbUWsD.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-garbage-bin-street-with-scattered-trash-plastic-bottles-debris_908344-251015.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Street Light\\vintage-street-light.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\overflow (54)_jpg.rf.kzUH43z4uDIT3xxfmgzy.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\dangerous-city-sidewalk-bari-italy-260nw-2065413929.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\ai-generated-8294134_640.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\drain-is-clogged-with-leaves-and-debris-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Water Supply\\360_F_1998612585_XeXZjZAsv640eKAYYUEBchCEVoBa7ZcO.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Street Light\\vertical-shot-of-traffic-lights-wrapped-with-an-adhesive-tape.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Water Supply\\water-leaking-through-damaged-ceiling-260nw-2784363319.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Drainage\\a-man-is-uncloging-a-clogged-sink.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\wastewater-treatment-pond-aerated-wastewater-treatment-ponds-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\free-photo-of-pile-of-trash-in-an-alley.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-photo.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\clogged-drain-stagnant-water-tiled-floor-shows-potential-hygiene-issues-health-hazards-plumbing-problem-requires-434020467.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-trash-bag-with-food-waste-and-garbage-on-the-dirty-concrete-photo.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\clogged-street-drain-rain-storm-tree-debris-clogging-71772932.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-171111.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\a-drain-that-is-open-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\360_F_1613567286_waJqWkynJHChdzFh89c1c9CqBGk94W6I.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\360_F_2189326312_fOsJbwS3E7f1kZNVROWTdfql5zCfrjnC.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-dark-gray-garbage-bin-filled-with-various-types-trash-debris-outdoors_908344-250836.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Roads\\pothole-road-water-red-house-bricks-inside-to-repair-pothole-road-water-red-house-bricks-451982271.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Street Light\\157324827-one-old-broken-spotlight-with-a-white-lamp-on-a-concrete-pillar-overgrown-with-dry-vegetation.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\clogged-drain-hair-lost-jewelry-wet-tiles-high-contrast-gritty-aesthetic-highlighting-home-emergency-ideal-454440377.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\truck-parked-next-to-several-potholes-on-a-city-street.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Waste Management\\taco_569_000068.jpg",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Street Light\\traffic-lights-down-during-roadworks.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\360_F_1841410869_ZAFFEWEo2ZluN6dRhpdtOD2elesRTJ39.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\ai-generated-industrial-waste-being-dumped-into-a-river-poisoning-the-water-source-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\free-photo-of-trash-around-a-garbage-bin.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\rusty-metal-drain-cover-on-concrete-surface-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Water Supply\\water-tap-and-pvc-pipe-free-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Waste Management\\free-photo-of-urban-alleyway-with-overflowing-garbage-heaps.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\images-20_jpg.rf.OocIM71cnnro1xnW0HD3.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\accident-sewerage-system.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\depositphotos_72691739-stock-photo-damaged-roadway.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Waste Management\\old-garbage-landfill-near-large-260nw-2127642269.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Roads\\mumbai-india-due-to-the-heavy-rainfall-that-has-been-lashing-mumbai-since-last-night-potholes.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\360_F_162259004_G7kTnYBIpsFlvBSob37pPo1SHLsBSsVY.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\cleaning-blocked-drain-clog-kitchen-sink_1016675-737.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\pothole-with-water-on-urban-street-surface-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Roads\\a-crack-in-the-road-that-is-showing-a-crack-in-the-road-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Water Supply\\water-leaking-from-a-irrigation-pipe-faucet.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Street Light\\40299262-electrical-street-lamp-on-white-isolated-background.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Water Supply\\rusty-pipe-with-water-spraying-out-creating-a-splash-on-the-concrete-floor-showcasing-industrial-plumbing-issues-and-the-need-for-maintenance-in-a-workshop-environment-free-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Street Light\\178367342-a-road-sign-lying-on-the-lawn-blown-down-by-the-wind.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\clogged-drain-cover-is-sitting-ground_820340-30635.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\taco_1016_000117.JPG",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Roads\\several-potholes-on-the-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\360_F_2089769932_vliHOd36jWYjLi5sTeSbcpULciOMTk9F.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\images-20_jpg.rf.Obw6S84mVueL4Kpu3xac.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\360_F_77575060_xyNr5g3OCWlE63NJXPJniUSrGHuyEVG2.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\water-flowing-over-grated-drain-DXP9ET.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\taco_1375_000075.jpg",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\98_jpg.rf.Q0DYRg83Y0gWoEvpOaIJ.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\discharge-drainage-water-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\floor-drain-to-filter-waste-in-the-bathroom-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\lamppost-against-sky-10968613.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\rebuilding-of-street-broken-manhole-with-steel-cover-manhole-with-rusty-metal-cover-in-cracked-asphalt-surface-R4XBAB.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\philadelphia-damaged-road-1.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\ai-generated-water-flowing-from-pipe-close-up-free-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\214129888-modern-street-lamp-with-broken-glass-and-visible-dirty-white-glass-bulb-on-blue-sky-background.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\clearing-an-outside-drain-blocked-with-fat.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\10_jpg.rf.Cf1gQVALTbDpijw0UNlG.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\city-street-after-rain.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\accident-sewerage-system-water-supply-failure-breakthrough-of-the-water-supply-system.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\120354189-broken-street-lamp-on-green-pole-and-sky-like-background-texture.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\water-pipes-in-ground-pit-trench-ditch-during-plumbing-under-construction-repairing-repair-of-a-water-supply-or-gas-pipeline-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\75509053194f05b262f9268fd1c01de8.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\a-fire-caused-this-manhole-cover-to-blow-off-on-maiden-lane-thursday-sept-24-2020-in-albany-n.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Water Supply\\360_F_1961838623_y3DNDEXfnF57oKVmWK1jbb60D16WGYmv.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Drainage\\dirty-sewage-exits-from-sewer-tunnel-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\360_F_1061105493_xYm7difE5jL0S8EZ0lxMGDfcVvRXVJjG.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Water Supply\\a-leaking-irrigation-hose-is-lying-on-the-concrete-sidewalk-and-water-is-streaming-through-the-hole-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Water Supply\\water-leaking-from-a-rusted-broken-pipe-in-a-basement-urgent-repairs-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Drainage\\360_F_1311559661_M3lf8SxuQTTnX7e3DA7K3hS4pKgtdkEL.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\16_jpg.rf.9SlxXByI3BHiQKty0SdA.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\road-repair-sewer-manholes-covered-with-cement-mortar-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\rainwater-flows-through-an-orange-drainage-pipe-among-fallen-leaves-in-a-wet-street-during-autumn-free-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\pothole-large-deep-montreal-street-canada-69837660.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Street Light\\traffic-light-thats-down-earth-260nw-686026135.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Roads\\pothole-in-the-asphalt-paved-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\images-4_jpg.rf.xry9weLoAppjCRmtdFV7.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\traffic-lights-are-melted-by-the-heat-of-a-burning-car-after-a-night-of-rioting.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\overflow (25)_jpg.rf.z0PVHq4dI76Qa7ChWrvr.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\old-garbage-can-full-garbage-png-isolated-transparent-background_723616-13226.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\rainwater-flows-into-the-storm-drain.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\sewage-overflow-river-water-pipe-pull-out-polluted-water-32058305.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\tar-road-filled-big-potholes-south-africa-massive-craters-very-poorly-maintained-due-to-poor-service-delivery-455476386.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Street Light\\traffic-lights-utility-fallen-pole-vehicle-crash-street.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Street Light\\lamppost-with-broken-banner.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Roads\\several-holes-street-potholes-visible-gray-asphalt-road-shows-significant-wear-tear-large-cracks-468309444.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Waste Management\\environment-garbage-pile-plastic-bags-white-background_1339860-3085.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\worker-cleaning-up-a-septic-tank.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\3_jpg.rf.X0wj8vPYePGifAHBdq7p.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\water-flowing-through-drainage-pipes-trench_1368099-4139.jpg_ga=GA1.1.1020276660.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-green-construction-dumpster-filled-with-cardboard-boxes-and-building-waste-at.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Water Supply\\heavy-storm-rain-create-water-flow-from-edge-of-ceiling-and-dirty-stain-on-wall-water-leaking.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Roads\\mumbai-india-private-contract-worker-carries-the-prepared-material-to-fill-potholes-between.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Waste Management\\fashion-garbage.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Water Supply\\there-leak-water-pipe-under-260nw-2653069377.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Roads\\360_F_249175320_yNuiZ8dv8uZPShrZ6vIzuwc6F7fZZVCN.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\images-63_jpg.rf.ZCbFWQsXeuJk6umhngwu.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-recycling-container-surrounded-by-black-trash-bags-full-garbage-bin-urban-setting_937679-86346.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\water-pipes-in-an-excavation-pit-at-a-construction-site.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\mumbai-india-potholes-at-santacruz-flyover-due-to-heavy-rain-on-august-30-2017-in-mumbai-india.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Roads\\severe-road-damage-caused-by-earthquake-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\broken-metal-sewer-hatch-in-the-middle-of-an-asphalt-road-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\177934569-road-traffic-lights-close-up-destroyed-broken-on-the-floor-vehicle-collision-at-inter-section.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\360_F_117374643_kPjNdiy0PoyLyV0LpPxsZQJEqZBBc5MD.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\people-dropping-their-garbage-bag-to-van-during-the-lockdown-due-to-the-covid-19-virus-corona.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\images-49_jpg.rf.YhoQf1wBsDSXCaYwquAE.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-garbage-container-with-plastic-bags-and-cardboard-urban-waste-pollution-environmental-problem-photo.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Water Supply\\360_F_384812476_v7uTbLF0CaKt9qaSI2rINjW0OWkx7Cut.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Water Supply\\heavy-storm-rain-create-water-260nw-2533157805.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Roads\\asphalt-collapsed-on-the-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\ai-generated-stark-imagery-of-industrial-wastewater-spewing-from-factory-pipes-into-canals-and-seas-illustrating-environmental-harm-and-water-pollution-photo.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Water Supply\\360_F_1744400263_1RtyfFfoXISBsPTb55n6kZ1hXH5wG2r4.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Waste Management\\free-photo-of-pile-of-trash-with-discarded-mattress-outdoors.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Street Light\\vintage-broken-street-lamp-bird-s-nest-inside-243263825.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Drainage\\storm-sewer-flood-dirty-water-cleanup.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Other\\other_002.jpg",
+      "class": "Other",
+      "class_idx": 1
+    },
+    {
+      "path": "ai/data\\Drainage\\manhole-overflowing-with-water.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\overflow (62)_jpg.rf.nPozvwrzIUNmQl5RNOZ9.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\96_jpg.rf.rKzTPlbBbS82zWzq5Jtl.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\cement-tile-covering-manhole-cover-damaged-has-hole-cement-tile-covering-manhole-cover-damaged-has-hole-317880231.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\clogged-drain-cover-is-sitting-ground_820340-30595.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Street Light\\traffic-light.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Roads\\asphalt-cracked-road-collapsed-by-landslide.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\360_F_1375636650_BNv0xZ0aQAl4C5DV3sWwmPigTZcYR66m.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Drainage\\104_jpg.rf.igI0J87gT2NGvFAVq2HG.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Water Supply\\plumbing-pipe-installation-in-an-aged-wall-setting-showcasing-repair-work-and-maintenance-tasks-free-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Waste Management\\taco_1285_000127.JPG",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\360_F_331833658_VMtFmP4yxZy8VcfcADZVZRWOh2mRfaA1.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\mumbai-india-potholes-at-dadar-bridge-on-tulsi-pipe-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Street Light\\vintage-old-street-classic-iron-lantern-house-wall-close-up-streetlight-broken-vintage-old-street-classic-iron-lantern-115759188.webp",
+      "class": "Street Light",
+      "class_idx": 3
+    },
+    {
+      "path": "ai/data\\Roads\\view-of-a-dirt-road-in-a-village-with-a-natural-concept-free-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\rusted-damaged-manhole-cover-old-600nw-2654950413.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\dropped-dumpsters-with-fallen-out-trash-ground_1268-15846.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\images-62_jpg.rf.e1OENA5E0ylWsyob6Y5g.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\a-hole-in-the-road.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Water Supply\\360_F_2075626177_LfYCYhJ7WZsCJiFX5Q2CrjXSDBIZfqux.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Roads\\mumbai-india-the-recent-heavy-spell-of-showers-has-increased-the-problem-of-commuters-as-huge.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-dark-blue-garbage-bin-filled-with-plastic-bottles-paper-assorted-waste-debris_908344-251538.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Water Supply\\rusty-pipe-leak-with-water-dripping-dimly-lit-room-interior_908344-205337.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Drainage\\open-concrete-manhole-damaged-cover-600nw-2822481263.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-trash-dumpsters-one.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\download-3_jpg.rf.uz6fJeP6noCuKw7tFdmx.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\pothole-large-deep-montreal-street-canada-75735131.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Water Supply\\water-leaking-connection-joint-pipes-system-plastic-82881058.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Water Supply\\ai-generated-water-flows-from-the-old-faucet-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Roads\\360_F_608384568_afwDm6HOSLWhWmpDUIPvqhwkkMS5RiMJ.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Roads\\gravel-road-with-big-potholes-effects-weather-heavy-use-urban-environment-isolated-with_660230-153132.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\unblock-drain-outside-garden-debris.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Water Supply\\burst-pipe-leaking-water-spraying-against-red-wall-plumbing-emergency-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    },
+    {
+      "path": "ai/data\\Waste Management\\overflowing-outdoor-garbage-bin.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Drainage\\medium-3jWH3KDQru3XasO1IVVE06E5u96EOnevCAfjvRhC.webp",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Roads\\a-large-deep-pothole-with-exposed-gravel-and-broken-asphalt-on-a-damaged-road-with-faded-lane-markings-photo.webp",
+      "class": "Roads",
+      "class_idx": 2
+    },
+    {
+      "path": "ai/data\\Drainage\\overflow (3)_jpg.rf.NLjfmCwpFGTZrTeEUR0T.jpg",
+      "class": "Drainage",
+      "class_idx": 0
+    },
+    {
+      "path": "ai/data\\Waste Management\\photo-1718104717552-7addaf35fe4b_fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.webp",
+      "class": "Waste Management",
+      "class_idx": 4
+    },
+    {
+      "path": "ai/data\\Water Supply\\ai-generated-water-flows-from-the-old-metal-tap-photo.webp",
+      "class": "Water Supply",
+      "class_idx": 5
+    }
+  ],
+  "per_class_counts": {
+    "Drainage": {
+      "class_idx": 0,
+      "total": 499,
+      "train": 351,
+      "val": 74,
+      "test": 74,
+      "baseline_test": 31
+    },
+    "Other": {
+      "class_idx": 1,
+      "total": 17,
+      "train": 12,
+      "val": 2,
+      "test": 3,
+      "baseline_test": 0
+    },
+    "Roads": {
+      "class_idx": 2,
+      "total": 206,
+      "train": 144,
+      "val": 30,
+      "test": 32,
+      "baseline_test": 32
+    },
+    "Street Light": {
+      "class_idx": 3,
+      "total": 151,
+      "train": 106,
+      "val": 22,
+      "test": 23,
+      "baseline_test": 23
+    },
+    "Waste Management": {
+      "class_idx": 4,
+      "total": 189,
+      "train": 132,
+      "val": 28,
+      "test": 29,
+      "baseline_test": 29
+    },
+    "Water Supply": {
+      "class_idx": 5,
+      "total": 150,
+      "train": 105,
+      "val": 22,
+      "test": 23,
+      "baseline_test": 23
+    }
+  },
+  "created_at": "2026-11-03T12:24:18.516547Z"
+}
