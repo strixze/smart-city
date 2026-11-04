@@ -28,7 +28,8 @@ from utils import (
     extract_image_features,
     safe_load_image,
     get_git_commit_id,
-    encode_image_to_base64
+    encode_image_to_base64,
+    get_accessible_path
 )
 from prompt import build_civic_analysis_prompt
 
@@ -82,6 +83,11 @@ def resolve_active_models_dir() -> str:
     env_dir = os.environ.get("MOBILENET_MODEL_DIR")
     if env_dir and os.path.isdir(env_dir):
         return env_dir
+
+    ws_v5_dir = os.path.join(os.path.dirname(__file__), "models_water_supply_v5")
+    if (os.path.exists(os.path.join(ws_v5_dir, "best_model.pth")) and
+            os.path.exists(os.path.join(ws_v5_dir, "model_config.json"))):
+        return ws_v5_dir
 
     ws_v4_dir = os.path.join(os.path.dirname(__file__), "models_water_supply_v4")
     if (os.path.exists(os.path.join(ws_v4_dir, "best_model.pth")) and
@@ -237,7 +243,8 @@ class MobileNetV3ModelLoader:
         if not self.is_loaded or self.model is None:
             raise RuntimeError(f"MobileNetV3 model is not loaded: {self.load_error}")
 
-        if not os.path.exists(image_path) or os.path.getsize(image_path) == 0:
+        image_path = get_accessible_path(image_path)
+        if not image_path or not os.path.exists(image_path) or os.path.getsize(image_path) == 0:
             raise ValueError(f"Invalid or empty image file: {image_path}")
 
         t0 = time.perf_counter()
@@ -387,6 +394,8 @@ def classify_with_gemini(
             latency_ms=round((time.perf_counter() - t0) * 1000, 2)
         )
 
+    if image_path:
+        image_path = get_accessible_path(image_path)
     has_image = bool(image_path and os.path.exists(image_path) and os.path.getsize(image_path) > 0)
     prompt_text = build_civic_analysis_prompt(description=description, has_image=has_image)
     contents = [prompt_text]
@@ -999,6 +1008,8 @@ def classify_local(
     Backwards-compatible wrapper: delegates to classify_heuristic_vision when an image
     is provided, or classify_text_heuristic for text-only complaints.
     """
+    if image_path:
+        image_path = get_accessible_path(image_path)
     has_image = bool(image_path and os.path.exists(image_path) and os.path.getsize(image_path) > 0)
     if has_image:
         return classify_heuristic_vision(
@@ -1152,6 +1163,9 @@ def classify_complaint(
     Priority 3 (OPTIONAL / DIAGNOSTIC): Gemini Vision.
     - NEVER invoked by default. Only called if explicitly requested via use_gemini=True.
     """
+    if image_path:
+        image_path = get_accessible_path(image_path)
+
     # 0. Explicit Gemini override (only when explicitly requested)
     if use_gemini and os.environ.get("GEMINI_API_KEY") and GENAI_AVAILABLE:
         return classify_with_gemini(
@@ -1160,6 +1174,8 @@ def classify_complaint(
             request_id=request_id
         )
 
+    if image_path:
+        image_path = get_accessible_path(image_path)
     has_image = bool(image_path and os.path.exists(image_path) and os.path.getsize(image_path) > 0)
 
     if has_image:
