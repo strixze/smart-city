@@ -1,0 +1,109 @@
+{
+  "model_name": "MobileNetV3-Small-Civic-DrainageV9",
+  "architecture": "mobilenet_v3_small",
+  "version": "1.11.0-drainage-v9",
+  "num_classes": 6,
+  "classes": [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+  ],
+  "class_to_idx": {
+    "Drainage": 0,
+    "Other": 1,
+    "Roads": 2,
+    "Street Light": 3,
+    "Waste Management": 4,
+    "Water Supply": 5
+  },
+  "input_size": [
+    3,
+    224,
+    224
+  ],
+  "image_size": 224,
+  "input_mean": [
+    0.485,
+    0.456,
+    0.406
+  ],
+  "input_std": [
+    0.229,
+    0.224,
+    0.225
+  ],
+  "selected_training_strategy": "Approach A (Fine-tuned from v5 checkpoint)",
+  "starting_checkpoint": "D:\\safe\\smart city main\\smart-city trained on subclasses categories\\ai\\models_water_supply_v5\\best_model.pth",
+  "best_epoch": 10,
+  "best_val_loss": 0.1825,
+  "best_val_acc": 0.9365,
+  "trained_at": "2026-11-10T08:00:35.492668Z",
+  "dataset_samples": {
+    "total_real_images": 3377,
+    "per_class": {
+      "Drainage": {
+        "class_idx": 0,
+        "total": 742,
+        "train": 520,
+        "val": 111,
+        "test": 111,
+        "baseline_v5_test": 72
+      },
+      "Other": {
+        "class_idx": 1,
+        "total": 17,
+        "train": 12,
+        "val": 2,
+        "test": 3,
+        "baseline_v5_test": 3
+      },
+      "Roads": {
+        "class_idx": 2,
+        "total": 705,
+        "train": 495,
+        "val": 105,
+        "test": 105,
+        "baseline_v5_test": 32
+      },
+      "Street Light": {
+        "class_idx": 3,
+        "total": 657,
+        "train": 461,
+        "val": 98,
+        "test": 98,
+        "baseline_v5_test": 23
+      },
+      "Waste Management": {
+        "class_idx": 4,
+        "total": 589,
+        "train": 413,
+        "val": 88,
+        "test": 88,
+        "baseline_v5_test": 29
+      },
+      "Water Supply": {
+        "class_idx": 5,
+        "total": 667,
+        "train": 467,
+        "val": 100,
+        "test": 100,
+        "baseline_v5_test": 100
+      }
+    },
+    "train_total": 2368,
+    "val_total": 504,
+    "test_total": 505
+  },
+  "real_data_classes": [
+    "Drainage",
+    "Other",
+    "Roads",
+    "Street Light",
+    "Waste Management",
+    "Water Supply"
+  ],
+  "training_notes": "Trained jointly across all 6 civic categories with expanded real Drainage dataset (742 images) alongside Roads (705), Water Supply (667), Street Light (657), Waste Management (589), and Other (17). Preserved 6-class output architecture and exact class ordering."
+}

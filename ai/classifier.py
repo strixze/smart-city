@@ -74,15 +74,23 @@ def resolve_active_models_dir() -> str:
     Resolves the directory containing the active MobileNetV3 model checkpoint and configuration.
     Priority:
     1. MOBILENET_MODEL_DIR environment variable if specified and directory exists.
-    2. ai/models_drainage_v3/ if best_model.pth and model_config.json exist.
-    3. ai/models_streetlight_roads_waste_v3/ if best_model.pth and model_config.json exist.
-    4. ai/models_roads_waste_v2/ as fallback.
-    5. ai/models_real_data_experiment/ as fallback.
-    6. ai/models/ as production fallback.
+    2. ai/models_drainage_updated_v9/ if best_model.pth and model_config.json exist.
+    3. ai/models_water_supply_v5/ if best_model.pth and model_config.json exist.
+    4. ai/models_water_supply_v4/ if best_model.pth and model_config.json exist.
+    5. ai/models_drainage_v3/ if best_model.pth and model_config.json exist.
+    6. ai/models_streetlight_roads_waste_v3/ if best_model.pth and model_config.json exist.
+    7. ai/models_roads_waste_v2/ as fallback.
+    8. ai/models_real_data_experiment/ as fallback.
+    9. ai/models/ as production fallback.
     """
     env_dir = os.environ.get("MOBILENET_MODEL_DIR")
     if env_dir and os.path.isdir(env_dir):
         return env_dir
+
+    drainage_v9_dir = os.path.join(os.path.dirname(__file__), "models_drainage_updated_v9")
+    if (os.path.exists(os.path.join(drainage_v9_dir, "best_model.pth")) and
+            os.path.exists(os.path.join(drainage_v9_dir, "model_config.json"))):
+        return drainage_v9_dir
 
     ws_v5_dir = os.path.join(os.path.dirname(__file__), "models_water_supply_v5")
     if (os.path.exists(os.path.join(ws_v5_dir, "best_model.pth")) and
