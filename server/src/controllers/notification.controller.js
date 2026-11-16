@@ -1,6 +1,6 @@
 import { Notification } from "../models/notifications.model.js";
 import { PushSubscription } from "../models/pushSubscription.model.js";
-import { vapidPublicKey } from "../services/webpush.service.js";
+import { getVapidPublicKey as getServiceVapidPublicKey, vapidPublicKey } from "../services/webpush.service.js";
 import { ApiResponse } from "../utils/apiUtils.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
@@ -92,8 +92,9 @@ export const markAllAsRead = asyncHandler(async (req, res) => {
  * Return the VAPID public key for frontend push subscription
  */
 export const getVapidPublicKey = asyncHandler(async (req, res) => {
+  const key = getServiceVapidPublicKey() || vapidPublicKey || "";
   res.status(200).json(
-    new ApiResponse(200, { vapidPublicKey: vapidPublicKey || "" }, "VAPID public key.")
+    new ApiResponse(200, { vapidPublicKey: key }, "VAPID public key.")
   );
 });
 
@@ -104,32 +105,53 @@ export const getVapidPublicKey = asyncHandler(async (req, res) => {
 export const pushSubscribe = asyncHandler(async (req, res) => {
   const { subscription, deviceName } = req.body;
 
-  if (!subscription || !subscription.endpoint || !subscription.keys) {
+  if (
+    !subscription ||
+    !subscription.endpoint ||
+    !subscription.keys ||
+    !subscription.keys.p256dh ||
+    !subscription.keys.auth
+  ) {
+    console.warn("[PushSubscribe] Validation failed: missing endpoint or required keys (p256dh, auth)");
     return res.status(400).json(
-      new ApiResponse(400, null, "Invalid push subscription data.")
+      new ApiResponse(400, null, "Invalid push subscription data: endpoint and cryptographic keys (p256dh, auth) are required.")
     );
   }
 
-  // Upsert: if endpoint already exists, update it (same device re-subscribing)
-  const pushSub = await PushSubscription.findOneAndUpdate(
-    { endpoint: subscription.endpoint },
-    {
-      user: req.user._id,
-      endpoint: subscription.endpoint,
-      keys: {
-        p256dh: subscription.keys.p256dh,
-        auth: subscription.keys.auth
+  try {
+    // Upsert: if endpoint already exists, update it (same device re-subscribing)
+    const pushSub = await PushSubscription.findOneAndUpdate(
+      { endpoint: subscription.endpoint },
+      {
+        user: req.user._id,
+        endpoint: subscription.endpoint,
+        keys: {
+          p256dh: subscription.keys.p256dh,
+          auth: subscription.keys.auth
+        },
+        deviceName: deviceName || "Unknown Device",
+        userAgent: req.headers["user-agent"] || "",
+        lastUsedAt: new Date()
       },
-      deviceName: deviceName || "Unknown Device",
-      userAgent: req.headers["user-agent"] || "",
-      lastUsedAt: new Date()
-    },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
-  res.status(201).json(
-    new ApiResponse(201, { subscription: pushSub }, "Push subscription registered.")
-  );
+    console.log(
+      `[PushSubscribe] Subscription saved in MongoDB (id: ${pushSub._id}, user: ${req.user._id}, device: "${pushSub.deviceName}")`
+    );
+
+    res.status(201).json(
+      new ApiResponse(201, { subscription: pushSub }, "Push subscription registered.")
+    );
+  } catch (dbError) {
+    console.error("[PushSubscribe] MongoDB persistence error:", dbError.message);
+    res.status(500).json({
+      success: false,
+      statusCode: 500,
+      isDatabaseError: true,
+      message: `Database error saving push subscription: ${dbError.message}`
+    });
+  }
 });
 
 /**

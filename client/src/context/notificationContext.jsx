@@ -309,8 +309,9 @@ export const NotificationProvider = ({ children }) => {
       toast.success("Phone / browser push notifications enabled!");
       return true;
     } catch (err) {
+      console.error("[NotificationContext] Push registration error:", err.name, err.message, err.details || "");
       const msg = err.message || "Failed to enable push notifications";
-      toast.error(msg);
+      toast.error(msg, { duration: 6000 });
       setPushPermission(getNotificationPermission());
       return false;
     }

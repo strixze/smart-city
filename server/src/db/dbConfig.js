@@ -1,8 +1,18 @@
 import mongoose from "mongoose";
 import mongodb from "mongodb";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-dotenv.config({path:"./.env"})
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const envPath = path.resolve(__dirname, "../../.env");
+if (fs.existsSync(envPath)) {
+  dotenv.config({ path: envPath });
+} else {
+  dotenv.config({ path: "./.env" });
+}
 
 const connectDB = async () => {
   try {

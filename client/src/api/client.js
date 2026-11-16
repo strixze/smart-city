@@ -1,9 +1,9 @@
 import axios from "axios";
 
 export const BACKEND_URL =
-  import.meta.env.VITE_ENV === "production"
-    ? import.meta.env.VITE_BACKEND_URL_PROD || "http://localhost:3000/api/v1"
-    : import.meta.env.VITE_BACKEND_URL_DEV || "http://localhost:3000/api/v1";
+  import.meta.env?.VITE_ENV === "production"
+    ? import.meta.env?.VITE_BACKEND_URL_PROD || "http://localhost:3000/api/v1"
+    : import.meta.env?.VITE_BACKEND_URL_DEV || "http://localhost:3000/api/v1";
 
 // Server root for static uploads (strip /api/v1)
 export const SERVER_ROOT = BACKEND_URL.replace(/\/api(\/v1)?\/?$/, "");
