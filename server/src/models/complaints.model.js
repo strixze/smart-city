@@ -57,6 +57,38 @@ export const COMPLAINT_STATUSES = [
 
 export const COMPLAINT_PRIORITIES = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
 
+// GeoJSON Point Schema for 2dsphere indexing and spatial queries
+const pointSchema = new Schema(
+  {
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point",
+      required: true
+    },
+    coordinates: {
+      type: [Number], // GeoJSON standard: [longitude, latitude]
+      required: true,
+      validate: {
+        validator: function (val) {
+          if (!val || val.length === 0) return true;
+          return (
+            val.length === 2 &&
+            typeof val[0] === "number" &&
+            typeof val[1] === "number" &&
+            val[0] >= -180 &&
+            val[0] <= 180 &&
+            val[1] >= -90 &&
+            val[1] <= 90
+          );
+        },
+        message: "Coordinates must be [longitude, latitude] with valid geographical ranges."
+      }
+    }
+  },
+  { _id: false }
+);
+
 const complaintSchema = new Schema(
   {
     complaintNumber: {
@@ -164,6 +196,11 @@ const complaintSchema = new Schema(
       required: [true, "Location address is required"],
       trim: true
     },
+    location: {
+      type: pointSchema,
+      required: false,
+      default: undefined
+    },
     citizenConfirmed: {
       type: Boolean,
       default: null
@@ -179,6 +216,9 @@ const complaintSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// Geospatial 2dsphere index for maps, distance queries, and hotspot density
+complaintSchema.index({ location: "2dsphere" }, { sparse: true });
 
 export const Complaint = mongoose.model("Complaint", complaintSchema);
 export default Complaint;

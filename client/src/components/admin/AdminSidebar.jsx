@@ -39,6 +39,11 @@ export const AdminSidebar = ({ isOpen, onClose }) => {
           path: "/admin/dashboard",
           icon: LayoutDashboard,
           exact: true
+        },
+        {
+          name: "Hotspot Map",
+          path: "/admin/map",
+          icon: Map
         }
       ]
     },

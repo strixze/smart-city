@@ -3,6 +3,7 @@ import {
   createComplaint,
   getMyComplaints,
   getComplaintById,
+  getComplaintHotspots,
   confirmResolution,
   reopenComplaint,
   getCitizenDashboard,
@@ -14,6 +15,9 @@ import { upload } from "../middlewares/upload.middleware.js";
 const router = Router();
 
 router.use(authenticate);
+
+// Hotspot map data (accessible by CITIZEN, STAFF, ADMIN with role-based scoping)
+router.get("/map/hotspots", getComplaintHotspots);
 
 // Citizen Routes
 router.post("/", authorizeRoles("CITIZEN"), upload.single("image"), createComplaint);

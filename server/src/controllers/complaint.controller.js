@@ -26,11 +26,41 @@ export const createComplaint = asyncHandler(async (req, res) => {
     aiCategory,
     aiSubcategory,
     aiConfidence,
-    aiPriority
+    aiPriority,
+    latitude,
+    longitude,
+    coordinates
   } = req.body;
 
   if (!title || !description || !locationAddress) {
     throw new ApiError(400, "Title, description, and location address are required.");
+  }
+
+  // Parse geographic coordinates if provided (GeoJSON format: [longitude, latitude])
+  let locationGeo = undefined;
+  if (latitude !== undefined && longitude !== undefined && latitude !== "" && longitude !== "") {
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+      locationGeo = {
+        type: "Point",
+        coordinates: [lng, lat]
+      };
+    }
+  } else if (coordinates) {
+    try {
+      const parsed = typeof coordinates === "string" ? JSON.parse(coordinates) : coordinates;
+      if (Array.isArray(parsed) && parsed.length === 2) {
+        const lng = parseFloat(parsed[0]);
+        const lat = parseFloat(parsed[1]);
+        if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+          locationGeo = {
+            type: "Point",
+            coordinates: [lng, lat]
+          };
+        }
+      }
+    } catch (_) {}
   }
 
   const complaintNumber = await generateComplaintNumber();
@@ -108,7 +138,8 @@ export const createComplaint = asyncHandler(async (req, res) => {
     priority: resolvedPriority,
     aiPriority: finalAiPrio,
     status: "SUBMITTED",
-    locationAddress: locationAddress.trim()
+    locationAddress: locationAddress.trim(),
+    ...(locationGeo && { location: locationGeo })
   });
 
   // Save BEFORE image record if photo provided
@@ -570,6 +601,186 @@ export const testComplaintImageAuthenticity = asyncHandler(async (req, res) => {
         }
       },
       "Image authenticity analysis completed successfully."
+    )
+  );
+});
+
+/**
+ * GET /complaints/map/hotspots
+ * Fetch complaints with geographic coordinates for interactive map pins & heatmap layer.
+ * Strictly enforces role-based access:
+ *   - ADMIN: View all complaints, hotspot clusters, and complete metadata
+ *   - STAFF: View assigned tasks, department complaints, and nearby relevant issues
+ *   - CITIZEN: View public aggregated hotspots and their own complaints (without other citizens' PII or private addresses)
+ */
+export const getComplaintHotspots = asyncHandler(async (req, res) => {
+  const {
+    category,
+    subcategory,
+    status,
+    priority,
+    startDate,
+    endDate,
+    nearLat,
+    nearLng,
+    maxDistance = 15000 // default 15km
+  } = req.query;
+
+  const role = req.user?.role || "CITIZEN";
+  const userId = req.user?._id;
+
+  // Query only complaints that have valid coordinates
+  const query = {
+    "location.coordinates.0": { $exists: true }
+  };
+
+  // Geospatial proximity filtering if coordinates provided
+  if (nearLat && nearLng) {
+    const lat = parseFloat(nearLat);
+    const lng = parseFloat(nearLng);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      query.location = {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [lng, lat]
+          },
+          $maxDistance: parseInt(maxDistance) || 15000
+        }
+      };
+    }
+  }
+
+  // Filters
+  if (category && category !== "ALL" && category !== "All Categories") {
+    query.category = category;
+  }
+  if (subcategory && subcategory !== "ALL" && subcategory !== "All Subcategories") {
+    query.subcategory = subcategory;
+  }
+  if (status && status !== "ALL" && status !== "All Statuses") {
+    query.status = status;
+  }
+  if (priority && priority !== "ALL" && priority !== "All Priorities") {
+    query.priority = priority;
+  }
+  if (startDate || endDate) {
+    query.createdAt = {};
+    if (startDate) query.createdAt.$gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      query.createdAt.$lte = end;
+    }
+  }
+
+  // Role-based scoping for STAFF
+  if (role === "STAFF") {
+    const userDept = req.user.department;
+    if (userDept) {
+      query.$or = [
+        { assignedStaff: userId },
+        { category: userDept }
+      ];
+    } else {
+      query.assignedStaff = userId;
+    }
+  }
+
+  const complaints = await Complaint.find(query)
+    .populate("citizen", "name email phone")
+    .populate("assignedStaff", "name department phone")
+    .sort({ createdAt: -1 })
+    .limit(1000);
+
+  const isPrivileged = role === "ADMIN" || role === "STAFF";
+
+  const markers = [];
+  const heatmapPoints = [];
+  const categoryStats = {};
+  const statusStats = {};
+  const priorityStats = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+
+  for (const c of complaints) {
+    const coords = c.location?.coordinates;
+    if (!coords || !Array.isArray(coords) || coords.length < 2) continue;
+
+    const lng = coords[0];
+    const lat = coords[1];
+    if (typeof lng !== "number" || typeof lat !== "number" || isNaN(lat) || isNaN(lng)) continue;
+
+    const isOwner = String(c.citizen?._id || c.citizen) === String(userId);
+    const canViewPersonal = isPrivileged || isOwner;
+
+    // Weight intensity by priority for heatmap layer
+    const intensityMap = {
+      CRITICAL: 1.0,
+      HIGH: 0.8,
+      MEDIUM: 0.5,
+      LOW: 0.3
+    };
+    const intensity = intensityMap[c.priority] || 0.5;
+
+    // Push into heatmap layer [lat, lng, intensity]
+    heatmapPoints.push([lat, lng, intensity]);
+
+    // Aggregate stats
+    categoryStats[c.category] = (categoryStats[c.category] || 0) + 1;
+    statusStats[c.status] = (statusStats[c.status] || 0) + 1;
+    if (priorityStats[c.priority] !== undefined) priorityStats[c.priority]++;
+
+    // Build marker object
+    markers.push({
+      _id: c._id,
+      complaintNumber: c.complaintNumber,
+      title: c.title,
+      category: c.category,
+      subcategory: c.subcategory || "",
+      status: c.status,
+      priority: c.priority,
+      createdAt: c.createdAt,
+      resolvedAt: c.resolvedAt,
+      lat,
+      lng,
+      coordinates: [lng, lat],
+      // Protect citizen personal information on public citizen views
+      locationAddress: canViewPersonal
+        ? c.locationAddress
+        : (c.category ? `${c.category} Issue Zone` : "Public Civic Area"),
+      citizen: canViewPersonal && c.citizen
+        ? {
+            _id: c.citizen._id,
+            name: c.citizen.name,
+            email: c.citizen.email,
+            phone: c.citizen.phone
+          }
+        : null,
+      assignedStaff: isPrivileged && c.assignedStaff
+        ? {
+            _id: c.assignedStaff._id,
+            name: c.assignedStaff.name,
+            department: c.assignedStaff.department
+          }
+        : null,
+      isOwner
+    });
+  }
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        total: markers.length,
+        role,
+        markers,
+        heatmapPoints,
+        stats: {
+          categories: categoryStats,
+          statuses: statusStats,
+          priorities: priorityStats
+        }
+      },
+      "Complaint hotspot data retrieved successfully."
     )
   );
 });
