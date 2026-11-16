@@ -28,6 +28,7 @@ import StaffProfile from "./pages/staff/StaffProfile";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminHotspotMap from "./pages/admin/AdminHotspotMap";
 import AdminComplaints from "./pages/admin/AdminComplaints";
 import AdminComplaintDetail from "./pages/admin/AdminComplaintDetail";
 import AdminStaff from "./pages/admin/AdminStaff";
@@ -169,6 +170,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["ADMIN"]}>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/map"
+          element={
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <AdminHotspotMap />
             </ProtectedRoute>
           }
         />

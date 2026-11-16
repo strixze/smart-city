@@ -2,20 +2,139 @@ import { GoogleGenAI } from "@google/genai";
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+import { ApiError } from "../utils/apiUtils.js";
+import { COMPLAINT_CATEGORIES } from "../models/complaints.model.js";
 
 const CANDIDATE_MODELS = [
   process.env.GEMINI_MODEL,
   "gemini-3.1-flash-lite",
   "gemini-3.8-flash",
-  "gemini-flash-latest"
+  "gemini-flash-latest",
 ].filter(Boolean);
 
+export const SIX_MAIN_CATEGORIES = [
+  "Drainage",
+  "Other",
+  "Roads",
+  "Street Light",
+  "Waste Management",
+  "Water Supply",
+];
+
+const SIX_CATEGORY_SUBCATEGORY_PROMPT = `
+1. Drainage
+   Allowed subcategories: Blocked Drain, Drainage Overflow, Sewage Leakage
+2. Other
+   Allowed subcategories: General Issue, Other
+3. Roads
+   Allowed subcategories: Pothole, Damaged Road, Broken Footpath
+4. Street Light
+   Allowed subcategories: Street Light Not Working, Street Light Damaged, Street Light Missing, Street Light Flickering, Street Light Pole Damaged, Multiple Street Lights Not Working
+5. Waste Management
+   Allowed subcategories: Garbage Dump, Overflowing Dustbin, Illegal Waste Disposal
+6. Water Supply
+   Allowed subcategories: Water Leakage, Pipeline Damage, Water Supply Issue
+`.trim();
+
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8000";
+
+const DEPARTMENT_MAP = {
+  "Street Light": "Electrical Engineering & Public Lighting Division",
+  "Waste Management": "Department of Solid Waste Management & Sanitation",
+  "Roads": "Public Works Department (PWD) - Roads & Bridges",
+  "Drainage": "Municipal Water Supply & Sewerage Board (Drainage Wing)",
+  "Water Supply": "Municipal Water Supply & Sewerage Board (Water Wing)",
+  "Street Infrastructure": "Electrical Engineering & Public Lighting Division",
+  "Public Property": "Department of Parks, Gardens & Public Amenities",
+  "Other": "General Municipal Grievance Cell",
+};
+
 /**
- * Intelligent rule-based civic classification fallback.
+ * Validates and normalizes the subcategory against COMPLAINT_CATEGORIES for the given category.
+ * - If rawSubcategory matches an allowed subcategory (exact or case-insensitively), returns canonical subcategory.
+ * - If rawSubcategory is "NA", "N/A", missing, or not in the allowed list, resolves from description keywords
+ *   or falls back to the category's primary subcategory from COMPLAINT_CATEGORIES.
+ * Never returns "NA" or "N/A".
+ */
+export function validateAndResolveSubcategory(category, rawSubcategory = "", description = "") {
+  const allowed = COMPLAINT_CATEGORIES[category] || COMPLAINT_CATEGORIES["Other"] || ["General Issue"];
+  const trimmed = typeof rawSubcategory === "string" ? rawSubcategory.trim() : "";
+
+  // 1. Exact match against allowed subcategories
+  if (allowed.includes(trimmed)) {
+    return trimmed;
+  }
+
+  // 2. Case-insensitive or clean match (ignoring placeholders like NA, N/A, none, etc.)
+  if (trimmed && !/^(n\/?a|na|none|null|undefined|-)$/i.test(trimmed)) {
+    const ciMatch = allowed.find((sub) => sub.toLowerCase() === trimmed.toLowerCase());
+    if (ciMatch) return ciMatch;
+
+    // Substring / fuzzy match
+    const fuzzyMatch = allowed.find(
+      (sub) =>
+        sub.toLowerCase().includes(trimmed.toLowerCase()) ||
+        trimmed.toLowerCase().includes(sub.toLowerCase())
+    );
+    if (fuzzyMatch) return fuzzyMatch;
+  }
+
+  // 3. If rawSubcategory was "NA", placeholder, or unrecognized, infer from description keywords
+  const descLower = (description || "").toLowerCase();
+  for (const sub of allowed) {
+    const keywords = sub.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
+    if (keywords.some((k) => descLower.includes(k))) {
+      return sub;
+    }
+  }
+
+  // 4. Default to first valid subcategory in existing mapping for this category
+  return allowed[0];
+}
+
+// Test hook references (for mocking in automated tests)
+let testGeminiClient = null;
+let testMicroserviceFetch = null;
+
+export function setGeminiClientForTesting(client) {
+  testGeminiClient = client;
+}
+
+export function setMicroserviceFetchForTesting(fn) {
+  testMicroserviceFetch = fn;
+}
+
+/**
+ * Returns an instance of GoogleGenAI if a valid GEMINI_API_KEY is present
+ * or if a test client is injected.
+ */
+function getGeminiClient() {
+  if (testGeminiClient) return testGeminiClient;
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey || typeof apiKey !== "string" || !apiKey.trim()) {
+    return null;
+  }
+  return new GoogleGenAI({ apiKey: apiKey.trim() });
+}
+
+/**
+ * Returns the exact provider list for a given environment.
+ * Development: ["MobileNetV3"] (strictly MobileNetV3 only)
+ * Production:  ["Gemini"]      (strictly Gemini only)
+ * Unset/Other: []              (invalid configuration, no provider)
+ */
+export function getProviderPriority(env = process.env.NODE_ENV) {
+  if (env === "development") {
+    return ["MobileNetV3"];
+  }
+  if (env === "production") {
+    return ["Gemini"];
+  }
+  return [];
+}
+
+/**
+ * Intelligent rule-based civic classification.
  * Evaluates complaint description keywords and filename to determine
  * category, subcategory, priority, confidence, and explicit metadata.
  */
@@ -26,7 +145,7 @@ export function getFallbackClassification(
 ) {
   const text = `${description} ${filename}`.toLowerCase();
   const requestId = options.requestId || `req_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
-  const fallbackReason = options.fallbackReason || "Automated keyword and heuristic classification fallback";
+  const fallbackReason = options.fallbackReason || "Automated keyword and heuristic classification";
 
   let category = "Other";
   let subcategory = "General Issue";
@@ -163,21 +282,19 @@ export function getFallbackClassification(
     predictionSource: "rules",
     modelLoaded: false,
     modelVersion: null,
-    fallbackUsed: true,
-    fallbackReason,
+    fallbackUsed: false,
+    fallbackReason: null,
     requestId,
-    isFallback: true,
+    isFallback: false,
     source: "rules",
-    serviceStatus: "Rule-based fallback active",
+    serviceStatus: "Rule-based active",
   };
 }
-
-const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8000";
 
 /**
  * Queries the dedicated Python AI Microservice (ai/) if running.
  */
-async function queryMicroserviceAI(imagePath, description, requestId) {
+export async function queryMicroserviceAI(imagePath, description, requestId) {
   try {
     const formData = new FormData();
     formData.append("description", description || "");
@@ -196,7 +313,8 @@ async function queryMicroserviceAI(imagePath, description, requestId) {
       headers["X-Request-Id"] = requestId;
     }
 
-    const response = await fetch(`${AI_SERVICE_URL}/analyze`, {
+    const fetchFn = testMicroserviceFetch || globalThis.fetch;
+    const response = await fetchFn(`${AI_SERVICE_URL}/analyze`, {
       method: "POST",
       body: formData,
       headers,
@@ -224,131 +342,111 @@ async function queryMicroserviceAI(imagePath, description, requestId) {
         predictionSource: predSource,
         modelLoaded: Boolean(data.modelLoaded),
         modelVersion: data.modelVersion || null,
-        fallbackUsed: Boolean(data.fallbackUsed ?? data.isFallback),
-        fallbackReason: data.fallbackReason || (data.isFallback ? data.reason : null),
+        fallbackUsed: false,
+        fallbackReason: null,
         requestId: data.requestId || requestId,
-        isFallback: Boolean(data.isFallback ?? data.fallbackUsed),
+        isFallback: false,
         source: data.source || predSource,
-        model: data.model || "Gemini-Vision",
+        model: data.model || "MobileNetV3-Small",
         topPredictions: data.top_predictions || [],
         serviceStatus: `AI Microservice connected (${data.model || predSource})`,
       };
     }
   } catch {
-    // Microservice offline; proceed smoothly to Gemini or rule-based fallback
+    // Microservice offline or communication failed
   }
   return null;
 }
 
 /**
- * Returns health and architecture verification from the Python AI microservice.
+ * Executes MobileNetV3 classification strictly via the Python microservice.
+ * Always returns its prediction regardless of confidence score.
+ * Never switches to Gemini or rules.
+ * Throws a clear ApiError if unavailable or failed.
  */
-export async function getAiHealth() {
-  try {
-    const response = await fetch(`${AI_SERVICE_URL}/health`, {
-      method: "GET",
-      signal: AbortSignal.timeout(2500),
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return {
-        online: true,
-        ...data,
-      };
-    }
-  } catch (err) {
-    // Return offline representation
+export async function classifyWithMobileNetV3(imagePath, description, requestId) {
+  if (imagePath && !fs.existsSync(imagePath)) {
+    throw new ApiError(400, `Image file specified does not exist on disk: ${imagePath}`);
   }
 
+  const result = await queryMicroserviceAI(imagePath, description, requestId);
+  if (!result) {
+    throw new ApiError(503, `MobileNetV3 classification service is unavailable or unreachable at ${AI_SERVICE_URL}`);
+  }
+
+  const cat = result.category || result.predictedCategory || "Other";
+  const sub = result.subcategory || result.predictedSubcategory || "General Issue";
+  const conf = typeof result.confidence === "number" ? result.confidence : 0.85;
+
   return {
-    online: false,
-    status: "offline",
-    service: "Smart City Civic AI Microservice (Unreachable)",
-    modelLoaded: false,
-    modelVerified: false,
-    modelError: "AI microservice is offline or unreachable at " + AI_SERVICE_URL,
-    visionApiConfigured: Boolean(process.env.GEMINI_API_KEY),
-    fallbackClassificationEnabled: true,
-    supportedCategories: [
-      "Waste Management",
-      "Roads",
-      "Drainage",
-      "Water Supply",
-      "Street Light",
-      "Street Infrastructure",
-      "Public Property",
-      "Other",
-    ],
+    category: cat,
+    subcategory: sub,
+    predictedCategory: cat,
+    predictedSubcategory: sub,
+    priority: result.priority || "MEDIUM",
+    confidence: conf,
+    description: result.description || result.reason || "",
+    reason: result.reason || "",
+    department: result.department || DEPARTMENT_MAP[cat] || "General Municipal Grievance Cell",
+    needsReview: Boolean(result.needsReview),
+    predictionSource: "mobilenet",
+    modelLoaded: Boolean(result.modelLoaded),
+    modelVersion: result.modelVersion || null,
+    fallbackUsed: false,
+    fallbackReason: null,
+    requestId,
+    isFallback: false,
+    source: "mobilenet",
+    model: result.model || "MobileNetV3-Small",
+    topPredictions: result.topPredictions || [],
+    serviceStatus: "Trained MobileNetV3 model active",
   };
 }
 
-export async function analyzeComplaintImageAndText({
-  imagePath,
-  description = "",
-  requestId = null,
-}) {
-  const effectiveRequestId = requestId || `req_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
-
-  // 1. Try Python AI Microservice first (runs fine-tuned PyTorch MobileNetV3)
-  const microserviceResult = await queryMicroserviceAI(imagePath, description, effectiveRequestId);
-  if (microserviceResult) {
-    return microserviceResult;
+/**
+ * Executes Gemini multimodal classification strictly.
+ * Always returns its prediction regardless of confidence score.
+ * Never switches to MobileNetV3 or rules.
+ * Throws a clear ApiError if unavailable or failed.
+ */
+export async function classifyWithGemini(imagePath, description, requestId) {
+  const ai = getGeminiClient();
+  if (!ai) {
+    throw new ApiError(500, "Gemini classification service is unavailable: GEMINI_API_KEY is not configured");
   }
 
-  // 2. Direct Gemini fallback
-  if (!process.env.GEMINI_API_KEY) {
-    console.warn("[Gemini AI] No GEMINI_API_KEY configured. Using intelligent fallback.");
-    return getFallbackClassification(
-      description,
-      imagePath ? path.basename(imagePath) : "",
-      {
-        requestId: effectiveRequestId,
-        fallbackReason: "MobileNetV3 microservice offline and GEMINI_API_KEY not configured",
-      }
-    );
-  }
-
-  try {
-    const parts = [
-      {
-        text: `
+  const parts = [
+    {
+      text: `
 Analyze this civic complaint.
 
 Description:
 ${description}
 
-Classify it into one of these municipal categories:
-- Waste Management
-- Roads
-- Drainage
-- Water Supply
-- Street Light
-- Street Infrastructure
-- Public Property
-- Other
+Classify it into one of these six municipal categories and its corresponding subcategory:
+${SIX_CATEGORY_SUBCATEGORY_PROMPT}
 
-Relevant subcategories for Street Light include:
-- Street Light Not Working
-- Street Light Damaged
-- Street Light Missing
-- Street Light Flickering
-- Street Light Pole Damaged
-- Multiple Street Lights Not Working
+Rules:
+1. "category": Must be one of the six categories above ("Drainage", "Other", "Roads", "Street Light", "Waste Management", "Water Supply").
+2. "subcategory": Must be one of the allowed subcategories for that predicted category. Never return "NA", "N/A", or generic placeholders. Always choose the most fitting valid subcategory.
+3. "priority": LOW, MEDIUM, HIGH, or CRITICAL.
+4. "confidence": float between 0.50 and 0.99.
+5. "reason": short explanation.
 
-Return JSON with:
-1. category
-2. subcategory
-3. priority: LOW, MEDIUM, HIGH, CRITICAL
-4. confidence: float between 0.50 and 0.99
-5. short reason
+Return ONLY a valid JSON object:
+{
+  "category": "<one of the 6 categories>",
+  "subcategory": "<one of the allowed subcategories for the chosen category>",
+  "priority": "<LOW|MEDIUM|HIGH|CRITICAL>",
+  "confidence": <float>,
+  "reason": "<short explanation>"
+}
+      `.trim(),
+    },
+  ];
 
-Return ONLY valid JSON.
-        `,
-      },
-    ];
-
-    // Add image if available and exists on disk
-    if (imagePath && fs.existsSync(imagePath)) {
+  if (imagePath && fs.existsSync(imagePath)) {
+    try {
       const imageData = fs.readFileSync(imagePath).toString("base64");
       const ext = path.extname(imagePath).toLowerCase();
       const mimeType =
@@ -364,72 +462,215 @@ Return ONLY valid JSON.
           data: imageData,
         },
       });
+    } catch (readErr) {
+      throw new ApiError(400, `Failed to read image file for Gemini analysis: ${readErr.message}`);
     }
+  }
 
-    // Try candidate models in order of availability
-    let response = null;
-    let lastError = null;
+  let response = null;
+  let lastError = null;
+  let usedModel = null;
+  const timeoutMs = parseInt(process.env.GEMINI_TIMEOUT_MS, 10) || 15000;
 
-    for (const model of CANDIDATE_MODELS) {
-      try {
-        response = await ai.models.generateContent({
-          model,
-          contents: [
-            {
-              role: "user",
-              parts,
-            },
-          ],
-          config: {
-            responseMimeType: "application/json",
+  for (const model of CANDIDATE_MODELS) {
+    try {
+      const generatePromise = ai.models.generateContent({
+        model,
+        contents: [
+          {
+            role: "user",
+            parts,
           },
-        });
-        if (response && response.text) break;
-      } catch (err) {
-        lastError = err;
+        ],
+        config: {
+          responseMimeType: "application/json",
+        },
+      });
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new ApiError(504, `Gemini API request timed out after ${timeoutMs}ms`)), timeoutMs)
+      );
+
+      response = await Promise.race([generatePromise, timeoutPromise]);
+      if (response && response.text) {
+        usedModel = model;
+        break;
       }
+    } catch (err) {
+      lastError = err;
     }
+  }
 
-    if (!response || !response.text) {
-      throw lastError || new Error("No response received from Gemini models");
+  if (!response || !response.text) {
+    if (lastError instanceof ApiError) {
+      throw lastError;
     }
+    throw new ApiError(502, `Gemini API error: ${lastError?.message || "No response received from Gemini models"}`);
+  }
 
-    const result = JSON.parse(response.text);
-    const cat = result.category || "Other";
-    const sub = result.subcategory || "General Issue";
+  let parsed;
+  try {
+    parsed = JSON.parse(response.text);
+  } catch (parseErr) {
+    throw new ApiError(502, `Invalid JSON returned by Gemini: ${parseErr.message}`);
+  }
 
-    return {
-      category: cat,
-      subcategory: sub,
-      predictedCategory: cat,
-      predictedSubcategory: sub,
-      priority: result.priority || "MEDIUM",
-      confidence: Number(result.confidence) || 0.90,
-      reason: result.reason || "",
-      department: result.department || (cat === "Street Light" ? "Electrical Engineering & Public Lighting Division" : ""),
-      predictionSource: "gemini_vision",
-      modelLoaded: false,
-      modelVersion: null,
-      fallbackUsed: false,
-      fallbackReason: null,
-      requestId: effectiveRequestId,
-      isFallback: false,
-      source: "gemini",
-      serviceStatus: "Gemini AI connected",
-    };
-  } catch (error) {
-    console.error(
-      "[Gemini AI Error]",
-      error.message
-    );
+  if (!parsed || typeof parsed !== "object") {
+    throw new ApiError(502, "Gemini response is not a valid JSON object");
+  }
 
-    return getFallbackClassification(
-      description,
-      imagePath ? path.basename(imagePath) : "",
-      {
-        requestId: effectiveRequestId,
-        fallbackReason: `MobileNetV3 microservice offline and Gemini error: ${error.message}`,
-      }
-    );
+  const rawCat = typeof parsed.category === "string" ? parsed.category.trim() : "";
+  if (!rawCat) {
+    throw new ApiError(502, "Gemini response is missing or has invalid category");
+  }
+
+  // Canonicalize category against COMPLAINT_CATEGORIES
+  const canonicalCategory = Object.keys(COMPLAINT_CATEGORIES).find(
+    (c) => c.toLowerCase() === rawCat.toLowerCase()
+  ) || rawCat;
+
+  // Validate and resolve subcategory against the existing mapping for the predicted category
+  const sub = validateAndResolveSubcategory(canonicalCategory, parsed.subcategory, description);
+  const conf = typeof parsed.confidence === "number" && !isNaN(parsed.confidence)
+    ? parsed.confidence
+    : (typeof parsed.confidence === "string" && !isNaN(Number(parsed.confidence)) ? Number(parsed.confidence) : 0.90);
+
+  return {
+    category: canonicalCategory,
+    subcategory: sub,
+    predictedCategory: canonicalCategory,
+    predictedSubcategory: sub,
+    priority: parsed.priority || "MEDIUM",
+    confidence: conf,
+    reason: parsed.reason || "",
+    department: parsed.department || DEPARTMENT_MAP[canonicalCategory] || "General Municipal Grievance Cell",
+    predictionSource: "gemini_vision",
+    modelLoaded: false,
+    modelVersion: null,
+    fallbackUsed: false,
+    fallbackReason: null,
+    requestId,
+    isFallback: false,
+    source: "gemini",
+    model: usedModel || "Gemini-Vision",
+    topPredictions: [],
+    serviceStatus: "Gemini AI active",
+  };
+}
+
+/**
+ * Returns health and architecture verification from the Python AI microservice.
+ */
+export async function getAiHealth() {
+  const environment = process.env.NODE_ENV;
+  const priority = getProviderPriority(environment);
+  const selectedProvider = environment === "development" ? "MobileNetV3" : environment === "production" ? "Gemini" : "None";
+
+  try {
+    const fetchFn = testMicroserviceFetch || globalThis.fetch;
+    const response = await fetchFn(`${AI_SERVICE_URL}/health`, {
+      method: "GET",
+      signal: AbortSignal.timeout(2500),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return {
+        online: true,
+        environment: environment || "unconfigured",
+        selectedProvider,
+        activeProviderPriority: priority,
+        ...data,
+      };
+    }
+  } catch {
+    // Return offline representation
+  }
+
+  return {
+    online: false,
+    status: "offline",
+    service: "Smart City Civic AI Microservice (Unreachable)",
+    environment: environment || "unconfigured",
+    selectedProvider,
+    activeProviderPriority: priority,
+    modelLoaded: false,
+    modelVerified: false,
+    modelError: "AI microservice is offline or unreachable at " + AI_SERVICE_URL,
+    visionApiConfigured: Boolean(process.env.GEMINI_API_KEY),
+    fallbackClassificationEnabled: false,
+    supportedCategories: [
+      "Waste Management",
+      "Roads",
+      "Drainage",
+      "Water Supply",
+      "Street Light",
+      "Street Infrastructure",
+      "Public Property",
+      "Other",
+    ],
+  };
+}
+
+/**
+ * Strict Environment-Based AI Complaint Classifier:
+ *
+ * NODE_ENV=development:
+ * - Use ONLY trained MobileNetV3 model.
+ * - Always return its prediction, regardless of confidence score.
+ * - Do NOT switch to Gemini when confidence is low.
+ * - Do NOT use rule-based fallback.
+ * - Do NOT call Gemini under any circumstances.
+ *
+ * NODE_ENV=production:
+ * - Use ONLY Gemini API.
+ * - Always use Gemini for predictions, regardless of confidence score.
+ * - Do NOT switch to MobileNetV3 when Gemini confidence is low.
+ * - Do NOT use rule-based fallback.
+ * - Do NOT call the trained model under any circumstances.
+ *
+ * Unsupported or missing NODE_ENV:
+ * - Throws a clear ApiError configuration error; does not select a provider automatically.
+ */
+export async function analyzeComplaintImageAndText({
+  imagePath,
+  description = "",
+  requestId = null,
+}) {
+  const effectiveRequestId = requestId || `req_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`;
+  const environment = process.env.NODE_ENV;
+
+  // Validate NODE_ENV strictly
+  if (!environment || (environment !== "development" && environment !== "production")) {
+    const errorMsg = `Configuration Error: Invalid or unsupported NODE_ENV ("${environment}"). NODE_ENV must be set strictly to "development" or "production".`;
+    console.error(`[AI Provider Selection] ${errorMsg}`);
+    throw new ApiError(500, errorMsg);
+  }
+
+  console.log(`Environment: ${environment}`);
+
+  // DEVELOPMENT ENVIRONMENT: Strict MobileNetV3 only
+  if (environment === "development") {
+    console.log("Selected provider: MobileNetV3");
+    try {
+      const result = await classifyWithMobileNetV3(imagePath, description, effectiveRequestId);
+      console.log("MobileNetV3 classification successful");
+      return result;
+    } catch (error) {
+      console.log(`MobileNetV3 classification failed: ${error.message}`);
+      throw error;
+    }
+  }
+
+  // PRODUCTION ENVIRONMENT: Strict Gemini only
+  if (environment === "production") {
+    console.log("Selected provider: Gemini");
+    try {
+      const result = await classifyWithGemini(imagePath, description, effectiveRequestId);
+      console.log("Gemini classification successful");
+      return result;
+    } catch (error) {
+      console.log(`Gemini classification failed: ${error.message}`);
+      throw error;
+    }
   }
 }

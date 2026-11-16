@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CitizenLayout from "../../components/citizen/CitizenLayout";
+import ComplaintLocationPicker from "../../components/citizen/ComplaintLocationPicker";
 import { complaintApi, aiApi } from "../../api/client";
 import { getLocalizedCategory, getLocalizedSubcategory, getLocalizedPriority } from "../../utils/formatters";
 import {
@@ -97,6 +98,9 @@ export const ReportComplaint = () => {
 
   // Location (Step 3)
   const [locationAddress, setLocationAddress] = useState("");
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [locationConfirmed, setLocationConfirmed] = useState(false);
   const [locating, setLocating] = useState(false);
 
   // Submission State
@@ -285,6 +289,10 @@ export const ReportComplaint = () => {
       formData.append("title", title.trim());
       formData.append("description", description.trim());
       formData.append("locationAddress", locationAddress.trim());
+      if (latitude !== null && longitude !== null) {
+        formData.append("latitude", latitude);
+        formData.append("longitude", longitude);
+      }
       formData.append("category", category || "Street Light");
       formData.append("subcategory", subcategory || "Street Light Not Working");
       formData.append("priority", priority || "MEDIUM");
@@ -890,69 +898,55 @@ export const ReportComplaint = () => {
       )}
 
       {/* ─────────────────────────────────────────────────────────
-          STEP 3: LOCATION
+          STEP 3: LOCATION SELECTION (LEAFLET + OSM + GPS)
          ───────────────────────────────────────────────────────── */}
       {currentStep === 3 && (
         <div className="bg-white rounded-2xl p-6 sm:p-7 border border-[#E2E8F0] shadow-xs space-y-6">
           <div>
-            <h3 className="text-base sm:text-lg font-bold text-[#0F172A]">
-              {t("citizen.report.step3Title", "Location & Area Landmark")} *
+            <h3 className="text-base sm:text-lg font-bold text-[#0F172A] flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-teal-600" />
+              {t("citizen.report.step3Title", "Pinpoint Complaint Location")} *
             </h3>
             <p className="text-xs text-[#64748B] mt-0.5">
-              {t("citizen.report.step3Desc", "Provide exact streets, area name, or nearby landmark for field inspectors.")}
+              {t(
+                "citizen.report.step3Desc",
+                "Click or drag on the interactive map to select the exact issue spot, or tap 'Use My Current Location'."
+              )}
             </p>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#0F172A] mb-1 flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-[#0D9488]" />
-              {t("citizen.report.locationLabel", "Address / Nearby Landmark")} *
-            </label>
-            <input
-              type="text"
-              required
-              value={locationAddress}
-              onChange={(e) => setLocationAddress(e.target.value)}
-              placeholder={t("citizen.report.landmarkPlaceholder", "e.g. Opposite State Bank, Near City Garden")}
-              className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:border-[#0D9488] focus:bg-white"
-            />
-          </div>
-
-          {/* Current Location Button */}
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={handleGetCurrentLocation}
-              disabled={locating}
-              className="px-4 py-2 rounded-xl border border-teal-200 bg-teal-50 text-[#0D9488] hover:bg-teal-100/60 text-xs font-bold flex items-center gap-2 transition-colors"
-            >
-              {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Compass className="w-4 h-4 text-[#0D9488]" />}
-              {locating ? t("citizen.report.locating", "Acquiring GPS Location...") : t("citizen.report.useLiveGps", "Use Device GPS Location")}
-            </button>
-            <span className="text-[11px] text-[#64748B]">
-              Auto-detects GPS coordinates for priority routing
-            </span>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] flex items-start gap-3">
-            <MapPin className="w-5 h-5 text-[#0D9488] flex-shrink-0 mt-0.5" />
-            <div className="text-xs text-[#475569]">
-              <span className="font-bold text-[#0F172A]">Dispatch Notice:</span> Municipal response crews prioritize complaints with verified area landmarks and GPS coordinates.
-            </div>
-          </div>
+          {/* Interactive Leaflet Location Picker */}
+          <ComplaintLocationPicker
+            initialLatitude={latitude}
+            initialLongitude={longitude}
+            initialAddress={locationAddress}
+            onLocationChange={({ latitude: lat, longitude: lng, address: addr }) => {
+              setLatitude(lat);
+              setLongitude(lng);
+              setLocationAddress(addr);
+              setLocationConfirmed(false);
+            }}
+            onLocationConfirm={({ latitude: lat, longitude: lng, address: addr }) => {
+              setLatitude(lat);
+              setLongitude(lng);
+              setLocationAddress(addr);
+              setLocationConfirmed(true);
+            }}
+            isConfirmed={locationConfirmed}
+          />
 
           <div className="flex items-center justify-between pt-3 border-t border-[#F1F5F9]">
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="px-5 py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-[#64748B] text-xs font-semibold hover:bg-[#F8FAFC]"
+              className="px-5 py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-[#64748B] text-xs font-semibold hover:bg-[#F8FAFC] cursor-pointer"
             >
               {t("common.back", "Back")}
             </button>
             <button
               type="button"
               onClick={handleNextFromStep3}
-              className="px-7 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition-colors"
+              className="px-7 py-2.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-bold text-xs shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               {t("citizen.report.nextStep", "Continue to Review")} <ArrowRight className="w-4 h-4" />
             </button>
@@ -1051,6 +1045,16 @@ export const ReportComplaint = () => {
                 <MapPin className="w-3.5 h-3.5 text-[#0D9488]" />
                 {locationAddress}
               </p>
+              {latitude !== null && longitude !== null && (
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[11px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                    GPS: {latitude.toFixed(5)}° N, {longitude.toFixed(5)}° E
+                  </span>
+                  <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Confirmed
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 

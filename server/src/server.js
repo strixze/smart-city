@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
 
 import authRouter from "./routes/auth.routes.js";
 import complaintRouter from "./routes/complaint.routes.js";
@@ -14,7 +15,14 @@ import chatRouter from "./routes/chat.routes.js";
 import aiRouter from "./routes/ai.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 
-dotenv.config({ path: "./.env" });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const envPath = path.resolve(__dirname, "../.env");
+if (fs.existsSync(envPath)) {
+  dotenv.config({ path: envPath });
+} else {
+  dotenv.config({ path: "./.env" });
+}
 
 const server = express();
 
@@ -25,13 +33,29 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // CORS configuration
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  process.env.ALLOW_ORIGIN || "https://smart-city-mu-wine.vercel.app"
+];
+
 server.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-      process.env.ALLOW_ORIGIN || "https://smart-city-mu-wine.vercel.app"
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, server-to-server)
+      if (!origin) return callback(null, true);
+      // Allow localhost on any port in development
+      if (
+        process.env.NODE_ENV !== "production" &&
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
+      ) {
+        return callback(null, true);
+      }
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true
   })
 );

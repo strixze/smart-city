@@ -1,7 +1,7 @@
 import { Notification } from "../models/notifications.model.js";
 import { PushSubscription } from "../models/pushSubscription.model.js";
 import { getIO, normalizeUserId } from "./socket.service.js";
-import { webpush, vapidPublicKey } from "./webpush.service.js";
+import { webpush, isVapidConfigured, vapidPublicKey } from "./webpush.service.js";
 
 /**
  * Central Notification Service
@@ -128,7 +128,7 @@ function emitSocketNotification(userId, notification) {
  * Removes invalid/expired subscriptions.
  */
 async function sendPushNotification(userId, payload) {
-  if (!vapidPublicKey) {
+  if (!isVapidConfigured()) {
     console.warn("[WebPush] VAPID keys not configured — skipping push");
     return;
   }

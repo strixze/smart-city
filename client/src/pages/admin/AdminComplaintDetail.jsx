@@ -243,6 +243,11 @@ export const AdminComplaintDetail = () => {
             <div>
               <p className="font-semibold text-[#0F172A]">{t("admin.detail.locationAddress")}</p>
               <p className="text-[#64748B]">{complaint.locationAddress}</p>
+              {complaint.location?.coordinates && complaint.location.coordinates.length === 2 && (
+                <p className="text-[11px] font-mono text-teal-700">
+                  GPS: {complaint.location.coordinates[1]?.toFixed(5)}° N, {complaint.location.coordinates[0]?.toFixed(5)}° E
+                </p>
+              )}
             </div>
           </div>
 

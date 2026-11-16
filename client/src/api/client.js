@@ -1,9 +1,9 @@
 import axios from "axios";
 
 export const BACKEND_URL =
-  import.meta.env.VITE_ENV === "production"
-    ? import.meta.env.VITE_BACKEND_URL_PROD || "http://localhost:3000/api/v1"
-    : import.meta.env.VITE_BACKEND_URL_DEV || "http://localhost:3000/api/v1";
+  import.meta.env?.VITE_ENV === "production"
+    ? import.meta.env?.VITE_BACKEND_URL_PROD || "http://localhost:3000/api/v1"
+    : import.meta.env?.VITE_BACKEND_URL_DEV || "http://localhost:3000/api/v1";
 
 // Server root for static uploads (strip /api/v1)
 export const SERVER_ROOT = BACKEND_URL.replace(/\/api(\/v1)?\/?$/, "");
@@ -75,6 +75,7 @@ export const complaintApi = {
   getMyComplaints: (params) => api.get("/complaints/my", { params }),
   getComplaintById: (id) => api.get(`/complaints/${id}`),
   getCitizenDashboard: () => api.get("/complaints/dashboard"),
+  getHotspots: (params) => api.get("/complaints/map/hotspots", { params }),
   confirmResolution: (id) => api.post(`/complaints/${id}/confirm`),
   reopenComplaint: (id, data) => api.post(`/complaints/${id}/reopen`, data),
   testImageAuthenticity: (id, target) =>
@@ -84,6 +85,7 @@ export const complaintApi = {
 export const staffApi = {
   getDashboard: () => api.get("/staff/dashboard"),
   getTasks: (params) => api.get("/staff/tasks", { params }),
+  getHotspots: (params) => api.get("/complaints/map/hotspots", { params }),
   startWork: (id, formData) =>
     api.patch(`/staff/tasks/${id}/start`, formData, {
       headers: { "Content-Type": "multipart/form-data" }
@@ -102,6 +104,7 @@ export const adminApi = {
   getDashboard: () => api.get("/admin/dashboard"),
   getAnalytics: (params) => api.get("/admin/analytics", { params }),
   getAllComplaints: (params) => api.get("/admin/complaints", { params }),
+  getHotspots: (params) => api.get("/complaints/map/hotspots", { params }),
   updateComplaint: (id, data) => api.patch(`/admin/complaints/${id}`, data),
   assignStaff: (id, data) => api.post(`/admin/complaints/${id}/assign`, data),
   rejectComplaint: (id, data) => api.post(`/admin/complaints/${id}/reject`, data),

@@ -361,6 +361,11 @@ export const CitizenComplaintDetail = () => {
                 <MapPin className="w-3.5 h-3.5 text-[#0D9488] flex-shrink-0" />
                 <span className="truncate">{complaint.locationAddress}</span>
               </p>
+              {complaint.location?.coordinates && complaint.location.coordinates.length === 2 && (
+                <p className="text-[10px] font-mono text-teal-700 mt-0.5">
+                  GPS: {complaint.location.coordinates[1]?.toFixed(5)}° N, {complaint.location.coordinates[0]?.toFixed(5)}° E
+                </p>
+              )}
             </div>
           </div>
 
